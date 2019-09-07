@@ -79,10 +79,10 @@ class crossover_detector:
         return heart_rates
         
     def _group_signal(signal, fs, time):
-        # FIX METHOD
         """ Groups a given signal in n items at a time, being n dependent on the sampling frequency (Hz) and wanted time (s) """
         n = fs * time
-        return map(None, *([iter(signal)]*n))
+        iterable_groups = zip(*([iter(signal)]*n))
+        return iterable_groups
         
     def _group_hr_reference(heart_rates, minute):
         """ Groups reference hrv in a list according to the wanted minute (eg. minute = 0, returns hrv from 00:00 to 01:00) """
@@ -102,7 +102,7 @@ class crossover_detector:
             subject_hr = hr_references[subject]
             subject_error = 0.0
             #FIX: iterating in groups
-            for current_minute, signal_minute in enumerate(_group_signal(subject_signal, fs, 60)):            # loops signal in groups of 60 seconds
+            for current_minute, signal_minute in enumerate(self._group_signal(subject_signal, fs, 60)):            # loops signal in groups of 60 seconds
                 # Estimate HRV using current alphas and calculate parameters
                 _, _, _, detected_peaks = self.detect_peaks(signal_minute)
                 detected_heart_rates = calculate_heart_rates(detect_peaks, fs)
