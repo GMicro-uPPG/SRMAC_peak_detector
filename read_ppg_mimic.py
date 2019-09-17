@@ -40,7 +40,8 @@ def getSignals(name):
         next(dataFile)
         for line in dataFile:
             aux = line.split(',')
-            x_hrv.append(int(aux[0]))
+            shift = int(aux[3])
+            x_hrv.append(int(aux[0]) + shift)
             hrv.append(float(aux[1]))
         #end-for
     #end-with
