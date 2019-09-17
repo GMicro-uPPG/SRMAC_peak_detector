@@ -2,18 +2,25 @@
 # Author: Victor O. Costa 
 # Performs random search on the crossover's alphas using rmse of parameters by minute as error function 
 
-from ppg_peak_detection import crossover_detector
+#from ppg_peak_detection import crossover_detector
 from read_ppg_mimic import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
+from plot import *
 
 
 # TODO: load subjects ppg and reference PP intervals
 
 # To print one record name
-print(records[0].name) # <- String
+name = records[0].name
+#print(name) # <- String
 # To print that record ppg
-print(records[0].ppg) # <- list: [x_ppg, ppg]
+ppg = records[0].ppg
+#print(ppg) # <- list: [x_ppg, ppg]
 # To print that record hrv
-print(records[0].hrv) # <- list: [x_hrv, hrv]
+hrv = records[0].hrv
+#print(hrv) # <- list: [x_hrv, hrv]
+
+# To plot ppg signal and peak points
+plotPPG(name, ppg, hrv)
 
 
 '''
