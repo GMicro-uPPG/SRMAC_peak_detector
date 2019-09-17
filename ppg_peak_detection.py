@@ -94,63 +94,53 @@ class crossover_detector:
                 grouped_hr.append(value)
                 
         return grouped_hr
+    
+
+    def signal_regularized_cost(self, detected_peaks, peaks_reference, C, fs):
+    """ Given a set of detected peaks, peaks reference and a constant C, returns the cost based on the confusion matrix regularized by total prediction area and number of predicted peaks.
+        The number of TPs, TNs, FPs and FNs is considered according to the predictors point of view: For each sequence of equally classified samples, the class of this samples block in the confusion matrix is evaluated.
+        Implements a regularization term via a sum of two terms:
+        - (number of positively predicted samples)]/(samples number) to make the total prediction area small
+        - |(actual number of peaks) - (predicted number of peaks)| / max(actual, predicted) to make the predicted number of peaks close to the actual number"""
+    
+        tp = 0              # True positives
+        tn = 0              # True negatives
+        fp = 0              # False positives
+        fn = 0              # False negatives
         
-    def features_rmse(self, ppg_signals, hr_references, fs, features_extractor):
-        """ Returns RMSE of the estimated hrv parameters by minute on each subject using given hrv references """
-        total_error = 0.0
-        for subject, subject_signal in enumerate(ppg_signals):
-            subject_hr = hr_references[subject]
-            subject_error = 0.0
-            #FIX: iterating in groups
-            for current_minute, signal_minute in enumerate(self._group_signal(subject_signal, fs, 60)):            # loops signal in groups of 60 seconds
-                # Estimate HRV using current alphas and calculate parameters
-                _, _, _, detected_peaks = self.detect_peaks(signal_minute)
-                detected_heart_rates = calculate_heart_rates(detect_peaks, fs)
-                hr_features = features_extractor(detected_heart_rates)
-                # Get reference HRV for the current minute and calculate its parameters
-                minute_ref_hr = _group_hr_reference(subject_hr, minute=current_minute)
-                reference_features = features_extractor(minute_ref_hr)
-                # Calculate RMSE in parameters space
-                minute_error = ((np.array(hr_features) - np.array(reference_features))**2)/len(hr_features)           # normalize minute error by number of parameters
-                subject_error += minute_error  
-            subject_error /= 15                         # normalize subject error by number of minutes
-            total_error += subject_error
-        total_error /= len(ppg_signals)                 # normalize total error by number of subjects
         
-        return total_error
-     
-    # DEPRECATED
-    # def parameters_random_search(self, num_iterations, ppg_signals, hrv_references, fs, parameters_calculator):
-        # """ Performs random search of the alphas, optimizing RMSE of the estimated hrv parameters by minute on each subject using given hrv references """
-      
-        # searched_parameters = []
-        # for iteration in range(num_iterations):
-            # # Randomize alphas 
-            # iter_alpha_fast = np.random.uniform(0, 1)
-            # iter_alpha_slow = np.random.uniform(0, 1)
-            # self.set_parameters(iter_alpha_fast, iter_alpha_slow)
-            # iteration_error = 0.0
-            
-            # for subject, subject_signal in enumerate(ppg_signals):
-                # subject_hrv = hrv_references[subject]
-                # subject_error = 0.0
-                
-                # #FIX: iterating in groups
-                # for current_minute, signal_minute in enumerate(_group(subject_signal, fs, 60)):            # loops signal in groups of 60 seconds
-                    # # Estimate HRV using current alphas and calculate parameters
-                    # _, _, _, detected_peaks = self.detect_peaks(signal_minute)
-                    # detected_heart_rates = self.calculate_heart_rates(detect_peaks, fs)
-                    # detected_parameters = parameters_calculator(detected_heart_rates)
-                    # # Get reference HRV for the current minute and calculate its parameters
-                    # reference_hrv = self._group_hrv_reference(subject_hrv, minute=current_minute)
-                    # reference_parameters = parameters_calculator(reference_hrv)
-                    # # Calculate RMSE in parameters space
-                    # minute_error = ((np.array(detected_parameters) - np.array(reference_parameters))**2)/len(detected_parameters)
-                    # subject_error += minute_error
-                    
-                # subject_error /= 15                         # normalize subject error by number of minutes
-                # iteration_error += subject_error
-            
-            # iteration_error /= len(ppg_signals)             # normalize iteration error by number of subjects 
-            # searched_parameters.append([iter_alpha_fast, iter_alpha_slow, iteration_error])
+        return cost
         
+    def total_regularized_cost(self, ppg_records, C, fs):
+        """ Given a set of PPG signals and the correspondent peak references, calculates a confusion matrix-based metric, regularized by the total area and number of peaks detected.  """
+        total_cost = 0.0
+        for record in ppg_records:
+            _, _, _, detected_peaks = self.detect_peaks(record.ppg)
+            record_cost = self.signal_regularized_cost(detected_peaks, record.peaks, C, fs)
+        
+        return total_cost
+        
+    # DEPRECATED RMSE OF FEATURES BY MINUTE
+    # def features_rmse(self, ppg_signals, hr_references, fs, features_extractor):
+        # """ Returns RMSE of the estimated hrv parameters by minute on each subject using given hrv references """
+        # total_error = 0.0
+        # for subject, subject_signal in enumerate(ppg_signals):
+            # subject_hr = hr_references[subject]
+            # subject_error = 0.0
+            # #FIX: iterating in groups
+            # for current_minute, signal_minute in enumerate(self._group_signal(subject_signal, fs, 60)):            # loops signal in groups of 60 seconds
+                # # Estimate HRV using current alphas and calculate parameters
+                # _, _, _, detected_peaks = self.detect_peaks(signal_minute)
+                # detected_heart_rates = calculate_heart_rates(detect_peaks, fs)
+                # hr_features = features_extractor(detected_heart_rates)
+                # # Get reference HRV for the current minute and calculate its parameters
+                # minute_ref_hr = _group_hr_reference(subject_hr, minute=current_minute)
+                # reference_features = features_extractor(minute_ref_hr)
+                # # Calculate RMSE in parameters space
+                # minute_error = ((np.array(hr_features) - np.array(reference_features))**2)/len(hr_features)           # normalize minute error by number of parameters
+                # subject_error += minute_error  
+            # subject_error /= 15                         # normalize subject error by number of minutes
+            # total_error += subject_error
+        # total_error /= len(ppg_signals)                 # normalize total error by number of subjects
+        
+        # return total_error
