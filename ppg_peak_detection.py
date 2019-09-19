@@ -8,8 +8,8 @@ class crossover_detector:
     
     def __init__(self):
         """ Constructor method """
-        self.alpha_fast = 0.05
-        self.alpha_slow = 0.98
+        self.alpha_fast = 0.98
+        self.alpha_slow = 0.05
         self.average_fast = 0.0
         self.average_slow = 0.0
         self.crossover_index = 0.0
@@ -78,15 +78,12 @@ class crossover_detector:
             
         return heart_rates
         
-
-    
-
-    def signal_confusion_matrix(self, detected_peaks, peaks_reference, C):
+    def signal_confusion_matrix(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the confusion matrix."""
         # Confusion matrix:
         # Between a falling and a rising edge: for 0 reference peaks, TN++;    for N reference peaks, FN += N
-        # Between a rising and a falling edge: for N reference peaks, TP += N; for 0 reference peaks, FP++
-        # In this way, TP + FN = len(peaks_reference)
+        # Between a rising and a falling edge: for N reference peaks, TP += 1; for 0 reference peaks, FP++
+        # In this way, TP + FN != len(peaks_reference)
         true_positives = 0 
         true_negatives = 0 
         false_positives = 0
@@ -152,7 +149,8 @@ class crossover_detector:
     def total_regularized_cost(self, ppg_records, C):
         """ Given a set of PPG records cont and the correspondent peak references, calculates a confusion matrix-based metric, regularized by the total area and number of peaks detected.  """
         total_cost = 0.0
-        for record in ppg_records:
+        for index, record in enumerate(ppg_records):
+            print("Cost calculation for record ", index)
             ppg_signal = record.ppg[1]
             reference_peaks = np.array(record.hrv[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
@@ -168,7 +166,7 @@ class crossover_detector:
             record_cost = record_accuracy + C * (record_regularization)
             total_cost += record_cost
             
-        total_cost =/ len(ppg_records)
+        total_cost /= len(ppg_records)
         
         return total_cost
         

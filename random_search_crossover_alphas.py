@@ -1,47 +1,39 @@
 #!python3
 # Author: Victor O. Costa 
-# Performs random search on the crossover's alphas using rmse of parameters by minute as error function 
+# Performs random search on the crossover's alphas using regularized confusion matrix-based cost function 
 
-#from ppg_peak_detection import crossover_detector
+import numpy as np
+from ppg_peak_detection import crossover_detector
 from read_ppg_mimic import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
-from plot import *
+#from plot import *
 
+# Record example
+# name = records[0].name              # Record name: string
+# ppg = records[0].ppg                # Record ppg: [x_ppg, ppg]
+# hrv = records[0].hrv                # Record hrv: [x_hrv, hrv]
+# plotPPG(name, ppg, hrv)             # Plot ppg signal and peak points
 
-# TODO: load subjects ppg and reference PP intervals
+# Use 30 records to train model
+train_records = records[0:15]
 
-# To print one record name
-name = records[0].name
-#print(name) # <- String
-# To print that record ppg
-ppg = records[0].ppg
-#print(ppg) # <- list: [x_ppg, ppg]
-# To print that record hrv
-hrv = records[0].hrv
-#print(hrv) # <- list: [x_hrv, hrv]
-
-# To plot ppg signal and peak points
-plotPPG(name, ppg, hrv)
-
-
-'''
-peak_detector = ppg_peak_detector()
-# TODO
-def features_extractor(heart_rate_signal):
-    # calculate each parameter (feature)
-    return feature1, feature2,..
-    
-# random search of estimated hrv parameters (features) by minute on each subject using given hrv references
-solution_archive = []
+# Random search of alphas, using regularized confusion matrix-based cost
+peak_detector = crossover_detector()
+# Parameters
+C = 20                                       # Regularization hyperparameter
+num_iterations = 50                          # Number of random search iterations
+# Optimization
+solution_archive = np.zeros((num_iterations,3))
 for iteration in range(num_iterations):
+    print("[Search iteration ", iteration, "]")
     # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha > slow alpha
-    alpha_slow = np.random.uniform(0, 1)
-    alpha_fast = np.random.uniform(alpha_slow, 1)   
+    alpha_fast = np.random.uniform(0, 1)
+    alpha_slow = np.random.uniform(alpha_fast, 1)   
     peak_detector.set_parameters(alpha_fast, alpha_slow)
-    error = peak_detector.features_rmse(ppg_signal= ,hr_references= , fs, features_extractor)
+    cost = peak_detector.total_regularized_cost(train_records, C)
     # Keep solutions in a matrix
-    solution_archive.append([alpha_fast, alpha_slow, error])
+    solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
 
-# sort solutions according to the errors
+# Sort solutions according to the costs
 solution_archive = solution_archive[solution_archive[:,-1].argsort()]
 best_solution = solution_archive[0]
-'''
+print(solution_archive)
