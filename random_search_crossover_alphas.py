@@ -3,6 +3,7 @@
 # Performs random search on the crossover's alphas using regularized confusion matrix-based cost function 
 
 import numpy as np
+import pickle as pkl
 from ppg_peak_detection import crossover_detector
 from read_ppg_mimic import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
 #from plot import *
@@ -14,13 +15,13 @@ from read_ppg_mimic import records # This will load 60 records (o to 59). Rercor
 # plotPPG(name, ppg, hrv)             # Plot ppg signal and peak points
 
 # Use 30 records to train model
-train_records = records[0:15]
+train_records = records[0:30]
 
 # Random search of alphas, using regularized confusion matrix-based cost
 peak_detector = crossover_detector()
 # Parameters
-C = 20                                       # Regularization hyperparameter
-num_iterations = 50                          # Number of random search iterations
+C = 3                                          # Regularization hyperparameter
+num_iterations = 100                          # Number of random search iterations
 # Optimization
 solution_archive = np.zeros((num_iterations,3))
 for iteration in range(num_iterations):
@@ -36,4 +37,5 @@ for iteration in range(num_iterations):
 # Sort solutions according to the costs
 solution_archive = solution_archive[solution_archive[:,-1].argsort()]
 best_solution = solution_archive[0]
-print(solution_archive)
+#print(solution_archive)
+pkl.dump(solution_archive, open("solution_archive.data","wb"))

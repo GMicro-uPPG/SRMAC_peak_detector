@@ -8,8 +8,8 @@ class crossover_detector:
     
     def __init__(self):
         """ Constructor method """
-        self.alpha_fast = 0.98
-        self.alpha_slow = 0.05
+        self.alpha_fast = 0.548263
+        self.alpha_slow = 0.964244
         self.average_fast = 0.0
         self.average_slow = 0.0
         self.crossover_index = 0.0
@@ -80,10 +80,11 @@ class crossover_detector:
         
     def signal_confusion_matrix(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the confusion matrix."""
+        # DEPRECATED DESCRIPTION
         # Confusion matrix:
         # Between a falling and a rising edge: for 0 reference peaks, TN++;    for N reference peaks, FN += N
         # Between a rising and a falling edge: for N reference peaks, TP += 1; for 0 reference peaks, FP++
-        # In this way, TP + FN != len(peaks_reference)
+        # In this way, TP + FN = len(peaks_reference)
         true_positives = 0 
         true_negatives = 0 
         false_positives = 0
@@ -93,26 +94,40 @@ class crossover_detector:
         state = 0                                                       # Initial state is negative prediction (no peak)
         state_peaks = 0                                                 # Number of peaks for a given state 
         ref_index = 0                                                   # Index of the reference peaks array
+        tn_flag = False                                                 # Flag to avoid a falsely detected peak in one valley to generate two true negatives for that valley 
         for index, prediction in enumerate(detected_peaks):
             # Updates confusion matrix when reaches an edge 
             if prediction != state:
                 # Rising edge
                 if state == 0:
+                    # For no reference peaks in a prediction valley, increment true negatives by one
                     if state_peaks == 0:
                         #print("True negative at index = ", index) 
                         true_negatives += 1
+                    # For one or more reference peaks in a prediction valley, consider the false negatives and true negatives around it
                     else:
                         #print("False negative at index = ", index) 
                         false_negatives += state_peaks
+                        true_negatives += state_peaks + 1
+                    # Set flag, so if the next prediction is a false positive, two true negatives will be discarded 
+                    tn_flag = True
                 
                 # Falling edge
                 elif state == 1:
+                    # For no reference peaks in a prediction hill, increments false positives.
                     if state_peaks == 0:
                         #print("False positive at index = ", index) 
                         false_positives += 1
+                        # If the false positive is preceded by a true negative, it means that the previous and next true negatives must be ignored
+                        if tn_flag:
+                            true_negatives -= 2
+                    # For more than one reference peaks in a prediction hill, increments the true positives and the false positives with reference to the reference valleys between ref. peaks 
                     else:
                         #print("True positive at index = ", index) 
                         true_positives += state_peaks
+                        false_positives += state_peaks - 1
+                    
+                    tn_flag = False
                     
                 state_peaks = 0
                 state = prediction
@@ -133,7 +148,7 @@ class crossover_detector:
         positive_predictions = sum(detected_peaks)
         total_predictions = len(detected_peaks)
         area_term = positive_predictions/total_predictions                                                                          # Maximum area_term value is 1
-        
+        print("Area term = ",area_term)
         # Considers the number of detected peaks and reference peaks to make them close
         detected_peaks = np.array(detected_peaks)
         rising_edges_mask = np.flatnonzero((detected_peaks[:-1] == 0) & (detected_peaks[1:] == 1))                                  # Mask to get the rising edges indices
@@ -144,7 +159,7 @@ class crossover_detector:
         # Total regularization is the average between area and number terms, having a maximum value of 1
         total_regularization = (area_term + number_term)/2
         
-        return total_regularization
+        return area_term
         
     def total_regularized_cost(self, ppg_records, C):
         """ Given a set of PPG records cont and the correspondent peak references, calculates a confusion matrix-based metric, regularized by the total area and number of peaks detected.  """
@@ -159,11 +174,11 @@ class crossover_detector:
             
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn = self.signal_confusion_matrix(detected_peaks, reference_peaks)
-            record_regularization= self.signal_regularization(detected_peaks, reference_peaks)
+            record_regularization = self.signal_regularization(detected_peaks, reference_peaks)
             
             # Calculate record's accuracy and cost
             record_accuracy = (tp + tn)/(tp + tn + fp + fn)
-            record_cost = record_accuracy + C * (record_regularization)
+            record_cost = (1 - record_accuracy) + C * record_regularization
             total_cost += record_cost
             
         total_cost /= len(ppg_records)

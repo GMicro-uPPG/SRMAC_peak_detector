@@ -12,7 +12,7 @@ sample_peaks = np.array(sample_record.hrv[0]) - sample_record.ppg[0][0]
 
 # Apply detector
 detector = crossover_detector()
-#detector.set_parameters(alpha_fast = 0.5, alpha_slow = 0.9)
+detector.set_parameters(alpha_fast = 0.523995775, alpha_slow = 0.95060876)
 fast_averages, slow_averages, crossover_indices, detected_peaks = detector.detect_peaks(sample_signal)
 
 # Plot signal and reference
