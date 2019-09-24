@@ -21,9 +21,10 @@ train_records = records[0:30]
 peak_detector = crossover_detector()
 # Parameters
 C = 3                                          # Regularization hyperparameter
-num_iterations = 100                          # Number of random search iterations
+num_iterations = 10000                         # Number of random search iterations
 # Optimization
-solution_archive = np.zeros((num_iterations,3))
+#solution_archive = np.zeros((num_iterations,3))
+best_solution = []
 for iteration in range(num_iterations):
     print("[Search iteration ", iteration, "]")
     # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha > slow alpha
@@ -32,10 +33,15 @@ for iteration in range(num_iterations):
     peak_detector.set_parameters(alpha_fast, alpha_slow)
     cost = peak_detector.total_regularized_cost(train_records, C)
     # Keep solutions in a matrix
-    solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
+    if iteration == 0:
+        best_solution = [alpha_fast, alpha_slow, cost]
+    elif cost < best_solution[-1]:
+        best_solution = [alpha_fast, alpha_slow, cost]
+         
+    #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
 
 # Sort solutions according to the costs
 solution_archive = solution_archive[solution_archive[:,-1].argsort()]
-best_solution = solution_archive[0]
+#best_solution = solution_archive[0]
 #print(solution_archive)
 pkl.dump(solution_archive, open("solution_archive.data","wb"))
