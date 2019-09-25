@@ -1,0 +1,78 @@
+
+First timestamp: 1569446138.254301
+
+Loading MIMIC1_organized dataset
+
+Getting record number 216
+Getting record number 211
+Getting record number 471
+Getting record number 485
+Getting record number 218
+Getting record number 482
+Getting record number 476
+Getting record number 220
+Getting record number 449
+Getting record number 041
+Getting record number 414
+Getting record number 477
+Getting record number 221
+Getting record number 484
+Getting record number 226
+Getting record number 219
+Getting record number 446
+Getting record number 210
+Getting record number 281
+Getting record number 401
+Getting record number 439
+Getting record number 430
+Getting record number 437
+Getting record number 408
+Getting record number 452
+Getting record number 409
+Getting record number 055
+Getting record number 438
+Getting record number 454
+Getting record number 453
+Getting record number 039
+Getting record number 284
+Getting record number 248
+Getting record number 417
+Getting record number 410
+Getting record number 444
+Getting record number 212
+Getting record number 443
+Getting record number 224
+Getting record number 472
+Getting record number 411
+Getting record number 240
+Getting record number 276
+Getting record number 225
+Getting record number 474
+Getting record number 480
+Getting record number 442
+Getting record number 231
+Getting record number 209
+Getting record number 456
+Getting record number 451
+Getting record number 253
+Getting record number 254
+Getting record number 208
+Getting record number 237
+Getting record number 230
+Getting record number 466
+Getting record number 403
+Getting record number 404
+Getting record number 252
+
+records[0:30]
+
+C = 3
+
+num_iterations = 1
+
+[Search iteration 0]
+
+best_solution = alpha_fast, alpha_slow, cost
+best_solution = [0.8705776885913042, 0.9692625908315822, 1.3138191457180128]
+
+Last timestamp: 1569446166.289609

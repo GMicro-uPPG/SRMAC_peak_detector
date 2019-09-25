@@ -2,6 +2,7 @@
 # Author: Victor O. Costa 
 
 import numpy as np
+from log_manager import time, log
 
 class crossover_detector:
     """ Class to process the PPG signal and indicate peaks using a crossover of moving averages """
@@ -148,7 +149,7 @@ class crossover_detector:
         positive_predictions = sum(detected_peaks)
         total_predictions = len(detected_peaks)
         area_term = positive_predictions/total_predictions                                                                          # Maximum area_term value is 1
-        print("Area term = ",area_term)
+        print('Area term = ', area_term)
         # Considers the number of detected peaks and reference peaks to make them close
         detected_peaks = np.array(detected_peaks)
         rising_edges_mask = np.flatnonzero((detected_peaks[:-1] == 0) & (detected_peaks[1:] == 1))                                  # Mask to get the rising edges indices
@@ -165,7 +166,7 @@ class crossover_detector:
         """ Given a set of PPG records cont and the correspondent peak references, calculates a confusion matrix-based metric, regularized by the total area and number of peaks detected.  """
         total_cost = 0.0
         for index, record in enumerate(ppg_records):
-            print("Cost calculation for record ", index)
+            print('Cost calculation for record ', index)
             ppg_signal = record.ppg[1]
             reference_peaks = np.array(record.hrv[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
