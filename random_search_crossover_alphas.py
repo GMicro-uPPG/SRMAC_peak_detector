@@ -27,7 +27,7 @@ try:
     C = 3                                          # Regularization hyperparameter
     print('\nC = ' + str(C))
 
-    num_iterations = 5000 # 10000                         # Number of random search iterations
+    num_iterations = 6000 # 10000                         # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
 
     # Optimization
@@ -82,8 +82,8 @@ except KeyboardInterrupt:
     print('Error: You cancelled the operation.\n')
     print('\nLast timestamp: ' + str(time.getTimestamp()))
     print('Last time: ' + str(time.getTime()))
-except:
-    print('An error occurred.')
+except Exception as e:
+    print('An error occurred:', e)
     print('\nLast timestamp: ' + str(time.getTimestamp()))
     print('Last time: ' + str(time.getTime()))
 #/except
