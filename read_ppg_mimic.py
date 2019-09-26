@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from log_manager import time, log
+from time_manager import time
 
 
 # Signal Structure -----------------------------------------------------------------------
@@ -59,18 +59,13 @@ ignore = '.DS_Store'
 dataset = 'MIMIC1_organized'
 list_of_recs = os.listdir(dataset)
 
-log.openLogFile() # open log file
+print('\nFirst timestamp: ' + str(time.getTimestamp()))
+print('First time: ' + str(time.getTime()))
 
-timestamp = '\nFirst timestamp: ' + str(time.getTimestamp())
-log.printWriteLog(timestamp)
-
-
-dataset_name = '\nLoading ' + str(dataset) + ' dataset\n'
-log.printWriteLog(dataset_name)
+print('\nLoading ' + str(dataset) + ' dataset\n')
 for i in range(len(list_of_recs)):
     if(list_of_recs[i] != ignore):
-        get_rec = 'Getting record number ' + list_of_recs[i]
-        log.printWriteLog(get_rec)
+        print('Getting record number ' + list_of_recs[i])
         name, x_ppg, ppg, x_hrv, hrv = getSignals(list_of_recs[i])
         records.append( record(name, x_ppg, ppg, x_hrv, hrv) )
     #end-if

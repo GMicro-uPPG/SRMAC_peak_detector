@@ -2,7 +2,6 @@
 # Author: Victor O. Costa 
 
 import numpy as np
-from log_manager import time, log
 
 class crossover_detector:
     """ Class to process the PPG signal and indicate peaks using a crossover of moving averages """

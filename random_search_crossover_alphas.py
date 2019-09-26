@@ -6,18 +6,8 @@ import numpy as np
 import pickle as pkl
 from ppg_peak_detection import crossover_detector
 from read_ppg_mimic import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
-from log_manager import time, log
+from time_manager import time
 #from plot import *
-
-# --- Handle error
-def err_finish(e):
-    log.printWriteLog(e)
-
-    timestamp_ = '\nLast timestamp: ' + str(time.getTimestamp())
-    log.printWriteLog(timestamp_)
-
-    log.closeLogFile() # close log file
-#end-def
 
 
 try:
@@ -29,23 +19,22 @@ try:
 
     # Use 30 records to train model
     train_records = records[0:30]
-    log.printWriteLog('\nrecords[0:30]')
+    print('\nrecords[0:30]')
 
     # Random search of alphas, using regularized confusion matrix-based cost
     peak_detector = crossover_detector()
     # Parameters
     C = 3                                          # Regularization hyperparameter
-    log.printWriteLog('\nC = ', C)
+    print('\nC = ' + str(C))
 
     num_iterations = 5000 # 10000                         # Number of random search iterations
-    log.printWriteLog('\nnum_iterations = ', num_iterations)
+    print('\nnum_iterations = ' + str(num_iterations))
 
     # Optimization
     #solution_archive = np.zeros((num_iterations,3))
     best_solution = []
     for iteration in range(num_iterations):
-        s_iter = '\n[Search iteration ' + str(iteration) + ']'
-        log.printWriteLog(s_iter)
+        print('\n[Search iteration ' + str(iteration) + ']')
         # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha > slow alpha
         alpha_fast = np.random.uniform(0, 1)
         alpha_slow = np.random.uniform(alpha_fast, 1)   
@@ -57,44 +46,44 @@ try:
         elif cost < best_solution[-1]:
             best_solution = [alpha_fast, alpha_slow, cost]
 
-        log.printWriteLog('\nbest_solution = alpha_fast, alpha_slow, cost') 
-        log.printWriteLog('best_solution = ' + str(best_solution)) 
+        print('\nbest_solution = alpha_fast, alpha_slow, cost') 
+        print('best_solution = ' + str(best_solution)) 
         #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
 
     # Sort solutions according to the costs
     #solution_archive = solution_archive[solution_archive[:,-1].argsort()]
     #best_solution = solution_archive[0]
-    #log.printWriteLog(solution_archive)
+    #print(solution_archive)
     #pkl.dump(solution_archive, open("solution_archive.data","wb"))
 
 
-    timestamp_ = '\nLast timestamp: ' + str(time.getTimestamp())
-    log.printWriteLog(timestamp_)
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
+#/try
 
-    log.closeLogFile() # close log file
 
-
-# --- Exceptions
 except IOError:
-    e = '\nError: An error occurred trying to read the file.\n'
-    err_finish(e)
-
+    print('Error: An error occurred trying to read the file.\n')
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
 except ValueError:
-    e = '\nError: Non-numeric data found in the file.\n'
-    err_finish(e)
-
+    print('Error: Non-numeric data found in the file.\n')
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
 except ImportError:
-    e = '\nError: No module found.\n'
-    err_finish(e)
-
+    print('Error: No module found.\n')
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
 except EOFError:
-    e = '\nError: Why did you do an EOF on me?\n'
-    err_finish(e)
-
+    print('Error: Why did you do an EOF on me?\n')
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
 except KeyboardInterrupt:
-    e = '\nError: You cancelled the operation.\n'
-    err_finish(e)
-
+    print('Error: You cancelled the operation.\n')
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
 except:
-    e = 'An error occurred.'
-    err_finish(e)
+    print('An error occurred.')
+    print('\nLast timestamp: ' + str(time.getTimestamp()))
+    print('Last time: ' + str(time.getTime()))
+#/except

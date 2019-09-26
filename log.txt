@@ -1,5 +1,7 @@
 
-First timestamp: 1569446138.254301
+First timestamp: 1569456050.505595
+
+First time: 2019-09-25 21:00:50.505623
 
 Loading MIMIC1_organized dataset
 
@@ -68,11 +70,81 @@ records[0:30]
 
 C = 3
 
-num_iterations = 1
+num_iterations = 5000
 
 [Search iteration 0]
+Cost calculation for record  0
+Area term =  0.4652396910194757
+Cost calculation for record  1
+Area term =  0.4457995182179397
+Cost calculation for record  2
+Area term =  0.4303771589080792
+Cost calculation for record  3
+Area term =  0.4520306847171975
+Cost calculation for record  4
+Area term =  0.35095423070427295
+Cost calculation for record  5
+Area term =  0.45883963413008116
+Cost calculation for record  6
+Area term =  0.476608680966053
+Cost calculation for record  7
+Area term =  0.39701686237211
+Cost calculation for record  8
+Area term =  0.30898052427132683
+Cost calculation for record  9
+Area term =  0.32925626005564496
+Cost calculation for record  10
+Area term =  0.41589703019582397
+Cost calculation for record  11
+Area term =  0.39007457844069726
+Cost calculation for record  12
+Area term =  0.44152392465710805
+Cost calculation for record  13
+Area term =  0.31148721321967304
+Cost calculation for record  14
+Area term =  0.44180837162997005
+Cost calculation for record  15
+Area term =  0.3909491724297321
+Cost calculation for record  16
+Area term =  0.42715935252757803
+Cost calculation for record  17
+Area term =  0.381941172810425
+Cost calculation for record  18
+Area term =  0.4593640832362954
+Cost calculation for record  19
+Area term =  0.3785011422323754
+Cost calculation for record  20
+Area term =  0.4193726166454813
+Cost calculation for record  21
+Area term =  0.4373905545827074
+Cost calculation for record  22
+Area term =  0.3539587018551276
+Cost calculation for record  23
+Area term =  0.32947848425319337
+Cost calculation for record  24
+Area term =  0.48299984888754566
+Cost calculation for record  25
+Area term =  0.4076480679828265
+Cost calculation for record  26
+Area term =  0.3159228082027396
+Cost calculation for record  27
+Area term =  0.40481569771579023
+Cost calculation for record  28
+Area term =  0.4070969519729064
+Cost calculation for record  29
+Area term =  0.40734584307416066
 
 best_solution = alpha_fast, alpha_slow, cost
-best_solution = [0.8705776885913042, 0.9692625908315822, 1.3138191457180128]
+best_solution = [0.35119159173713554, 0.9826223743189251, 1.2762411258125739]
 
-Last timestamp: 1569446166.289609
+[Search iteration 1]
+Cost calculation for record  0
+Area term =  0.48819989511017875
+Cost calculation for record  1
+Area term =  0.44248393319051726
+Cost calculation for record  2
+Error: You cancelled the operation.
+
+
+Last timestamp: 1569456064.157569
+Last time: 2019-09-25 21:01:04.157587
