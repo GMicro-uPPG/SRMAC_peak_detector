@@ -8,8 +8,8 @@ class crossover_detector:
     
     def __init__(self):
         """ Constructor method """
-        self.alpha_fast = 0.548263
-        self.alpha_slow = 0.964244
+        self.alpha_fast = 0.3011934482294183 #0.548263
+        self.alpha_slow = 0.9482683739254808 #0.964244
         self.average_fast = 0.0
         self.average_slow = 0.0
         self.crossover_index = 0.0
@@ -174,6 +174,16 @@ class crossover_detector:
             
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn = self.signal_confusion_matrix(detected_peaks, reference_peaks)
+
+            if( (tp <= 0) or (tn <= 0) or (fp <= 0) or (fn <= 0) ):
+                print('TP: ', tp)
+                print('TN: ', tn)
+                print('FP: ', fp)
+                print('FN: ', fn)
+                print('alpha_fast: ', self.alpha_fast)
+                print('alpha_slow: ', self.alpha_slow)
+            #/if
+
             record_regularization = self.signal_regularization(detected_peaks, reference_peaks)
             
             # Calculate record's accuracy and cost
