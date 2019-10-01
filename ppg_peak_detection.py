@@ -90,6 +90,8 @@ class crossover_detector:
         false_positives = 0
         false_negatives = 0
         
+        fp_hill_flag = False
+        
         # Assumes that the detected_peaks array treats 0 as negative prediction and 1 as positive prediction
         state = 0                                                       # Initial state is negative prediction (no peak)
         state_peaks = 0                                                 # Number of peaks for a given state 
@@ -109,8 +111,6 @@ class crossover_detector:
                         #print("False negative at index = ", index) 
                         false_negatives += state_peaks
                         true_negatives += state_peaks + 1
-                    # Set flag, so if the next prediction is a false positive, two true negatives will be discarded 
-                    tn_flag = True
                 
                 # Falling edge
                 elif state == 1:
@@ -119,15 +119,16 @@ class crossover_detector:
                         #print("False positive at index = ", index) 
                         false_positives += 1
                         # If the false positive is preceded by a true negative, it means that the previous and next true negatives must be ignored
-                        if tn_flag:
-                            true_negatives -= 2
+                        true_negatives -= 1
+                        fp_hill_flag = True
                     # For more than one reference peaks in a prediction hill, increments the true positives and the false positives with reference to the reference valleys between ref. peaks 
                     else:
                         #print("True positive at index = ", index) 
                         true_positives += state_peaks
                         false_positives += state_peaks - 1
-                    
-                    tn_flag = False
+                        if fp_hill_flag:
+                            true_negatives -= 1
+                            fp_hill_flag = False
                     
                 state_peaks = 0
                 state = prediction
@@ -139,8 +140,7 @@ class crossover_detector:
                     ref_index += 1
                 
         return true_positives, true_negatives, false_positives, false_negatives
-        
-        
+                
     def signal_regularization(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the regularization value, considering total prediction area and number of predicted peaks. """        
         # Assumes that detected_peaks treats 0 as negative prediction and 1 as positive prediction
@@ -175,13 +175,10 @@ class crossover_detector:
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn = self.signal_confusion_matrix(detected_peaks, reference_peaks)
 
-            if( (tp <= 0) or (tn <= 0) or (fp <= 0) or (fn <= 0) ):
-                print('TP: ', tp)
-                print('TN: ', tn)
-                print('FP: ', fp)
-                print('FN: ', fn)
-                print('alpha_fast: ', self.alpha_fast)
-                print('alpha_slow: ', self.alpha_slow)
+            #if((tp <= 0) or (tn <= 0) or (fp <= 0) or (fn <= 0)):
+            print('[RECORD ', index,']')
+            print('TP: ', tp, 'TN: ', tn, 'FP: ', fp, 'FN: ', fn)
+            
             #/if
 
             record_regularization = self.signal_regularization(detected_peaks, reference_peaks)

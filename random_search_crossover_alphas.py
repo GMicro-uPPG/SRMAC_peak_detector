@@ -18,13 +18,13 @@ try:
     # plotPPG(name, ppg, hrv)             # Plot ppg signal and peak points
 
     # Use 30 records to train model
-    train_records = records[0:30]
-    print('\nrecords[0:30]')
+    train_records = records[0:5]
+    print('\nrecords[0:5]')
 
     # Random search of alphas, using regularized confusion matrix-based cost
     peak_detector = crossover_detector()
     # Parameters
-    C = 3                                          # Regularization hyperparameter
+    C = 1                                          # Regularization hyperparameter
     print('\nC = ' + str(C))
 
     num_iterations = 6000 # 10000                         # Number of random search iterations
@@ -35,19 +35,19 @@ try:
     best_solution = []
     for iteration in range(num_iterations):
         print('\n[Search iteration ' + str(iteration) + ']')
-        # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha > slow alpha
+        # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
         alpha_fast = np.random.uniform(0, 1)
         alpha_slow = np.random.uniform(alpha_fast, 1)   
         peak_detector.set_parameters(alpha_fast, alpha_slow)
         cost = peak_detector.total_regularized_cost(train_records, C)
+        print('[randomized] alpha_fast: ', peak_detector.alpha_fast, ', alpha_slow: ', peak_detector.alpha_slow, ', cost: ', cost)
+        
         # Keep solutions in a matrix
         if iteration == 0:
             best_solution = [alpha_fast, alpha_slow, cost]
         elif cost < best_solution[-1]:
             best_solution = [alpha_fast, alpha_slow, cost]
-
-        print('\nbest_solution = alpha_fast, alpha_slow, cost') 
-        print('best_solution = ' + str(best_solution)) 
+        print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
         #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
 
     # Sort solutions according to the costs
