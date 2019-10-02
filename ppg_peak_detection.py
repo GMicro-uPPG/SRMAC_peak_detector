@@ -178,6 +178,7 @@ class crossover_detector:
             #if((tp <= 0) or (tn <= 0) or (fp <= 0) or (fn <= 0)):
             print('[RECORD ', index,']')
             print('TP: ', tp, 'TN: ', tn, 'FP: ', fp, 'FN: ', fn)
+            print('Number of reference peaks: ', len(reference_peaks))
             
             #/if
 
