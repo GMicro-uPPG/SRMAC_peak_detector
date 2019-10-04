@@ -7,15 +7,17 @@ import pickle as pkl
 from ppg_peak_detection import crossover_detector
 from read_ppg_mimic import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
 from time_manager import time
-#from plot import *
+from plot import *
 
 
 try:
     # Record example
-    # name = records[0].name              # Record name: string
-    # ppg = records[0].ppg                # Record ppg: [x_ppg, ppg]
-    # hrv = records[0].hrv                # Record hrv: [x_hrv, hrv]
-    # plotPPG(name, ppg, hrv)             # Plot ppg signal and peak points
+    #rec = 21
+    #name = records[rec].name              # Record name: string
+    #ppg = records[rec].ppg                # Record ppg: [x_ppg, ppg]
+    #hrv = records[rec].hrv                # Record hrv: [x_hrv, hrv]
+    #plotPPG(name, ppg, hrv)             # Plot ppg signal and peak points
+
 
     # Use 30 records to train model
     train_records = records[0:5]
