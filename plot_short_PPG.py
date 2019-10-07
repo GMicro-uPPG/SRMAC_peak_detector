@@ -1,15 +1,15 @@
-import sys
+#import sys
 import matplotlib.pyplot as plt
 
 
-def getSignals():
+def getSignals(name):
 
-    name = sys.argv[1]
+    #name = sys.argv[1]
     x_ppg, ppg = [], []
     x_hrv, hrv = [], []
    
     # PPG signals file
-    with open(name+'/record_ppg-ecg.csv') as dataFile:
+    with open('MIMIC1_organized_short/' + name + '/record_ppg-ecg.csv') as dataFile:
         next(dataFile)
         next(dataFile)
         for line in dataFile:
@@ -26,7 +26,7 @@ def getSignals():
     dataFile.close()
 
     # HRV signals file
-    with open(name+'/rri.csv') as dataFile:
+    with open('MIMIC1_organized_short/' + name + '/rri.csv') as dataFile:
         next(dataFile)
         for line in dataFile:
             aux = line.split(',')
@@ -58,5 +58,5 @@ def plotPPG(name, x_ppg, ppg, x_hrv, hrv):
 
 # MAIN ---------------------------------------------------
 
-name, x_ppg, ppg, x_hrv, hrv = getSignals()
-plotPPG(name, x_ppg, ppg, x_hrv, hrv)
+# name, x_ppg, ppg, x_hrv, hrv = getSignals()
+# plotPPG(name, x_ppg, ppg, x_hrv, hrv)

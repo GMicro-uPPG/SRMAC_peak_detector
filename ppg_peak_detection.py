@@ -97,6 +97,7 @@ class crossover_detector:
         state_peaks = 0                                                 # Number of peaks for a given state 
         ref_index = 0                                                   # Index of the reference peaks array
         tn_flag = False                                                 # Flag to avoid a falsely detected peak in one valley to generate two true negatives for that valley 
+        confusion_array = []                                            # Array to keep which positions corresponds to which CM members
         for index, prediction in enumerate(detected_peaks):
             # Updates confusion matrix when reaches an edge 
             if prediction != state:
@@ -104,10 +105,12 @@ class crossover_detector:
                 if state == 0:
                     # For no reference peaks in a prediction valley, increment true negatives by one
                     if state_peaks == 0:
+                        confusion_array.append('tn')
                         #print("True negative at index = ", index) 
                         true_negatives += 1
                     # For one or more reference peaks in a prediction valley, consider the false negatives and true negatives around it
                     else:
+                        confusion_array.append('fn')
                         #print("False negative at index = ", index) 
                         false_negatives += state_peaks
                         true_negatives += state_peaks + 1
@@ -116,6 +119,7 @@ class crossover_detector:
                 elif state == 1:
                     # For no reference peaks in a prediction hill, increments false positives.
                     if state_peaks == 0:
+                        confusion_array.append('fp')
                         #print("False positive at index = ", index) 
                         false_positives += 1
                         # If the false positive is preceded by a true negative, it means that the previous and next true negatives must be ignored
@@ -123,6 +127,7 @@ class crossover_detector:
                         fp_hill_flag = True
                     # For more than one reference peaks in a prediction hill, increments the true positives and the false positives with reference to the reference valleys between ref. peaks 
                     else:
+                        confusion_array.append('tp')
                         #print("True positive at index = ", index) 
                         true_positives += state_peaks
                         false_positives += state_peaks - 1
@@ -139,7 +144,7 @@ class crossover_detector:
                 if ref_index < len(peaks_reference) - 1:
                     ref_index += 1
                 
-        return true_positives, true_negatives, false_positives, false_negatives
+        return true_positives, true_negatives, false_positives, false_negatives, confusion_array
                 
     def signal_regularization(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the regularization value, considering total prediction area and number of predicted peaks. """        
