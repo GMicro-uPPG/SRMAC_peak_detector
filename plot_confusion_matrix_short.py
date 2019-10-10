@@ -23,16 +23,17 @@ plt.ylabel('amplitude')
 plt.plot(ppg, color='k')
 plt.scatter(x=reference_peaks, y=[max(ppg)]*len(reference_peaks))
 
-for index, member  in enumerate(confusion_array):
-    if member == 'tp':
+for index, member_tuple in enumerate(confusion_array):
+    if member_tuple[0] == 'tp':
         index_color = 'g'
-    elif member == 'tn':
+    elif member_tuple[0] == 'tn':
         index_color = 'b'
-    elif member == 'fp':
+    elif member_tuple[0] == 'fp':
         index_color = 'r'
-    elif member == 'fn':
+    elif member_tuple[0] == 'fn':
         index_color = 'gray'
-    plt.axvspan(x = index, color = index_color, linewidth = 2, alpha = 0.5)
+    if index < len(confusion_array) - 1:
+        plt.axvspan(xmin = member_tuple[1], xmax = confusion_array[index+1][1], color = index_color, linewidth = 2, alpha = 0.5)
 
 plt.grid()
 plt.show()

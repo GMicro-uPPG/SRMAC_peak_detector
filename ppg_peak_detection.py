@@ -105,12 +105,12 @@ class crossover_detector:
                 if state == 0:
                     # For no reference peaks in a prediction valley, increment true negatives by one
                     if state_peaks == 0:
-                        confusion_array.append('tn')
+                        confusion_array.append(('tn',index))
                         #print("True negative at index = ", index) 
                         true_negatives += 1
                     # For one or more reference peaks in a prediction valley, consider the false negatives and true negatives around it
                     else:
-                        confusion_array.append('fn')
+                        confusion_array.append(('fn',index))
                         #print("False negative at index = ", index) 
                         false_negatives += state_peaks
                         true_negatives += state_peaks + 1
@@ -119,7 +119,7 @@ class crossover_detector:
                 elif state == 1:
                     # For no reference peaks in a prediction hill, increments false positives.
                     if state_peaks == 0:
-                        confusion_array.append('fp')
+                        confusion_array.append(('fp',index))
                         #print("False positive at index = ", index) 
                         false_positives += 1
                         # If the false positive is preceded by a true negative, it means that the previous and next true negatives must be ignored
@@ -127,7 +127,7 @@ class crossover_detector:
                         fp_hill_flag = True
                     # For more than one reference peaks in a prediction hill, increments the true positives and the false positives with reference to the reference valleys between ref. peaks 
                     else:
-                        confusion_array.append('tp')
+                        confusion_array.append(('tp',index))
                         #print("True positive at index = ", index) 
                         true_positives += state_peaks
                         false_positives += state_peaks - 1
