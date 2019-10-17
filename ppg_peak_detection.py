@@ -122,7 +122,8 @@ class crossover_detector:
                     if state_peaks == 0:
                         confusion_array.append(('fp',index))
                         #print("False positive at index = ", index) 
-                        false_positives += 1
+                        if not fp_hill_flag:
+                            false_positives += 1
                         # If the false positive is preceded by a true negative, it means that the previous and next true negatives must be ignored
                         true_negatives -= 1
                         fp_hill_flag = True
@@ -134,6 +135,7 @@ class crossover_detector:
                         false_positives += state_peaks - 1
                         if fp_hill_flag:
                             true_negatives -= 1
+                            
                             fp_hill_flag = False
                     
                 state_peaks = 0

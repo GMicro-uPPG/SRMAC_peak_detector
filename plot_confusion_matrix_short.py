@@ -4,14 +4,19 @@
 import numpy as np
 from ppg_peak_detection import crossover_detector
 import plot_short_PPG
+import read_ppg_mimic
 import matplotlib.pyplot as plt
+import sys
 
-signal_name = "039"
-_, x_ppg, ppg, x_hrv, _ = plot_short_PPG.getSignals(signal_name)
+signal_name = sys.argv[1]
+#_, x_ppg, ppg, x_hrv, _ = plot_short_PPG.getSignals(signal_name)
+_, x_ppg, ppg, x_hrv, _ = read_ppg_mimic.getSignals(signal_name)
 reference_peaks = np.array(x_hrv) - x_ppg[0]
 
 detector = crossover_detector()
-detector.set_parameters(alpha_fast = 0.5144310567075446, alpha_slow = 0.9640168863482605)
+#detector.set_parameters(alpha_fast = 0.5144310567075446, alpha_slow = 0.9640168863482605)          # good parameters
+detector.set_parameters(alpha_fast = 0.2, alpha_slow = 0.6)                                         # bad parameters
+
 _, _, _, detected_peaks = detector.detect_peaks(ppg)
 
 tp, tn, fp, fn, confusion_array = detector.signal_confusion_matrix(detected_peaks, reference_peaks)
