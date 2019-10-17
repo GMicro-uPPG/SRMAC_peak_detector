@@ -93,12 +93,13 @@ class crossover_detector:
         fp_hill_flag = False
         
         # Assumes that the detected_peaks array treats 0 as negative prediction and 1 as positive prediction
-        state = 0                                                       # Initial state is negative prediction (no peak)
         state_peaks = 0                                                 # Number of peaks for a given state 
         ref_index = 0                                                   # Index of the reference peaks array
         tn_flag = False                                                 # Flag to avoid a falsely detected peak in one valley to generate two true negatives for that valley 
         confusion_array = []                                            # Array to keep which positions corresponds to which CM members
         for index, prediction in enumerate(detected_peaks):
+            if index == 0:
+                state = prediction
             # Updates confusion matrix when reaches an edge 
             if prediction != state:
                 # Rising edge
@@ -143,7 +144,29 @@ class crossover_detector:
                 state_peaks += 1
                 if ref_index < len(peaks_reference) - 1:
                     ref_index += 1
+            
+        # Updates confusion matrix in the end of the signal
+        # if index == len(detected_peaks) - 1:
+            
+        if state == 0:
+            if state_peaks == 0:
+                confusion_array.append(('tn',index))
+                true_negatives += 1
+            else:
+                confusion_array.append(('fn',index))
+                false_negatives += state_peaks
+                true_negatives += state_peaks + 1
                 
+        elif state == 1:
+            if state_peaks == 0:
+                confusion_array.append(('fp',index)) 
+                false_positives += 1
+            # For more than one reference peaks in a prediction hill, increments the true positives and the false positives with reference to the reference valleys between ref. peaks 
+            else:
+                confusion_array.append(('tp',index))
+                true_positives += state_peaks
+                false_positives += state_peaks - 1
+                        
         return true_positives, true_negatives, false_positives, false_negatives, confusion_array
                 
     def signal_regularization(self, detected_peaks, peaks_reference):
