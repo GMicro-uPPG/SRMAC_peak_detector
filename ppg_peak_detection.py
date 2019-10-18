@@ -203,7 +203,7 @@ class crossover_detector:
             _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
             
             # Get record's confusion matrix and regularization term
-            tp, tn, fp, fn = self.signal_confusion_matrix(detected_peaks, reference_peaks)
+            tp, tn, fp, fn, _ = self.signal_confusion_matrix(detected_peaks, reference_peaks)
 
             #if((tp <= 0) or (tn <= 0) or (fp <= 0) or (fn <= 0)):
             print('[RECORD ', index,']')

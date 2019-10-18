@@ -6,13 +6,13 @@ from read_ppg_mimic import records # This will load 60 records (o to 59). Rercor
 import matplotlib.pyplot as plt
 
 # Get sample signal and reference from records
-sample_record = records[15]
+sample_record = records[10]
 sample_signal = sample_record.ppg[1]
 sample_peaks = np.array(sample_record.hrv[0]) - sample_record.ppg[0][0] 
 
 # Apply detector
 detector = crossover_detector()
-detector.set_parameters(alpha_fast = 0.5144310567075446, alpha_slow = 0.9640168863482605)                   # Current best set (01/10/19), with cost of 0.36697370
+detector.set_parameters(alpha_fast = 0.8329186816539544, alpha_slow = 0.9463972836760943)                   # Current best set (17/10/19), with cost of 0.4324561691187358
 fast_averages, slow_averages, crossover_indices, detected_peaks = detector.detect_peaks(sample_signal)
 
 # Plot signal and reference

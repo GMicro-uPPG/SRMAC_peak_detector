@@ -54,19 +54,19 @@ def getSignals(name):
 
 
 # MAIN -----------------------------------------------------------------------------------
-# records = []
-# ignore = '.DS_Store'
-# dataset = 'MIMIC1_organized'
-# list_of_recs = os.listdir(dataset)
+records = []
+ignore = '.DS_Store'
+dataset = 'MIMIC1_organized'
+list_of_recs = os.listdir(dataset)
 
-# print('\nFirst timestamp: ' + str(time.getTimestamp()))
-# print('First time: ' + str(time.getTime()))
+print('\nFirst timestamp: ' + str(time.getTimestamp()))
+print('First time: ' + str(time.getTime()))
 
-# print('\nLoading ' + str(dataset) + ' dataset\n')
-# for i in range(len(list_of_recs)):
-    # if(list_of_recs[i] != ignore):
-        # print('Getting record number ' + list_of_recs[i])
-        # name, x_ppg, ppg, x_hrv, hrv = getSignals(list_of_recs[i])
-        # records.append( record(name, x_ppg, ppg, x_hrv, hrv) )
-    #end-if
-#end-for
+print('\nLoading ' + str(dataset) + ' dataset\n')
+for i in range(len(list_of_recs)):
+    if(list_of_recs[i] != ignore):
+        print('Getting record number ' + list_of_recs[i])
+        name, x_ppg, ppg, x_hrv, hrv = getSignals(list_of_recs[i])
+        records.append( record(name, x_ppg, ppg, x_hrv, hrv) )
+    #/if
+#/for
