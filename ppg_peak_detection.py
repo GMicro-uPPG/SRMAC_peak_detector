@@ -8,49 +8,96 @@ class crossover_detector:
     
     def __init__(self):
         """ Constructor method """
+        # Parameters
         self.alpha_fast = 0.3011934482294183 #0.548263
         self.alpha_slow = 0.9482683739254808 #0.964244
+        self.difference_threshold = 1
+        
+        # 
         self.average_fast = 0.0
         self.average_slow = 0.0
         self.crossover_index = 0.0
-    
-    def set_parameters(self, alpha_fast, alpha_slow):
+        self.difference = 0.0
+        self.old_value = 0.0
+        self.first_pass = True
+        
+        
+    def set_parameters(self, alpha_fast, alpha_slow, difference_threshold):
         """ Define exponential average and threshold parameters """ 
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
+        self.difference_threshold = difference_threshold
+        
         
     def exponential_ma(self, alpha, input_value, old_average):
         """ Returns exponential moving average without internal memory """
         return (1-alpha)*input_value + alpha*old_average
 
-    def kaufman_ma():
+        
+    def kaufman_ma(self):
         """ Returns Kaufman's adaptative moving average without internal memory """
         pass
+
+        
+    def local_difference(self, ppg_value):
+        
+        if self.first_pass:
+            self.first_pass = False
+            return 0.0
+        
+        difference = ppg_value - self.old_value
+        self.old_value = ppg_value
+        
+        return difference
    
-    def reset_averages(self):
-        """ Resets fast and slow current values """
+   
+    def reset_state(self):
+        """ Resets fast and slow averages and the current difference """
         self.average_fast = 0.0
         self.average_slow = 0.0
+        self.difference = 0.0
+        self.first_pass = True
    
-    def update_averages(self, ppg_value):
+   
+    def update_model(self, ppg_value):
         """ Updates current_index in an online way (value by value) """
+        
+        # Crossover process
         self.average_fast = self.exponential_ma(self.alpha_fast, ppg_value, self.average_fast)
         self.average_slow = self.exponential_ma(self.alpha_slow, ppg_value, self.average_slow)
         self.crossover_index = self.average_fast - self.average_slow
-   
+        
+        # Difference-based sanity check, assuming the possible existence of unwanted abrupt (high frequency) artifacts
+        self.difference = self.local_difference(ppg_value)
+        
+        
     def detect_peaks(self, ppg_array):
-        self.reset_averages()
+        self.reset_state()
         fast_averages = []
         slow_averages = []
         crossover_indices = []
+        differences = []
         peaks_array = []
         
+        artifact_flag = False
+        
         for value in ppg_array:
-            self.update_averages(value)
+            self.update_model(value)
+            
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
-            if self.crossover_index > 0:
+            differences.append(self.difference)
+            
+            # High frequency artifact flag logic
+            if (not artifact_flag) and (self.difference > self.difference_threshold):
+                artifact_flag = True
+            elif artifact_flag and (self.difference < -self.difference_threshold):
+                artifact_flag = False
+            
+            # Crossover detection
+            if (not artifact_flag) and self.crossover_index > 0:
+            #if self.crossover_index > 0:
                 peaks_array.append(1)
             else:
                 peaks_array.append(0)
