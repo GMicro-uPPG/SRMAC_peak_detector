@@ -20,8 +20,8 @@ try:
 
 
     # Use 30 records to train model
-    train_records = records[0:5]
-    print('\nrecords[0:5]')
+    train_records = records[0:30]
+    print('\nrecords[0:30]')
 
     # Random search of alphas, using regularized confusion matrix-based cost
     peak_detector = crossover_detector()
@@ -29,7 +29,7 @@ try:
     C = 1                                          # Regularization hyperparameter
     print('\nC = ' + str(C))
 
-    num_iterations = 6000 # 10000                         # Number of random search iterations
+    num_iterations = 2000 # 10000                         # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
 
     # Optimization
