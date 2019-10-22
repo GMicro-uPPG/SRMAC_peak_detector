@@ -217,7 +217,31 @@ class crossover_detector:
                 false_positives += state_peaks - 1
                         
         return true_positives, true_negatives, false_positives, false_negatives, confusion_array
-                
+            
+
+    def record_confusion_matrix(self, ppg_records):
+        """ Given a set of records containing ppg signals and peak references, returns the confusion matrix."""
+        
+        true_positives = 0 
+        true_negatives = 0 
+        false_positives = 0
+        false_negatives = 0
+        
+        for index, record in enumerate(ppg_records):
+            #print('Cost calculation for record ', index)
+            ppg_signal = record.ppg[1]
+            reference_peaks = np.array(record.hrv[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            
+            # Detect peaks using current set of parameters
+            _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
+            
+            # Get record's confusion matrix and regularization term
+            tp, tn, fp, fn, _ = self.signal_confusion_matrix(detected_peaks, reference_peaks)
+            true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
+                        
+        return true_positives, true_negatives, false_positives, false_negatives
+        
+            
     def signal_regularization(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the regularization value, considering total prediction area and number of predicted peaks. """        
         # Assumes that detected_peaks treats 0 as negative prediction and 1 as positive prediction
