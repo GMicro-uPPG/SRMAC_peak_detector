@@ -94,6 +94,7 @@ def elgendiRealBOIandPeaks(xAxis, signal, MA, THR1, THR2):
     return realBlocksOfInterest, peakx, peaky
 #end-def
 
+# Billauer method for min and max points
 def billauer_minmax(v, delta, x=None):
     maxtab_x, maxtab_y = [], []
     mintab_x, mintab_y = [], []
@@ -150,4 +151,14 @@ def billauer_minmax(v, delta, x=None):
     #/for
 
     return maxtab_x, maxtab_y, mintab_x, mintab_y
+#/def
+
+# Calculate the first derivative
+def firstDerivative(x, y):
+    
+    # First derivate: -90˚ on phase
+    dydx = np.diff(y)/np.diff(x)
+    x = x[:-1] # Delete one element from x axis.
+
+    return x, dydx
 #/def

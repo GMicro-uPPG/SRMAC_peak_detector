@@ -68,6 +68,7 @@ class read:
 
 # FILTER FUNCTIONS -----------------------------------------------------------------------
 class bFilter:
+    # Bandpass ---
     def butter_bandpass(lowcut, highcut, sRate, order=5):
         nyq = 0.5 * sRate
         low = lowcut / nyq
@@ -83,4 +84,20 @@ class bFilter:
         y,zo = lfilter(b, a, data, zi=zi*data[0])
         return y
     #/def
-#/butter
+
+    # Lowpass ---
+    def butter_lowpass(lowcut, sRate, order=5):
+        nyq = 0.5 * sRate
+        low = lowcut / nyq
+        b, a = butter(order, low, btype='low')
+        return b, a
+    #/def
+
+    # This function will apply the filter considering the initial transient.
+    def butter_lowpass_filter_zi(data, lowcut, sRate, order=5):
+        b, a = bFilter.butter_lowpass(lowcut, sRate, order=order)
+        zi = lfilter_zi(b, a)
+        y,zo = lfilter(b, a, data, zi=zi*data[0])
+        return y
+    #/def
+#/class
