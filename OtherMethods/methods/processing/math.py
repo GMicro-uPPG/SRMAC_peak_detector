@@ -26,7 +26,7 @@ def cuttingNegatives(signal):
 # Squaring values
 def squaringValues(signal):
     return np.power(signal,2)
-#end-if
+#end-def
 
 # Exponential moving average by abascal. Do not provide delay, but do not calculate first and last values.
 def expMovingAverage_abascal(signal, window):
