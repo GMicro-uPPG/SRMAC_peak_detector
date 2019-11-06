@@ -230,7 +230,7 @@ class crossover_detector:
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
             ppg_signal = record.ppg[1]
-            reference_peaks = np.array(record.hrv[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
             # Detect peaks using current set of parameters
             _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
@@ -268,7 +268,7 @@ class crossover_detector:
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
             ppg_signal = record.ppg[1]
-            reference_peaks = np.array(record.hrv[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
             # Detect peaks using current set of parameters
             _, _, _, detected_peaks = self.detect_peaks(ppg_signal)

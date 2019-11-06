@@ -6,7 +6,7 @@ def getSignals(name):
 
     #name = sys.argv[1]
     x_ppg, ppg = [], []
-    x_hrv, hrv = [], []
+    x_beats, beats = [], []
    
     # PPG signals file
     with open('MIMIC1_organized_short/' + name + '/record_ppg-ecg.csv') as dataFile:
@@ -31,25 +31,25 @@ def getSignals(name):
         for line in dataFile:
             aux = line.split(',')
             shift = int(aux[3])
-            x_hrv.append(int(aux[0]) + shift)
-            hrv.append(float(aux[1]))
+            x_beats.append(int(aux[0]) + shift)
+            beats.append(float(aux[1]))
         #end-for
     #end-with
 
     dataFile.close()
 
-    return name, x_ppg, ppg, x_hrv, hrv
+    return name, x_ppg, ppg, x_beats, beats
 #end-def
 
 
-def plotPPG(name, x_ppg, ppg, x_hrv, hrv):
+def plotPPG(name, x_ppg, ppg, x_beats, beats):
     plt.figure('PPG Signal ' + str(name) + ' from MIMIC1_organized_short', figsize=(14,6)) # 20,10
 
     plt.title('PPG Signal')
     plt.xlabel('samples')
     plt.ylabel('amplitude')
     plt.plot(x_ppg, ppg, 'purple')
-    plt.scatter(x_hrv, hrv)
+    plt.scatter(x_beats, beats)
     plt.grid()
 
     plt.show()
@@ -58,5 +58,5 @@ def plotPPG(name, x_ppg, ppg, x_hrv, hrv):
 
 # MAIN ---------------------------------------------------
 
-# name, x_ppg, ppg, x_hrv, hrv = getSignals()
-# plotPPG(name, x_ppg, ppg, x_hrv, hrv)
+# name, x_ppg, ppg, x_beats, beats = getSignals()
+# plotPPG(name, x_ppg, ppg, x_beats, beats)

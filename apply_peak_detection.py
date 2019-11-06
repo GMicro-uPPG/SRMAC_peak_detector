@@ -2,13 +2,13 @@
 
 import numpy as np
 from ppg_peak_detection import crossover_detector
-from read_ppg_mimic import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
+from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
 import matplotlib.pyplot as plt
 
 # Get sample signal and reference from records
 sample_record = records[10]
 sample_signal = sample_record.ppg[1]
-sample_peaks = np.array(sample_record.hrv[0]) - sample_record.ppg[0][0] 
+sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
 
 # Apply detector
 detector = crossover_detector()

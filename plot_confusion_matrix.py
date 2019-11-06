@@ -4,7 +4,7 @@
 import numpy as np
 from ppg_peak_detection import crossover_detector
 import plot_short_PPG
-import read_ppg_mimic
+import read_datasets
 import matplotlib.pyplot as plt
 import sys
 
@@ -18,14 +18,14 @@ else:
     signal_size = sys.argv[2]
 
 if signal_size == "short":
-    _, x_ppg, ppg, x_hrv, _ = plot_short_PPG.getSignals(patient_number)
+    _, x_ppg, ppg, x_beats, _ = plot_short_PPG.getSignals(patient_number)
 elif signal_size == "long":
-    _, x_ppg, ppg, x_hrv, _ = read_ppg_mimic.getSignals(patient_number)
+    _, x_ppg, ppg, x_beats, _ = read_datasets.getSignals(patient_number)
 else:
     print("Invalid desired signal size")
     exit(-1)
     
-reference_peaks = np.array(x_hrv) - x_ppg[0]
+reference_peaks = np.array(x_beats) - x_ppg[0]
 detector = crossover_detector()
 detector.set_parameters(alpha_fast = 0.5144310567075446, alpha_slow = 0.9640168863482605, difference_threshold = 0.2)          # good parameters
 #detector.set_parameters(alpha_fast = 0.2, alpha_slow = 0.6, difference_threshold = 0.2)                                         # bad parameters
