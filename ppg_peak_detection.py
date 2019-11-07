@@ -8,101 +8,106 @@ class crossover_detector:
     
     def __init__(self):
         """ Constructor method """
-        # Parameters
+        ## Parameters
+        # Crossover
         self.alpha_fast = 0.3011934482294183 #0.548263
         self.alpha_slow = 0.9482683739254808 #0.964244
-        self.difference_threshold = 1
         
-        # 
+        # Variance
+        self.var_alpha = 1.0
+        
+        ## Variables
+        # Crossover
         self.average_fast = 0.0
         self.average_slow = 0.0
         self.crossover_index = 0.0
-        self.difference = 0.0
-        self.old_value = 0.0
         self.first_pass = True
         
+        # Variance
+        self.var_average = 0.0
+        self.variance = 0.0
         
-    def set_parameters(self, alpha_fast, alpha_slow, difference_threshold):
+        
+    def set_parameters(self, alpha_fast, alpha_slow):
         """ Define exponential average and threshold parameters """ 
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
-        self.difference_threshold = difference_threshold
         
+    def set_parameters_var(self, var_alpha):
+        
+        self.var_alpha = var_alpha
         
     def exponential_ma(self, alpha, input_value, old_average):
         """ Returns exponential moving average without internal memory """
         return (1-alpha)*input_value + alpha*old_average
 
-        
-    def kaufman_ma(self):
-        """ Returns Kaufman's adaptative moving average without internal memory """
-        pass
-
-        
-    def local_difference(self, ppg_value):
-        
-        if self.first_pass:
-            self.first_pass = False
-            return 0.0
-        
-        difference = ppg_value - self.old_value
-        self.old_value = ppg_value
-        
-        return difference
-   
+    def exponential_mv(self, alpha, input_value, old_variance, old_average):
+        # From the paper "Incremental calculation of weighted mean and variance" (Tony Finch, 2009)
+        variance = (1 - alpha) * (old_variance + alpha*((input_value - old_average)**2)) 
+        return variance
    
     def reset_state(self):
-        """ Resets fast and slow averages and the current difference """
+        """ Resets fast and slow averages """
         self.average_fast = 0.0
         self.average_slow = 0.0
-        self.difference = 0.0
         self.first_pass = True
    
    
     def update_model(self, ppg_value):
         """ Updates current_index in an online way (value by value) """
-        
         # Crossover process
         self.average_fast = self.exponential_ma(self.alpha_fast, ppg_value, self.average_fast)
         self.average_slow = self.exponential_ma(self.alpha_slow, ppg_value, self.average_slow)
         self.crossover_index = self.average_fast - self.average_slow
-        
-        # Difference-based sanity check, assuming the possible existence of unwanted abrupt (high frequency) artifacts
-        self.difference = self.local_difference(ppg_value)
-        
+         
+    def update_model_var(self, ppg_value):
+        self.variance = self.exponential_mv(self.var_alpha, ppg_value, self.variance, self.var_average)
+        self.var_average = self.exponential_ma(1-self.var_alpha, ppg_value, self.var_average)
+        print("Var: " + str(self.variance) + "\nAvg: " + str(self.variance))
         
     def detect_peaks(self, ppg_array):
         self.reset_state()
         fast_averages = []
         slow_averages = []
         crossover_indices = []
-        differences = []
         peaks_array = []
-        
-        artifact_flag = False
-        
+                
         for value in ppg_array:
             self.update_model(value)
             
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
-            differences.append(self.difference)
-            
-            # High frequency artifact flag logic
-            if (not artifact_flag) and (self.difference > self.difference_threshold):
-                artifact_flag = True
-            elif artifact_flag and (self.difference < -self.difference_threshold):
-                artifact_flag = False
-            
+                       
             # Crossover detection
-            if (not artifact_flag) and self.crossover_index > 0:
+            if self.crossover_index > 0:
             #if self.crossover_index > 0:
                 peaks_array.append(1)
             else:
                 peaks_array.append(0)
         
         return fast_averages, slow_averages, crossover_indices, peaks_array
+        
+        
+    def detect_peaks_var(self, ppg_array):
+        self.reset_state()
+        averages = []
+        variances = []
+        peaks_array = []
+                
+        for value in ppg_array:
+            self.update_model_var(value)
+            variances.append(self.variance)
+            averages.append(self.var_average)
+            
+            # # Crossover detection
+            # if self.crossover_index > 0:
+            # #if self.crossover_index > 0:
+                # peaks_array.append(1)
+            # else:
+                # peaks_array.append(0)
+        
+        return variances, averages#, peaks_array    
         
     def calculate_heart_rates(self, peaks_array, freq):
         """ Use the beats to calculate Heart Rates in bpm """
@@ -250,15 +255,15 @@ class crossover_detector:
         total_predictions = len(detected_peaks)
         area_term = positive_predictions/total_predictions                                                                          # Maximum area_term value is 1
         #print('Area term = ', area_term)
-        # Considers the number of detected peaks and reference peaks to make them close
-        detected_peaks = np.array(detected_peaks)
-        rising_edges_mask = np.flatnonzero((detected_peaks[:-1] == 0) & (detected_peaks[1:] == 1))                                  # Mask to get the rising edges indices
-        predicted_peaks_number = len(rising_edges_mask)
-        reference_peaks_number = len(peaks_reference)
-        number_term = abs(reference_peaks_number - predicted_peaks_number)/max(reference_peaks_number, predicted_peaks_number)      # Maximum number_term value is 1 
         
+        # Considers the number of detected peaks and reference peaks to make them close
+        # detected_peaks = np.array(detected_peaks)
+        # rising_edges_mask = np.flatnonzero((detected_peaks[:-1] == 0) & (detected_peaks[1:] == 1))                                  # Mask to get the rising edges indices
+        # predicted_peaks_number = len(rising_edges_mask)
+        # reference_peaks_number = len(peaks_reference)
+        # number_term = abs(reference_peaks_number - predicted_peaks_number)/max(reference_peaks_number, predicted_peaks_number)      # Maximum number_term value is 1 
         # Total regularization is the average between area and number terms, having a maximum value of 1
-        total_regularization = (area_term + number_term)/2
+        #total_regularization = (area_term + number_term)/2
         
         return area_term
         
@@ -293,45 +298,3 @@ class crossover_detector:
         total_cost /= len(ppg_records)
         
         return total_cost
-        
-    # DEPRECATED RMSE OF FEATURES BY MINUTE
-    # def _group_signal(signal, fs, time):
-        # """ Groups a given signal in n items at a time, being n dependent on the sampling frequency (Hz) and wanted time (s) """
-        # n = fs * time
-        # iterable_groups = zip(*([iter(signal)]*n))
-        # return iterable_groups
-        
-    # def _group_hr_reference(heart_rates, minute):
-        # """ Groups reference hrv in a list according to the wanted minute (eg. minute = 0, returns hrv from 00:00 to 01:00) """
-        # sum = 0.0
-        # grouped_hr = []
-        # for value in heart_rates:
-            # sum += value
-            # if sum > 60*minute and sum < 60*(minute+1):
-                # grouped_hr.append(value)
-                
-        # return grouped_hr
-    
-    # def features_rmse(self, ppg_signals, hr_references, fs, features_extractor):
-        # """ Returns RMSE of the estimated hrv parameters by minute on each subject using given hrv references """
-        # total_error = 0.0
-        # for subject, subject_signal in enumerate(ppg_signals):
-            # subject_hr = hr_references[subject]
-            # subject_error = 0.0
-            # #FIX: iterating in groups
-            # for current_minute, signal_minute in enumerate(self._group_signal(subject_signal, fs, 60)):            # loops signal in groups of 60 seconds
-                # # Estimate HRV using current alphas and calculate parameters
-                # _, _, _, detected_peaks = self.detect_peaks(signal_minute)
-                # detected_heart_rates = calculate_heart_rates(detect_peaks, fs)
-                # hr_features = features_extractor(detected_heart_rates)
-                # # Get reference HRV for the current minute and calculate its parameters
-                # minute_ref_hr = _group_hr_reference(subject_hr, minute=current_minute)
-                # reference_features = features_extractor(minute_ref_hr)
-                # # Calculate RMSE in parameters space
-                # minute_error = ((np.array(hr_features) - np.array(reference_features))**2)/len(hr_features)           # normalize minute error by number of parameters
-                # subject_error += minute_error  
-            # subject_error /= 15                         # normalize subject error by number of minutes
-            # total_error += subject_error
-        # total_error /= len(ppg_signals)                 # normalize total error by number of subjects
-        
-        # return total_error

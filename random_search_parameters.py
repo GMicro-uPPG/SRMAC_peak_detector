@@ -28,11 +28,10 @@ try:
     # Random search of alphas, using regularized confusion matrix-based cost
     peak_detector = crossover_detector()
     # Parameters
-    C = 3.0                                         # Regularization hyperparameter
-    diff_max_threshold = 2.0                        # Maximum difference threshold value
+    C = 0                                         # Regularization hyperparameter
     print('\nC = ' + str(C))
 
-    num_iterations = 300                            # Number of random search iterations
+    num_iterations = 2000                            # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
 
     
@@ -44,17 +43,16 @@ try:
         # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
         alpha_fast = np.random.uniform(0, 1)
         alpha_slow = np.random.uniform(alpha_fast, 1)   
-        difference_threshold = np.random.uniform(0.0, diff_max_threshold)
-        peak_detector.set_parameters(alpha_fast, alpha_slow, difference_threshold)
+        peak_detector.set_parameters(alpha_fast, alpha_slow)
         cost = peak_detector.total_regularized_cost(train_records, C)
-        print('[randomized] alpha_fast: ', peak_detector.alpha_fast, ', alpha_slow: ', peak_detector.alpha_slow, ', difference threshold: ', peak_detector.difference_threshold, ', cost: ', cost)
+        print('[randomized] alpha_fast: ', peak_detector.alpha_fast, ', alpha_slow: ', peak_detector.alpha_slow,', cost: ', cost)
         
         # Keep solutions in a matrix
         if iteration == 0:
             best_solution = [alpha_fast, alpha_slow, cost]
         elif cost < best_solution[-1]:
             best_solution = [alpha_fast, alpha_slow, cost]
-        print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', difference threshold: ', best_solution[2], ', cost: ', best_solution[-1])
+        print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
         #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
 
     # Sort solutions according to the costs
@@ -63,11 +61,11 @@ try:
     #print(solution_archive)
     #pkl.dump(solution_archive, open("solution_archive.data","wb"))
     
-    peak_detector.set_parameters(best_solution[0], best_solution[1], best_solution[2])
+    peak_detector.set_parameters(best_solution[0], best_solution[1])
     train_confusion_matrix = peak_detector.record_confusion_matrix(train_records)
     test_confusion_matrix = peak_detector.record_confusion_matrix(test_records)
-    print('Train set confusion matrix: [TP,TN,FP,FN]' + train_confusion_matrix)
-    print('Test set confusion matrix: [TP,TN,FP,FN]' + test_confusion_matrix)
+    print('Train set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+    print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     
 
     print('\nLast timestamp: ' + str(time.getTimestamp()))

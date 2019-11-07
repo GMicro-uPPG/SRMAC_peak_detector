@@ -175,21 +175,22 @@ def getHUSMppg():
 
 # HUSM dataset
 getHUSMppg() # get dataset
-x = records[0].ppg[0]
-ir = records[0].ppg[1]
-peakx = records[0].beats[0]
-peaky = records[0].beats[1]
 
-# Apply bandpass filter into uPPG raw signals
-lowcut = 0.5 # From Elgendi
-highcut = 8 # From Elgendi
-order = 2 # From Elgendi
-sps = 200
-ir_f = butter_bandpass_filter_zi(ir, lowcut, highcut, sps, order)
+# x = records[0].ppg[0]
+# ir = records[0].ppg[1]
+# peakx = records[0].beats[0]
+# peaky = records[0].beats[1]
 
-# Plot
-plt.figure("PPG and peaks from "+records[0].name,figsize=(14,6))
-plt.plot(x, ir_f, color="brown")
-plt.scatter(peakx, peaky)
-plt.grid()
-plt.show()
+# # Apply bandpass filter into uPPG raw signals
+# lowcut = 0.5 # From Elgendi
+# highcut = 8 # From Elgendi
+# order = 2 # From Elgendi
+# sps = 200
+# ir_f = butter_bandpass_filter_zi(ir, lowcut, highcut, sps, order)
+
+# # Plot
+# plt.figure("PPG and peaks from "+records[0].name,figsize=(14,6))
+# plt.plot(x, ir_f, color="brown")
+# plt.scatter(peakx, peaky)
+# plt.grid()
+# plt.show()
