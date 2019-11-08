@@ -9,7 +9,6 @@ from read_datasets import records # This will load 60 records (o to 59). Rercord
 from time_manager import time
 from plot import *
 
-
 try:
     # Record example
     #rec = 21
@@ -31,9 +30,8 @@ try:
     C = 0                                         # Regularization hyperparameter
     print('\nC = ' + str(C))
 
-    num_iterations = 10000                            # Number of random search iterations
+    num_iterations = 1000                            # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
-
     
     # Optimization
     #solution_archive = np.zeros((num_iterations,3))
@@ -59,16 +57,15 @@ try:
         ## Optimize variance
         # Randomize parameters
         var_alpha = np.random.uniform(0,1)
-        avg_alpha = np.random.uniform(0,1)
         var_threshold = np.random.uniform(0,300)
-        peak_detector.set_parameters_var(var_alpha, avg_alpha, var_threshold)
+        peak_detector.set_parameters_var(var_alpha, var_threshold)
         cost = peak_detector.total_regularized_cost(train_records, C, 'variance')
-        print('[randomized] var_alpha: ', var_alpha, ', avg_alpha: ', avg_alpha, 'threshold: ', var_threshold, ', cost: ', cost)
+        print('[randomized] var_alpha: ', var_alpha, ', threshold: ', var_threshold, ', cost: ', cost)
         if iteration == 0:
-            best_solution = [var_alpha, avg_alpha, var_threshold, cost]
+            best_solution = [var_alpha, var_threshold, cost]
         elif cost < best_solution[-1]:
-            best_solution = [var_alpha, avg_alpha, var_threshold, cost]
-        print('[current best] var_alpha: ', best_solution[0], ', avg_alpha: ', best_solution[1], 'threshold: ', best_solution[2], ', cost: ', best_solution[-1])
+            best_solution = [var_alpha, var_threshold, cost]
+        print('[current best] var_alpha: ', best_solution[0], 'threshold: ', best_solution[1], ', cost: ', best_solution[-1])
         
         ## Optimize mixed
         # alpha_fast = np.random.uniform(0.9, 1)

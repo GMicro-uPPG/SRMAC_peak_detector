@@ -16,7 +16,6 @@ class crossover_detector:
         
         # Variance
         self.var_alpha = 0.5
-        self.avg_alpha = 0.5
         self.var_threshold = 1.0
         
         ## Variables
@@ -36,9 +35,8 @@ class crossover_detector:
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
         
-    def set_parameters_var(self, var_alpha, avg_alpha, var_threshold):
+    def set_parameters_var(self, var_alpha, var_threshold):
         self.var_alpha = var_alpha
-        self.avg_alpha = avg_alpha
         self.var_threshold = var_threshold
         
     def set_parameters_mix(self, alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold):
@@ -72,7 +70,7 @@ class crossover_detector:
          
     def update_model_var(self, ppg_value):
         self.variance = self.exponential_mv(self.var_alpha, ppg_value, self.variance, self.var_average)
-        self.var_average = self.exponential_ma(self.avg_alpha, ppg_value, self.var_average)
+        self.var_average = self.exponential_ma(1 - self.var_alpha, ppg_value, self.var_average)
         #print("Var: " + str(self.variance) + "\nAvg: " + str(self.variance))
         
     def update_model_mix(self, ppg_value):
