@@ -2,6 +2,7 @@
 # Author: Victor O. Costa 
 
 import numpy as np
+import sys
 
 class crossover_detector:
     """ Class to process the PPG signal and indicate peaks using a crossover of moving averages """
@@ -301,7 +302,7 @@ class crossover_detector:
         
         return area_term
         
-    def total_regularized_cost(self, ppg_records, C):
+    def total_regularized_cost(self, ppg_records, C, method):
         """ Given a set of PPG records cont and the correspondent peak references, calculates a confusion matrix-based metric, regularized by the total area and number of peaks detected.  """
         total_cost = 0.0
         for index, record in enumerate(ppg_records):
@@ -310,18 +311,23 @@ class crossover_detector:
             reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
             # Detect peaks using current set of parameters
-            _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
-            
+            if method == 'crossover':
+                _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
+            elif method == 'variance':
+                _, _, detected_peaks = self.detect_peaks_var(ppg_signal)
+            elif method == 'mix':
+                detected_peaks = self.detect_peaks_mix(ppg_signal)
+            else:
+                print("No match for method argument in total cost")
+                sys.exit(-1)
+                
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn, _ = self.signal_confusion_matrix(detected_peaks, reference_peaks)
 
-            #if((tp <= 0) or (tn <= 0) or (fp <= 0) or (fn <= 0)):
-            print('[RECORD ', index,']')
+            #print('[RECORD ', index,']')
             print('TP: ', tp, 'TN: ', tn, 'FP: ', fp, 'FN: ', fn)
-            print('Number of reference peaks: ', len(reference_peaks))
+            #print('Number of reference peaks: ', len(reference_peaks))
             
-            #/if
-
             record_regularization = self.signal_regularization(detected_peaks, reference_peaks)
             
             # Calculate record's accuracy and cost

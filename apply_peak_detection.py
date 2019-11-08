@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 sample_record = records[10]
 sample_signal = sample_record.ppg[1]
 sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
-
-# Apply detector
 detector = crossover_detector()
+
+## Apply crossover detector
 # #detector.set_parameters(alpha_fast = 0.8329186816539544, alpha_slow = 0.9463972836760943)                   # Current best set (17/10/19), with cost of 0.4324561691187358
 # detector.set_parameters(alpha_fast = 0.9684424413846544, alpha_slow = 0.9689074349612342)                    # Current best set of husm (07/11/19), with cost of 0.95
 # fast_averages, slow_averages, crossover_indices, detected_peaks = detector.detect_peaks(sample_signal)
@@ -34,16 +34,34 @@ detector = crossover_detector()
 
 # plt.show()
 
-detector.set_parameters_var(var_alpha = 0.002, avg_alpha = 0.9, var_threshold = 100.0)
-variances, averages, detected_peaks = detector.detect_peaks_var(sample_signal);
+## Apply variance detector
+# detector.set_parameters_var(var_alpha = 0.002, avg_alpha = 0.9, var_threshold = 100.0)
+# variances, averages, detected_peaks = detector.detect_peaks_var(sample_signal);
+# # Plot signal and reference
+# plt.figure()
+# plt.title("PPG average and variance")
+# plt.plot(sample_signal, color='k', label="PPG signal")
+# plt.scatter(sample_peaks, [1]*len(sample_peaks), label="Reference peaks")
+# plt.plot(detected_peaks, color = 'y', label = "Detected peaks")
+# plt.plot(averages, color='magenta', label="average")
+# plt.plot(variances, color='navy', label="variance")
+
+# plt.legend()
+# plt.show()
+
+
+## Apply Mixed detector
+detector.set_parameters_mix(alpha_fast = 0.9656528722478156 , alpha_slow = 0.9668991435014739, 
+                            var_alpha = 0.8322917528906034, avg_alpha = 0.18278088860663844, var_threshold = 21.16502812624924)
+detected_peaks = detector.detect_peaks_mix(sample_signal);
 # Plot signal and reference
 plt.figure()
 plt.title("PPG average and variance")
 plt.plot(sample_signal, color='k', label="PPG signal")
 plt.scatter(sample_peaks, [1]*len(sample_peaks), label="Reference peaks")
 plt.plot(detected_peaks, color = 'y', label = "Detected peaks")
-plt.plot(averages, color='magenta', label="average")
-plt.plot(variances, color='navy', label="variance")
+#plt.plot(averages, color='magenta', label="average")
+#plt.plot(variances, color='navy', label="variance")
 
 plt.legend()
 plt.show()
