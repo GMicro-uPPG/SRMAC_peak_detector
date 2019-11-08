@@ -14,7 +14,9 @@ class crossover_detector:
         self.alpha_slow = 0.9482683739254808 #0.964244
         
         # Variance
-        self.var_alpha = 1.0
+        self.var_alpha = 0.5
+        self.avg_alpha = 0.5
+        self.var_threshold = 1.0
         
         ## Variables
         # Crossover
@@ -33,9 +35,17 @@ class crossover_detector:
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
         
-    def set_parameters_var(self, var_alpha):
-        
+    def set_parameters_var(self, var_alpha, avg_alpha, var_threshold):
         self.var_alpha = var_alpha
+        self.avg_alpha = avg_alpha
+        self.var_threshold = var_threshold
+        
+    def set_parameters_mix(self, alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold):
+        self.alpha_fast = alpha_fast
+        self.alpha_slow = alpha_slow
+        self.var_alpha = var_alpha
+        self.avg_alpha = avg_alpha
+        self.var_threshold = var_threshold
         
     def exponential_ma(self, alpha, input_value, old_average):
         """ Returns exponential moving average without internal memory """
@@ -52,7 +62,6 @@ class crossover_detector:
         self.average_slow = 0.0
         self.first_pass = True
    
-   
     def update_model(self, ppg_value):
         """ Updates current_index in an online way (value by value) """
         # Crossover process
@@ -62,8 +71,16 @@ class crossover_detector:
          
     def update_model_var(self, ppg_value):
         self.variance = self.exponential_mv(self.var_alpha, ppg_value, self.variance, self.var_average)
-        self.var_average = self.exponential_ma(1-self.var_alpha, ppg_value, self.var_average)
-        print("Var: " + str(self.variance) + "\nAvg: " + str(self.variance))
+        self.var_average = self.exponential_ma(self.avg_alpha, ppg_value, self.var_average)
+        #print("Var: " + str(self.variance) + "\nAvg: " + str(self.variance))
+        
+    def update_model_mix(self, ppg_value):
+        self.average_fast = self.exponential_ma(self.alpha_fast, ppg_value, self.average_fast)
+        self.average_slow = self.exponential_ma(self.alpha_slow, ppg_value, self.average_slow)
+        self.crossover_index = self.average_fast - self.average_slow
+        
+        self.variance = self.exponential_mv(self.var_alpha, self.crossover_index, self.variance, self.var_average)
+        self.var_average = self.exponential_ma(self.avg_alpha, self.crosssover_index, self.var_average)
         
     def detect_peaks(self, ppg_array):
         self.reset_state()
@@ -100,14 +117,31 @@ class crossover_detector:
             variances.append(self.variance)
             averages.append(self.var_average)
             
-            # # Crossover detection
-            # if self.crossover_index > 0:
-            # #if self.crossover_index > 0:
-                # peaks_array.append(1)
-            # else:
-                # peaks_array.append(0)
+            if value > self.var_average + self.var_threshold * self.variance:
+                peaks_array.append(1)
+            else:
+                peaks_array.append(0)
+            
+        return variances, averages, peaks_array    
         
-        return variances, averages#, peaks_array    
+    def detect_peaks_mix(self, ppg_array):
+        self.reset_state()
+        # fast_averages = []
+        # slow_averages = []
+        # crossover_indices = []
+        # averages = []
+        # variances = []
+        peaks_array = []
+        
+        for value in ppg_array:
+            self.update_model_var(value)
+            if self.crossover_index > self.var_average + self.var_threshold * self.variance:
+                peaks_array.append(1)
+            else:
+                peaks_array.append(0)
+                
+        return peaks_array
+        
         
     def calculate_heart_rates(self, peaks_array, freq):
         """ Use the beats to calculate Heart Rates in bpm """

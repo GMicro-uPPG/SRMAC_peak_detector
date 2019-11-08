@@ -40,28 +40,60 @@ try:
     best_solution = []
     for iteration in range(num_iterations):
         print('\n[Search iteration ' + str(iteration) + ']')
-        # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
-        alpha_fast = np.random.uniform(0, 1)
-        alpha_slow = np.random.uniform(alpha_fast, 1)   
-        peak_detector.set_parameters(alpha_fast, alpha_slow)
-        cost = peak_detector.total_regularized_cost(train_records, C)
-        print('[randomized] alpha_fast: ', peak_detector.alpha_fast, ', alpha_slow: ', peak_detector.alpha_slow,', cost: ', cost)
         
-        # Keep solutions in a matrix
+        ## Optimize crossover
+        # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
+        # alpha_fast = np.random.uniform(0, 1)
+        # alpha_slow = np.random.uniform(alpha_fast, 1)
+        # peak_detector.set_parameters(alpha_fast, alpha_slow)
+        # cost = peak_detector.total_regularized_cost(train_records, C)
+        # print('[randomized] alpha_fast: ', alpha_fast, ', alpha_slow: ', alpha_slow,', cost: ', cost)
+        # # Keep solutions in a matrix
+        # if iteration == 0:
+            # best_solution = [alpha_fast, alpha_slow, cost]
+        # elif cost < best_solution[-1]:
+            # best_solution = [alpha_fast, alpha_slow, cost]
+        # print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
+        # #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
+        
+        ## Optimize variance
+        # Randomize parameters
+        var_alpha = np.random.uniform(0,1)
+        avg_alpha = np.random.uniform(0,1)
+        var_threshold = np.random.uniform(0,200)
+        peak_detector.set_parameters_var(var_alpha, avg_alpha, var_threshold)
+        cost = peak_detector.total_regularized_cost(train_records, C)
+        print('[randomized] var_alpha: ', var_alpha, ', avg_alpha: ', avg_alpha, 'threshold: ', var_threshold, ', cost: ', cost)
         if iteration == 0:
-            best_solution = [alpha_fast, alpha_slow, cost]
+            best_solution = [var_alpha, avg_alpha, var_threshold, cost]
         elif cost < best_solution[-1]:
-            best_solution = [alpha_fast, alpha_slow, cost]
-        print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
-        #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
-
+            best_solution = [var_alpha, avg_alpha, var_threshold, cost]
+        print('[current best] var_alpha: ', best_solution[0], ', avg_alpha: ', best_solution[1], 'threshold: ', best_solution[2], ', cost: ', best_solution[-1])
+        
+        ## Optimize mixed
+        alpha_fast = np.random.uniform(0, 1)
+        alpha_slow = np.random.uniform(alpha_fast, 1)
+        var_alpha = np.random.uniform(0,1)
+        avg_alpha = np.random.uniform(0,1)
+        var_threshold = np.random.uniform(0,100)
+        peak_detector.set_parameters_mix(alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold)
+        cost = peak_detector.total_regularized_cost(train_records, C)
+        print('[randomized] alpha_fast: ', alpha_fast, ', alpha_slow: ', alpha_slow, 'var_alpha: ', var_alpha, ', avg_alpha: ', avg_alpha, 'threshold: ', var_threshold, ', cost: ', cost)
+        if iteration == 0:
+            best_solution = [alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold, cost]
+        elif cost < best_solution[-1]:
+            best_solution = [alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold, cost]
+        print('[current best] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], 'var_alpha: ', best_solution[2], ', avg_alpha: ', best_solution[3], 'threshold: ', best_solution[4], ', cost: ', best_solution[-1])
+        
     # Sort solutions according to the costs
     #solution_archive = solution_archive[solution_archive[:,-1].argsort()]
     #best_solution = solution_archive[0]
     #print(solution_archive)
     #pkl.dump(solution_archive, open("solution_archive.data","wb"))
     
-    peak_detector.set_parameters(best_solution[0], best_solution[1])
+    #peak_detector.set_parameters(best_solution[0], best_solution[1])
+    #peak_detector.set_parameters_var(best_solution[0], best_solution[1], best_solution[2])
+    peak_detector.set_parameters_mix(best_solution[0], best_solution[1], best_solution[2], best_solution[3], best_solution[4])
     train_confusion_matrix = peak_detector.record_confusion_matrix(train_records)
     test_confusion_matrix = peak_detector.record_confusion_matrix(test_records)
     print('Train set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
