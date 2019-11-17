@@ -81,6 +81,7 @@ class crossover_detector:
         self.variance = self.exponential_mv(self.var_alpha, self.crossover_index, self.variance, self.var_average)
         self.var_average = self.exponential_ma(self.avg_alpha, self.crosssover_index, self.var_average)
         
+    # Crossover based peak detection
     def detect_peaks(self, ppg_array):
         self.reset_state()
         fast_averages = []
@@ -336,3 +337,33 @@ class crossover_detector:
         total_cost /= len(ppg_records)
         
         return total_cost
+        
+    
+    # Given a solution archive and a record set, returned the detected peaks by the rule of majority voting
+    def crossover_bagging_detection(self, alphas_fast, alphas_slow, record_set):
+            if len(alphas_fast) != len(alphas_slow):
+                print("Alphas lengths do not match")
+                exit(-1)
+            
+            individual_predictions = []
+            for i in range(0, len(alphas_fast)):
+                _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
+                individual_predictions.append(detect_peaks)
+            
+            voted_peaks = (np.sum( individual_predictions, axis=0) > float(ensemble_size)/2) * 1
+        
+        return voted_peaks
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

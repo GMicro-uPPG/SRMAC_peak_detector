@@ -33,6 +33,13 @@ try:
     num_iterations = 1000                            # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
     
+    # Solution Archive
+    # solution_archive[0] <=> best bagging_alpha_fasts
+    # solution_archive[1] <=> best bagging_alpha_slows
+    # solution_archive[2] <=> best bagging_costs
+    solution_archive = []
+    num_members = 5
+    
     # Optimization
     #solution_archive = np.zeros((num_iterations,3))
     best_solution = []
@@ -54,18 +61,41 @@ try:
         # print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
         # #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
         
+        
+        ## Optimize crossover ensembles
+        # Keep num_members best solutions and build voting ensemble by bootstrap sampling (bagging)
+        bagging_alpha_fasts = np.random.uniform(0,1,num_members)
+        bagging_alpha_slows = np.random.uniform(bagging_alpha_fasts, num_members*[1],num_members
+        bagging_costs = np.array(num_members*[0])
+        
+        for i in range(0, num_numbers):
+            peak_detector.set_parameters(bagging_alpha_fasts[i], bagging_alpha_slows[i])
+            # Resamples train set with repick to generate diverse models
+            bootstrap_indices = np.random.randint(0,len(train_records),len(train_records))
+            train_bootstrap_records = train_records[bootstrap_indices]
+            bagging_costs[i] = peak_detector.total_regularized_cost(train_bootstrap_records, C, "crossover)
+            
+            solution_archive.append([bagging_alpha_fasts[i], bagging_alpha_slows[i], bagging_costs[i])
+            
+        print('[current solution archive]')
+        print(solution_archive)
+            
+        # Merge and sort
+        solution_archive = solution_archive[bagging_costs.argsort()]                            # Sort solution archive according to the fitness of each solution
+        solution_archive = solution_archive[0:num_members, :]                                 # Remove worst solutions           
+        
         ## Optimize variance
         # Randomize parameters
-        var_alpha = np.random.uniform(0,1)
-        var_threshold = np.random.uniform(0,300)
-        peak_detector.set_parameters_var(var_alpha, var_threshold)
-        cost = peak_detector.total_regularized_cost(train_records, C, 'variance')
-        print('[randomized] var_alpha: ', var_alpha, ', threshold: ', var_threshold, ', cost: ', cost)
-        if iteration == 0:
-            best_solution = [var_alpha, var_threshold, cost]
-        elif cost < best_solution[-1]:
-            best_solution = [var_alpha, var_threshold, cost]
-        print('[current best] var_alpha: ', best_solution[0], 'threshold: ', best_solution[1], ', cost: ', best_solution[-1])
+        # var_alpha = np.random.uniform(0,1)
+        # var_threshold = np.random.uniform(0,300)
+        # peak_detector.set_parameters_var(var_alpha, var_threshold)
+        # cost = peak_detector.total_regularized_cost(train_records, C, 'variance')
+        # print('[randomized] var_alpha: ', var_alpha, ', threshold: ', var_threshold, ', cost: ', cost)
+        # if iteration == 0:
+            # best_solution = [var_alpha, var_threshold, cost]
+        # elif cost < best_solution[-1]:
+            # best_solution = [var_alpha, var_threshold, cost]
+        # print('[current best] var_alpha: ', best_solution[0], 'threshold: ', best_solution[1], ', cost: ', best_solution[-1])
         
         ## Optimize mixed
         # alpha_fast = np.random.uniform(0.9, 1)
