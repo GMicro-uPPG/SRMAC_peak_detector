@@ -11,8 +11,8 @@ class crossover_detector:
         """ Constructor method """
         ## Parameters
         # Crossover
-        self.alpha_fast = 0.3011934482294183 #0.548263
-        self.alpha_slow = 0.9482683739254808 #0.964244
+        self.alpha_fast = 0.0 #0.548263
+        self.alpha_slow = 0.0 #0.964244
         
         # Variance
         self.var_alpha = 0.5
@@ -20,8 +20,8 @@ class crossover_detector:
         
         ## Variables
         # Crossover
-        self.average_fast = 0.0
-        self.average_slow = 0.0
+        self.average_fast = 0
+        self.average_slow = 0
         self.crossover_index = 0.0
         self.first_pass = True
         
@@ -30,14 +30,16 @@ class crossover_detector:
         self.variance = 0.0
         
         
-    def set_parameters(self, alpha_fast, alpha_slow):
+    def set_parameters_cross(self, alpha_fast, alpha_slow):
         """ Define exponential average and threshold parameters """ 
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
         
+        
     def set_parameters_var(self, var_alpha, var_threshold):
         self.var_alpha = var_alpha
         self.var_threshold = var_threshold
+        
         
     def set_parameters_mix(self, alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold):
         self.alpha_fast = alpha_fast
@@ -46,32 +48,38 @@ class crossover_detector:
         self.avg_alpha = avg_alpha
         self.var_threshold = var_threshold
         
+        
     def exponential_ma(self, alpha, input_value, old_average):
         """ Returns exponential moving average without internal memory """
         return (1-alpha)*input_value + alpha*old_average
 
+        
     def exponential_mv(self, alpha, input_value, old_variance, old_average):
         # From the paper "Incremental calculation of weighted mean and variance" (Tony Finch, 2009)
         variance = (1 - alpha) * (old_variance + alpha*((input_value - old_average)**2)) 
         return variance
-   
+
+        
     def reset_state(self):
         """ Resets fast and slow averages """
         self.average_fast = 0.0
         self.average_slow = 0.0
         self.first_pass = True
-   
+
+        
     def update_model(self, ppg_value):
         """ Updates current_index in an online way (value by value) """
         # Crossover process
         self.average_fast = self.exponential_ma(self.alpha_fast, ppg_value, self.average_fast)
         self.average_slow = self.exponential_ma(self.alpha_slow, ppg_value, self.average_slow)
         self.crossover_index = self.average_fast - self.average_slow
-         
+        
+        
     def update_model_var(self, ppg_value):
         self.variance = self.exponential_mv(self.var_alpha, ppg_value, self.variance, self.var_average)
         self.var_average = self.exponential_ma(1 - self.var_alpha, ppg_value, self.var_average)
         #print("Var: " + str(self.variance) + "\nAvg: " + str(self.variance))
+        
         
     def update_model_mix(self, ppg_value):
         self.average_fast = self.exponential_ma(self.alpha_fast, ppg_value, self.average_fast)
@@ -81,8 +89,9 @@ class crossover_detector:
         self.variance = self.exponential_mv(self.var_alpha, self.crossover_index, self.variance, self.var_average)
         self.var_average = self.exponential_ma(self.avg_alpha, self.crosssover_index, self.var_average)
         
+        
     # Crossover based peak detection
-    def detect_peaks(self, ppg_array):
+    def detect_peaks_cross(self, ppg_array):
         self.reset_state()
         fast_averages = []
         slow_averages = []
@@ -91,14 +100,13 @@ class crossover_detector:
                 
         for value in ppg_array:
             self.update_model(value)
-            
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
-                       
+            #print(self.crossover_index)
+            
             # Crossover detection
             if self.crossover_index > 0:
-            #if self.crossover_index > 0:
                 peaks_array.append(1)
             else:
                 peaks_array.append(0)
@@ -124,6 +132,7 @@ class crossover_detector:
             
         return variances, averages, peaks_array    
         
+        
     def detect_peaks_mix(self, ppg_array):
         self.reset_state()
         # fast_averages = []
@@ -142,6 +151,27 @@ class crossover_detector:
                 
         return peaks_array
         
+        
+        # Given a solution archive and a record set, returned the detected peaks by the rule of majority voting
+    def bagging_join_detections(self, alphas_fast, alphas_slow, ppg_signal):
+        if len(alphas_fast) != len(alphas_slow):
+            print("Alphas lengths do not match")
+            exit(-1)
+        
+        ensemble_size = len(alphas_fast)
+        
+        individual_predictions = []
+        for i in range(0, len(alphas_fast)):
+            self.reset_state()
+            self.set_parameters_cross(alphas_fast[i], alphas_slow[i])
+            _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
+            individual_predictions.append(detected_peaks)
+        
+        voted_peaks = (np.sum( individual_predictions, axis=0) > float(ensemble_size)/2) * 1
+        
+        return voted_peaks
+        
+    #def 
         
     def calculate_heart_rates(self, peaks_array, freq):
         """ Use the beats to calculate Heart Rates in bpm """
@@ -258,8 +288,12 @@ class crossover_detector:
         return true_positives, true_negatives, false_positives, false_negatives, confusion_array
             
 
-    def record_confusion_matrix(self, ppg_records):
+    def record_set_confusion_matrix(self, ppg_records, method):
         """ Given a set of records containing ppg signals and peak references, returns the confusion matrix."""
+        
+        if method != 'crossover' and method != 'variance' and method != 'mix':
+            print("Please choose a valid method")
+            exit(-1)
         
         true_positives = 0 
         true_negatives = 0 
@@ -272,7 +306,15 @@ class crossover_detector:
             reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
             # Detect peaks using current set of parameters
-            _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
+            if method == 'crossover':
+                _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
+            elif method == 'variance':
+                _, _, detected_peaks = self.detect_peaks_var(ppg_signal)
+            elif method == 'mix':
+                detected_peaks = self.detect_peaks_mix(ppg_signal)
+            else:
+                print("No match for method argument in total cost")
+                sys.exit(-1)
             
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn, _ = self.signal_confusion_matrix(detected_peaks, reference_peaks)
@@ -280,6 +322,29 @@ class crossover_detector:
                         
         return true_positives, true_negatives, false_positives, false_negatives
         
+    def bagging_records_confusion_matrix(self, solution_archive, ppg_records):
+    
+        true_positives = 0 
+        true_negatives = 0 
+        false_positives = 0
+        false_negatives = 0
+        alphas_fast = solution_archive[:, 0]
+        alphas_slow = solution_archive[:, 1]
+        for index, record in enumerate(ppg_records):
+            #print('Cost calculation for record ', index)
+            ppg_signal = record.ppg[1]
+            reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            
+            # 
+            voted_peaks = self.bagging_join_detections(alphas_fast, alphas_slow, ppg_signal)
+            
+            # Get record's confusion matrix and regularization term
+            tp, tn, fp, fn, _ = self.signal_confusion_matrix(voted_peaks, reference_peaks)
+            true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
+                        
+        return true_positives, true_negatives, false_positives, false_negatives
+    
+    
             
     def signal_regularization(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the regularization value, considering total prediction area and number of predicted peaks. """        
@@ -302,7 +367,7 @@ class crossover_detector:
         return area_term
         
     def total_regularized_cost(self, ppg_records, C, method):
-        """ Given a set of PPG records cont and the correspondent peak references, calculates a confusion matrix-based metric, regularized by the total area and number of peaks detected.  """
+        """ Given a set of PPG records and the correspondent peak references, calculates a confusion matrix-based metric """
         total_cost = 0.0
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
@@ -311,7 +376,9 @@ class crossover_detector:
             
             # Detect peaks using current set of parameters
             if method == 'crossover':
-                _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
+                _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
+            elif method == 'bagging':
+                detected_peaks
             elif method == 'variance':
                 _, _, detected_peaks = self.detect_peaks_var(ppg_signal)
             elif method == 'mix':
@@ -324,7 +391,7 @@ class crossover_detector:
             tp, tn, fp, fn, _ = self.signal_confusion_matrix(detected_peaks, reference_peaks)
 
             #print('[RECORD ', index,']')
-            print('TP: ', tp, 'TN: ', tn, 'FP: ', fp, 'FN: ', fn)
+            #print('TP: ', tp, 'TN: ', tn, 'FP: ', fp, 'FN: ', fn)
             #print('Number of reference peaks: ', len(reference_peaks))
             
             record_regularization = self.signal_regularization(detected_peaks, reference_peaks)
@@ -339,20 +406,7 @@ class crossover_detector:
         return total_cost
         
     
-    # Given a solution archive and a record set, returned the detected peaks by the rule of majority voting
-    def crossover_bagging_detection(self, alphas_fast, alphas_slow, record_set):
-            if len(alphas_fast) != len(alphas_slow):
-                print("Alphas lengths do not match")
-                exit(-1)
-            
-            individual_predictions = []
-            for i in range(0, len(alphas_fast)):
-                _, _, _, detected_peaks = self.detect_peaks(ppg_signal)
-                individual_predictions.append(detect_peaks)
-            
-            voted_peaks = (np.sum( individual_predictions, axis=0) > float(ensemble_size)/2) * 1
-        
-        return voted_peaks
+    
     
     
     

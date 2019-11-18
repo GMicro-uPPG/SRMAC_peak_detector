@@ -33,13 +33,14 @@ try:
     num_iterations = 1000                            # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
     
-    # Solution Archive
+    
+    # Bagging solution Archive
     # solution_archive[0] <=> best bagging_alpha_fasts
     # solution_archive[1] <=> best bagging_alpha_slows
     # solution_archive[2] <=> best bagging_costs
-    solution_archive = []
-    num_members = 5
-    
+    num_members = 10
+    solution_archive = np.ones((num_members, 3))
+
     # Optimization
     #solution_archive = np.zeros((num_iterations,3))
     best_solution = []
@@ -50,7 +51,7 @@ try:
         # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
         # alpha_fast = np.random.uniform(0, 1)
         # alpha_slow = np.random.uniform(alpha_fast, 1)
-        # peak_detector.set_parameters(alpha_fast, alpha_slow)
+        # peak_detector.set_parameters_cross(alpha_fast, alpha_slow)
         # cost = peak_detector.total_regularized_cost(train_records, C, "crossover")
         # print('[randomized] alpha_fast: ', alpha_fast, ', alpha_slow: ', alpha_slow,', cost: ', cost)
         # # Keep solutions in a matrix
@@ -62,27 +63,28 @@ try:
         # #solution_archive[iteration, :] = [alpha_fast, alpha_slow, cost]
         
         
-        ## Optimize crossover ensembles
-        # Keep num_members best solutions and build voting ensemble by bootstrap sampling (bagging)
-        bagging_alpha_fasts = np.random.uniform(0,1,num_members)
-        bagging_alpha_slows = np.random.uniform(bagging_alpha_fasts, num_members*[1],num_members
-        bagging_costs = np.array(num_members*[0])
+        # ## Optimize crossover ensembles
+        # # Keep num_members best solutions and build voting ensemble by bootstrap sampling (bagging)
         
-        for i in range(0, num_numbers):
-            peak_detector.set_parameters(bagging_alpha_fasts[i], bagging_alpha_slows[i])
-            # Resamples train set with repick to generate diverse models
-            bootstrap_indices = np.random.randint(0,len(train_records),len(train_records))
-            train_bootstrap_records = train_records[bootstrap_indices]
-            bagging_costs[i] = peak_detector.total_regularized_cost(train_bootstrap_records, C, "crossover)
+        # bagging_alpha_fasts = np.random.uniform(0, 1, num_members)
+        # bagging_alpha_slows = np.random.uniform(bagging_alpha_fasts, num_members*[1], num_members)
+        # local_archive = []
+        # for i in range(0, num_members):
+            # peak_detector.set_parameters_cross(bagging_alpha_fasts[i], bagging_alpha_slows[i])
+            # # Resamples train set with repick to generate diverse models
+            # bootstrap_indices = np.random.randint(0, len(train_records), len(train_records))
+            # train_bootstrap_records = np.array(train_records)[bootstrap_indices]
+            # cost = peak_detector.total_regularized_cost(train_bootstrap_records, C, "crossover")
+            # local_archive.append([bagging_alpha_fasts[i], bagging_alpha_slows[i], cost])
             
-            solution_archive.append([bagging_alpha_fasts[i], bagging_alpha_slows[i], bagging_costs[i])
-            
-        print('[current solution archive]')
-        print(solution_archive)
-            
-        # Merge and sort
-        solution_archive = solution_archive[bagging_costs.argsort()]                            # Sort solution archive according to the fitness of each solution
-        solution_archive = solution_archive[0:num_members, :]                                 # Remove worst solutions           
+        
+        # # Merge, sort and remove worst
+        # solution_archive = np.append(solution_archive, local_archive, axis = 0)                     # Append new solutions to the Archive        
+        # solution_archive = solution_archive[solution_archive[:, -1].argsort()]                      # Sort solution archive according to the fitness of each solution
+        # solution_archive = solution_archive[0:num_members, :]                                       # Remove worst solutions           
+        
+        # print('[Current archive]')
+        # print(solution_archive)
         
         ## Optimize variance
         # Randomize parameters
@@ -112,17 +114,18 @@ try:
             # best_solution = [alpha_fast, alpha_slow, var_alpha, avg_alpha, var_threshold, cost]
         # print('[current best] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], 'var_alpha: ', best_solution[2], ', avg_alpha: ', best_solution[3], 'threshold: ', best_solution[4], ', cost: ', best_solution[-1])
         
-    # Sort solutions according to the costs
-    #solution_archive = solution_archive[solution_archive[:,-1].argsort()]
-    #best_solution = solution_archive[0]
-    #print(solution_archive)
-    #pkl.dump(solution_archive, open("solution_archive.data","wb"))
     
-    #peak_detector.set_parameters(best_solution[0], best_solution[1])
-    #peak_detector.set_parameters_var(best_solution[0], best_solution[1], best_solution[2])
-    peak_detector.set_parameters_mix(best_solution[0], best_solution[1], best_solution[2], best_solution[3], best_solution[4])
-    train_confusion_matrix = peak_detector.record_confusion_matrix(train_records)
-    test_confusion_matrix = peak_detector.record_confusion_matrix(test_records)
+    # peak_detector.set_parameters_cross(best_solution[0], best_solution[1])
+    # peak_detector.set_parameters_var(best_solution[0], best_solution[1], best_solution[2])
+    # peak_detector.set_parameters_mix(best_solution[0], best_solution[1], best_solution[2], best_solution[3], best_solution[4])
+    
+    # train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records)
+    # test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records)
+    
+    # pkl.dump(solution_archive, open("solution_archive.data","wb"))
+    # train_confusion_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, train_records)
+    # test_confusion_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, test_records)
+    
     print('Train set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
     print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     

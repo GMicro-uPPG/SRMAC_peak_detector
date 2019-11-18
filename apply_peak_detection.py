@@ -2,11 +2,20 @@
 
 import numpy as np
 from ppg_peak_detection import crossover_detector
-from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
 import matplotlib.pyplot as plt
+import pickle as pkl
+import sys
 
+if len(sys.argv) != 2:
+    print("Please enter record number (0:60)")
+    exit(-1)
+    
+    
+from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
+    
 # Get sample signal and reference from records
-sample_record = records[10]
+record_number = int(sys.argv[1])
+sample_record = records[record_number]
 sample_signal = sample_record.ppg[1]
 sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
 detector = crossover_detector()
@@ -49,11 +58,18 @@ detector = crossover_detector()
 # plt.legend()
 # plt.show()
 
-
 ## Apply Mixed detector
-detector.set_parameters_mix(alpha_fast = 0.9656528722478156 , alpha_slow = 0.9668991435014739, 
-                            var_alpha = 0.8322917528906034, avg_alpha = 0.18278088860663844, var_threshold = 21.16502812624924)
-detected_peaks = detector.detect_peaks_mix(sample_signal);
+# detector.set_parameters_mix(alpha_fast = 0.9656528722478156 , alpha_slow = 0.9668991435014739, 
+                            # var_alpha = 0.8322917528906034, avg_alpha = 0.18278088860663844, var_threshold = 21.16502812624924)
+# detected_peaks = detector.detect_peaks_mix(sample_signal);
+
+# Apply bagging
+solution_archive = pkl.load(open("solution_archive.data","rb"))
+alphas_fast = solution_archive[:, 0]
+alphas_slow = solution_archive[:, 1]
+detected_peaks = detector.bagging_join_detections(alphas_fast, alphas_slow, sample_signal)
+
+
 # Plot signal and reference
 plt.figure()
 plt.title("PPG average and variance")
