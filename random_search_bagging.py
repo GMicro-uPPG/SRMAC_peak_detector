@@ -4,6 +4,7 @@
 
 import numpy as np
 import pickle as pkl
+import random
 from ppg_peak_detection import crossover_detector
 from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
 from time_manager import time
@@ -17,17 +18,17 @@ try:
     #beats = records[rec].beats            # Record beats: [x_beats, beats]
     #plotPPG(name, ppg, beats)             # Plot ppg signal and peak points
     # Use 30 records to train model and 30 to test it
-    train_records = records[0:30]
-    test_records = records[30:60]
+    train_records = records[0:40]
+    test_records = records[40:60]
     
-    print('\nrecords[0:30]')
+    print('\nrecords[0:40]')
 
     # Random search of alphas, using regularized confusion matrix-based cost
     peak_detector = crossover_detector()
     # Parameters
-    C = 10                                         # Regularization hyperparameter
+    C = 0                                         # Regularization hyperparameter
     print('\nC = ' + str(C))
-    num_iterations = 1000                            # Number of random search iterations
+    num_iterations = 500                            # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
     
     # Bagging solution Archive
@@ -38,9 +39,23 @@ try:
     
     solution_archive = np.ones((ensemble_size, 3))
     
-    # Generate boostrap fixed indices (ensemble_size x input length matrix)
-    bootstrap_indices = np.random.randint(low = 0, high=len(train_records), size=(ensemble_size, len(train_records)))
+    ### Ensemble datasets
+    train_sampled_records = [0] * ensemble_size
+    ## Bootstrap train data for bagging
+    # Generate boostrap (sampling with replacement) fixed indices (ensemble_size x input length matrix)
+    #print("Generate bootstrap train records")    
+    #bootstrap_indices = np.random.randint(low = 0, high=len(train_records), size=(ensemble_size, len(train_records)))
+    # Based on bootstrap indices, create different realizations of the records
+    #for i in range(0, ensemble_size):
+    #    train_sampled_records[i] = np.array(train_records)[bootstrap_indices[i]]
     
+    ## Sample records without replacement (ensemble_size x (ratio * input length matrix))
+    sampling_percentage = 0.10 		                
+    for i in range(0, ensemble_size):
+        train_sampled_records[i] = random.sample(train_records, int(sampling_percentage * len(train_records)))
+    
+    
+    # Define solution archive
     solution_archive = np.zeros((ensemble_size,3))
     solution_archive[:, -1] = float('inf')
     
@@ -50,32 +65,31 @@ try:
         
         ## Optimize crossover ensembles
         # Keep ensemble_size best solutions and build voting ensemble by bootstrap sampling (bagging)
-        bagging_alpha_fasts = np.random.uniform(0, 1, ensemble_size)
+        bagging_alpha_fasts = np.random.uniform(0.9, 1, ensemble_size)
         bagging_alpha_slows = np.random.uniform(bagging_alpha_fasts, ensemble_size*[1], ensemble_size)
         local_archive = []
         for i in range(0, ensemble_size):
             # print("Ensemble member " + str(i))
             peak_detector.set_parameters_cross(bagging_alpha_fasts[i], bagging_alpha_slows[i])
-            # Resamples train set with repick to generate diverse models
-            bagging_indices = bootstrap_indices[i]
-            # print("bagging indices:" + str(bagging_indices))
-            train_bootstrap_records = np.array(train_records)[bagging_indices]
-            cost = peak_detector.total_regularized_cost(train_bootstrap_records, C, "crossover")
+
+            cost = peak_detector.total_regularized_cost(train_sampled_records[i], C, "crossover")
             if cost < solution_archive[i, -1]:
                 solution_archive[i, :] = [bagging_alpha_fasts[i], bagging_alpha_slows[i], cost]
         
-        print('[Current archive]')
+        print('[Current archive, individual costs]')
         print(solution_archive)
         
-        current_conf_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, train_records)
-        print('Current confusion matrix: [TP,TN,FP,FN]' + str(current_conf_matrix))
+        # Current bagging confusion matrix
+        current_cm = peak_detector.bagging_records_confusion_matrix(solution_archive, train_records)
+        current_accuracy = (current_cm[0] + current_cm[1])/(sum(current_cm))
+        print('(Current bagging) Score: ' + str(current_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(current_cm))
         
     # pkl.dump(solution_archive, open("solution_archive.data","wb"))
     train_confusion_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, train_records)
     test_confusion_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, test_records)
     
-    print('Train set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
-    print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
+    print('Train set bagging confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+    print('Test set bagging confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     
     print('\nLast timestamp: ' + str(time.getTimestamp()))
     print('Last time: ' + str(time.getTime()))

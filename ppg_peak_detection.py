@@ -322,6 +322,7 @@ class crossover_detector:
                         
         return true_positives, true_negatives, false_positives, false_negatives
         
+        
     def bagging_records_confusion_matrix(self, solution_archive, ppg_records):
     
         true_positives = 0 
@@ -333,19 +334,20 @@ class crossover_detector:
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
             ppg_signal = record.ppg[1]
+
             reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
-            
+
             # 
             voted_peaks = self.bagging_join_detections(alphas_fast, alphas_slow, ppg_signal)
-            
+
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn, _ = self.signal_confusion_matrix(voted_peaks, reference_peaks)
+
             true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
-                        
+       
         return true_positives, true_negatives, false_positives, false_negatives
     
-    
-            
+      
     def signal_regularization(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the regularization value, considering total prediction area and number of predicted peaks. """        
         # Assumes that detected_peaks treats 0 as negative prediction and 1 as positive prediction
@@ -365,6 +367,7 @@ class crossover_detector:
         #total_regularization = (area_term + number_term)/2
         
         return area_term
+        
         
     def total_regularized_cost(self, ppg_records, C, method):
         """ Given a set of PPG records and the correspondent peak references, calculates a confusion matrix-based metric """
@@ -389,18 +392,21 @@ class crossover_detector:
                 
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn, _ = self.signal_confusion_matrix(detected_peaks, reference_peaks)
-
+            true_positive_rate = tp / (tp + fn)
+            true_negative_rate = tn / (tn + fp)
             #print('[RECORD ', index,']')
             #print('TP: ', tp, 'TN: ', tn, 'FP: ', fp, 'FN: ', fn)
             #print('Number of reference peaks: ', len(reference_peaks))
             
-            record_regularization = self.signal_regularization(detected_peaks, reference_peaks)
+            #record_regularization = self.signal_regularization(detected_peaks, reference_peaks)
             
             # Calculate record's accuracy and cost
+                     
             record_accuracy = (tp + tn)/(tp + tn + fp + fn)
-            record_cost = (1 - record_accuracy) + C * record_regularization
+            record_cost = (1 - record_accuracy) #+ C * record_regularization
+            #record_cost = true_positive_rate + C * true_negative_rate
             total_cost += record_cost
-            
+
         total_cost /= len(ppg_records)
         
         return total_cost
