@@ -152,26 +152,29 @@ class crossover_detector:
         return peaks_array
         
         
-        # Given a solution archive and a record set, returned the detected peaks by the rule of majority voting
-    def bagging_join_detections(self, alphas_fast, alphas_slow, ppg_signal):
-        if len(alphas_fast) != len(alphas_slow):
-            print("Alphas lengths do not match")
-            exit(-1)
+    # Given a solution archive and a record set, returned the detected peaks by the rule of weighted majority voting
+    # When all the weights are equal to 1 and threshold = 0.5, it is equivalent to unweighted voting
+    def ensemble_join_detections(self, ensemble_models, models_weights, threshold, ppg_signal):
         
-        ensemble_size = len(alphas_fast)
-        
+        ensemble_models = np.array(ensemble_models)
+        ensemble_size = len(ensemble_models)
+        alphas_fast = ensemble_models[:, 0]
+        alphas_slow = ensemble_models[:, 1]     
         individual_predictions = []
-        for i in range(0, len(alphas_fast)):
+        for i in range(0, ensemble_size):
+            # Individual detections based on each model's parameters
             self.reset_state()
             self.set_parameters_cross(alphas_fast[i], alphas_slow[i])
             _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
-            individual_predictions.append(detected_peaks)
-        
-        voted_peaks = (np.sum( individual_predictions, axis=0) > float(ensemble_size)/2) * 1
+            # Keep detected peaks
+            individual_predictions.append(list( np.array(detected_peaks) * models_weights[i] ))
+            #individual_predictions.append(detected_peaks)
+            
+        voted_peaks = ( (np.sum(individual_predictions, axis=0) / float(ensemble_size)) > threshold ) * 1
+        #voted_peaks = ( (np.sum(individual_predictions, axis=0)) > float(ensemble_size) / 2 ) * 1
         
         return voted_peaks
         
-    #def 
         
     def calculate_heart_rates(self, peaks_array, freq):
         """ Use the beats to calculate Heart Rates in bpm """
@@ -323,26 +326,24 @@ class crossover_detector:
         return true_positives, true_negatives, false_positives, false_negatives
         
         
-    def bagging_records_confusion_matrix(self, solution_archive, ppg_records):
+    def ensemble_records_confusion_matrix(self, ensemble_models, models_weights, threshold, ppg_records):
     
+        if len(ensemble_models) != len(models_weights):
+            print("Number of models and weights do not match")
+            exit(-1)
+            
         true_positives = 0 
         true_negatives = 0 
         false_positives = 0
         false_negatives = 0
-        alphas_fast = solution_archive[:, 0]
-        alphas_slow = solution_archive[:, 1]
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
             ppg_signal = record.ppg[1]
-
             reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
-
             # 
-            voted_peaks = self.bagging_join_detections(alphas_fast, alphas_slow, ppg_signal)
-
+            voted_peaks = self.ensemble_join_detections(ensemble_models, models_weights, threshold, ppg_signal)
             # Get record's confusion matrix and regularization term
             tp, tn, fp, fn, _ = self.signal_confusion_matrix(voted_peaks, reference_peaks)
-
             true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
        
         return true_positives, true_negatives, false_positives, false_negatives
@@ -370,7 +371,7 @@ class crossover_detector:
         
         
     def total_regularized_cost(self, ppg_records, C, method):
-        """ Given a set of PPG records and the correspondent peak references, calculates a confusion matrix-based metric """
+        """ Given a set of PPG records and the correspondent peak references, calculates a regularized confusion matrix-based metric """
         total_cost = 0.0
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
@@ -380,8 +381,8 @@ class crossover_detector:
             # Detect peaks using current set of parameters
             if method == 'crossover':
                 _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
-            elif method == 'bagging':
-                detected_peaks
+            #elif method == 'ensemble':
+            #    detected_peaks = self.ensemble_join_detections(models, weights, ppg_signal)
             elif method == 'variance':
                 _, _, detected_peaks = self.detect_peaks_var(ppg_signal)
             elif method == 'mix':

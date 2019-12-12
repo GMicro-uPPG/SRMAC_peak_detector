@@ -1,6 +1,6 @@
 #!python3
 # Author: Victor O. Costa 
-# Performs random search on the crossover's alphas and derivtive threshold using confusion matrix-based cost function 
+# Performs random search on the crossover's alphas and threshold, optimizing a confusion matrix metric
 
 import numpy as np
 import pickle as pkl
@@ -31,17 +31,17 @@ try:
     num_iterations = 500                            # Number of random search iterations
     print('\nnum_iterations = ' + str(num_iterations))
     
-    # Bagging solution Archive
-    # solution_archive[0] <=> best bagging_alpha_fasts
-    # solution_archive[1] <=> best bagging_alpha_slows
-    # solution_archive[2] <=> best bagging_costs
+    # Ensemble models
+    # ensemble_models[0] <=> best ensemble_alpha_fasts
+    # ensemble_models[1] <=> best ensemble_alpha_slows
+    # ensemble_models[2] <=> best ensemble_costs
     ensemble_size = 10
     
-    solution_archive = np.ones((ensemble_size, 3))
+    ensemble_models = np.ones((ensemble_size, 3))
     
     ### Ensemble datasets
     train_sampled_records = [0] * ensemble_size
-    ## Bootstrap train data for bagging
+    ## Bootstrap train data for ensemble
     # Generate boostrap (sampling with replacement) fixed indices (ensemble_size x input length matrix)
     #print("Generate bootstrap train records")    
     #bootstrap_indices = np.random.randint(low = 0, high=len(train_records), size=(ensemble_size, len(train_records)))
@@ -55,41 +55,44 @@ try:
         train_sampled_records[i] = random.sample(train_records, int(sampling_percentage * len(train_records)))
     
     
-    # Define solution archive
-    solution_archive = np.zeros((ensemble_size,3))
-    solution_archive[:, -1] = float('inf')
+    # Define ensemble models initially at zero with infinite costs
+    ensemble_models = np.zeros((ensemble_size,3))
+    ensemble_models[:, -1] = float('inf')
+    # With all the weights equal to 1 and threhsold as 0.5, the voting is unweighted
+    models_weights = np.ones(ensemble_size)
+    voting_threshold = 0.5
     
     best_solution = [0, 0, ]
     for iteration in range(num_iterations):
         print('\n[Search iteration ' + str(iteration) + ']')
         
         ## Optimize crossover ensembles
-        # Keep ensemble_size best solutions and build voting ensemble by bootstrap sampling (bagging)
-        bagging_alpha_fasts = np.random.uniform(0.9, 1, ensemble_size)
-        bagging_alpha_slows = np.random.uniform(bagging_alpha_fasts, ensemble_size*[1], ensemble_size)
-        local_archive = []
+        # Keep ensemble_size best solutions and build voting ensemble by bootstrap sampling (ensemble)
+        ensemble_alpha_fasts = np.random.uniform(0.9, 1, ensemble_size)
+        ensemble_alpha_slows = np.random.uniform(ensemble_alpha_fasts, ensemble_size*[1], ensemble_size)
+
         for i in range(0, ensemble_size):
             # print("Ensemble member " + str(i))
-            peak_detector.set_parameters_cross(bagging_alpha_fasts[i], bagging_alpha_slows[i])
+            peak_detector.set_parameters_cross(ensemble_alpha_fasts[i], ensemble_alpha_slows[i])
 
             cost = peak_detector.total_regularized_cost(train_sampled_records[i], C, "crossover")
-            if cost < solution_archive[i, -1]:
-                solution_archive[i, :] = [bagging_alpha_fasts[i], bagging_alpha_slows[i], cost]
+            if cost < ensemble_models[i, -1]:
+                ensemble_models[i, :] = [ensemble_alpha_fasts[i], ensemble_alpha_slows[i], cost]
         
-        print('[Current archive, individual costs]')
-        print(solution_archive)
+        print('[Current models, individual costs]')
+        print(ensemble_models)
         
-        # Current bagging confusion matrix
-        current_cm = peak_detector.bagging_records_confusion_matrix(solution_archive, train_records)
+        # Current ensemble confusion matrix
+        current_cm = peak_detector.ensemble_records_confusion_matrix(ensemble_models, models_weights, voting_threshold, train_records)
         current_accuracy = (current_cm[0] + current_cm[1])/(sum(current_cm))
-        print('(Current bagging) Score: ' + str(current_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(current_cm))
+        print('(Current ensemble) Score: ' + str(current_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(current_cm))
         
-    # pkl.dump(solution_archive, open("solution_archive.data","wb"))
-    train_confusion_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, train_records)
-    test_confusion_matrix = peak_detector.bagging_records_confusion_matrix(solution_archive, test_records)
+    # pkl.dump(ensemble_models, open("ensemble_models.data","wb"))
+    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(ensemble_models, models_weights, voting_threshold, train_records)
+    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(ensemble_models, models_weights, voting_threshold, test_records)
     
-    print('Train set bagging confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
-    print('Test set bagging confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
+    print('Train set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+    print('Test set ensemble confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     
     print('\nLast timestamp: ' + str(time.getTimestamp()))
     print('Last time: ' + str(time.getTime()))
