@@ -168,7 +168,6 @@ class crossover_detector:
             _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
             # Keep detected peaks
             individual_predictions.append(list( np.array(detected_peaks) * models_weights[i] ))
-            #individual_predictions.append(detected_peaks)
             
         voted_peaks = ( (np.sum(individual_predictions, axis=0) / float(ensemble_size)) > threshold ) * 1
         #voted_peaks = ( (np.sum(individual_predictions, axis=0)) > float(ensemble_size) / 2 ) * 1

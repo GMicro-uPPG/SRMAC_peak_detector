@@ -45,8 +45,6 @@ try:
     best_cm = peak_detector.ensemble_records_confusion_matrix(ensemble_models, best_weights, best_treshold, train_records)
     best_accuracy = (best_cm[0] + best_cm[1])/(sum(best_cm))
     print('Initial score: ' + str(best_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(best_cm))
-       
-    
     for iteration in range(num_iterations):
         print('\n[Search iteration ' + str(iteration) + ']')
         
@@ -69,7 +67,6 @@ try:
         print('(Current best threshold) ' + str(best_treshold))
         print('Score: ' + str(best_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(best_cm))
         
-    # pkl.dump(ensemble_models, open("ensemble_models.data","wb"))
     train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(ensemble_models, best_weights, best_treshold, train_records)
     test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(ensemble_models, best_weights, best_treshold, test_records)
     
