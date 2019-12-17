@@ -11,7 +11,6 @@ from read_datasets import records # This will load 60 records (o to 59). Rercord
 from time_manager import time
 
 try:
-    
     train_records = records[0:40]
     test_records = records[40:60]
     num_iterations = 1000                            # Number of random search iterations
@@ -21,10 +20,6 @@ try:
     print('\nIterations per model = ' + str(num_iterations))
     print('\nEnsemble size = ' + str(ensemble_size))
     
-    # With all the weights equal to 1 and threhsold as 0.5, the voting is unweighted
-    models_weights = np.ones(ensemble_size)
-    voting_threshold = 0.5
-   
     # Percentage of train data sampling for each model's optimization
     sampling_percentage = 0.10
     # Optimize each model for its own subset of the train records
@@ -36,12 +31,20 @@ try:
         # Random search of model's alphas over the saampled train records
         print("\nSearch for model " + str(model_index))
         model_parameters = random_search_crossover(sampled_train_records, num_iterations, 0.9, 1, verbosity = False)
-        print(model_parameters)
+        print("Model parameters: " + str(model_parameters[0:-1]))
+        
+        # Print costs on partition and train set
+        detector = crossover_detector()
+        detector.set_parameters_cross(model_parameters[0], model_parameters[1])
+        train_cm = detector.record_set_confusion_matrix(train_records, "crossover")
+        train_cost = 1 - (train_cm[0]+train_cm[1])/(sum(train_cm))
+        
+        print("Cost on partition: " + str(model_parameters[-1]) + " / Cost on train set: " + str(train_cost))
         ensemble_models.append(model_parameters)
         
     # Save search result
     pkl.dump(ensemble_models, open("ensemble_models.pickle","wb"))
-        
+    # ensemble_models = pkl.load(open("ensemble_models.pickle","rb"))
         
     ## Extract predictions from all models for all records on train and test data, record-wise
     train_records_predictions = []
@@ -73,14 +76,16 @@ try:
         test_records_predictions.append(single_record_predictions)
     
     # Save ensemble train and test predictions
-    pkl.dump(train_records_predictions, open("ensemble_train_predictiosn.pickle","wb"))
-    pkl.dump(test_records_predictions, open("ensemble_test_predictiosn.pickle","wb"))
+    pkl.dump(train_records_predictions, open("ensemble_train_predictions.pickle","wb"))
+    pkl.dump(test_records_predictions, open("ensemble_test_predictions.pickle","wb"))
     
-    
+    # With all the weights equal to 1 and threhsold as 0.5, the voting is unweighted
+    models_weights = np.ones(ensemble_size)
+    voting_threshold = 0.5
     peak_detector = crossover_detector()
     train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, models_weights, voting_threshold)
     test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(test_records, test_records_predictions, models_weights, voting_threshold)
-    print('Train set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+    print('\nTrain set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
     print('Test set ensemble confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     
     

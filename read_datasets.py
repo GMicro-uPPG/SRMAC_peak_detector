@@ -59,7 +59,7 @@ def getMIMICppg():
 
     dataset = 'MIMIC1_organized'
     list_of_recs = os.listdir(dataset)
-
+    list_of_recs.sort()
     print('\nLoading ' + str(dataset) + ' dataset\n')
     for item in list_of_recs:
         if (len(item) == 3): # To not read trash

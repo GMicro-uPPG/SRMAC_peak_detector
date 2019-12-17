@@ -6,56 +6,53 @@ import numpy as np
 import pickle as pkl
 import random
 from ppg_peak_detection import crossover_detector
-from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
+from read_datasets import records                   # This will load 60 records (o to 59). Rercord sample rate = 125Hz
 from time_manager import time
 from plot import *
 
 try:
-    # Record example
-    #rec = 21
-    #name = records[rec].name              # Record name: string
-    #ppg = records[rec].ppg                # Record ppg: [x_ppg, ppg]
-    #beats = records[rec].beats            # Record beats: [x_beats, beats]
-    #plotPPG(name, ppg, beats)             # Plot ppg signal and peak points
-    # Use 30 records to train model and 30 to test it
+    # Load reference data
+    print('Train records: [0:40]')
     train_records = records[0:40]
     test_records = records[40:60]
     
-    print('\nrecords[0:40]')
-
-    # Random search of alphas, using regularized confusion matrix-based cost
-    peak_detector = crossover_detector()
-    # Parameters
-    C = 0                                         # Regularization hyperparameter
-    print('\nC = ' + str(C))
-    num_iterations = 300                            # Number of random search iterations
-    print('\nnum_iterations = ' + str(num_iterations))
+    # Load each member's predictions on train and test data
+    train_records_predictions = pkl.load(open("ensemble_train_predictions.pickle","rb"))
+    test_records_predictions = pkl.load(open("ensemble_test_predictions.pickle","rb"))
     
-    # Ensemble models
-    # ensemble_models[:, 0] <=> best ensemble_alpha_fasts
-    # ensemble_models[:, 1] <=> best ensemble_alpha_slows
-    # ensemble_models[:, 2] <=> best ensemble_costs
-    ensemble_models = pkl.load(open("ensemble_models.pickle", "rb"))
-    print(np.array(ensemble_models))
-    ensemble_size = len(ensemble_models)
+    if len(train_records_predictions[0]) != len(test_records_predictions[0]):
+        print("Train and test predictions are made with different number of models")
+        exit(-1)
+    
+    ensemble_size = len(train_records_predictions[0])
+    
+    num_iterations = 10                                        # Number of random search iterations
+    print('\nNumber of iterations = ' + str(num_iterations))
+    
     # Initial solution is the unweighted voting of the loaded models
-    # Compute accuracy of this initial solution
-    best_weights = (ensemble_size)*[1]
+    # Compute train accuracies of this initial solution
+    peak_detector = crossover_detector()
+    best_weights = np.ones(ensemble_size)
     best_treshold = 0.5
-    best_cm = peak_detector.ensemble_records_confusion_matrix(ensemble_models, best_weights, best_treshold, train_records)
+    best_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold)
     best_accuracy = (best_cm[0] + best_cm[1])/(sum(best_cm))
     print('Initial score: ' + str(best_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(best_cm))
+    
     for iteration in range(num_iterations):
         print('\n[Search iteration ' + str(iteration) + ']')
         
         ## Optimize crossover ensembles
         # Keep ensemble_size best solutions and build voting ensemble by bootstrap sampling (ensemble)
         iteration_weights = np.random.uniform(0, 1, ensemble_size)
-        iteration_threshold = np.random.uniform(0, 0.1)
+        iteration_threshold = np.random.uniform(0, 1)
 
         # iteration ensemble confusion matrix
-        iteration_cm = peak_detector.ensemble_records_confusion_matrix(ensemble_models, iteration_weights, iteration_threshold, train_records)
+        iteration_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, iteration_weights, iteration_threshold)
         iteration_accuracy = (iteration_cm[0] + iteration_cm[1])/(sum(iteration_cm))
+        
+        print('(Randomized weights) ' + str(iteration_weights))
+        print('(Randomized threshold) ' + str(iteration_threshold))
+        print('Score: ' + str(iteration_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(iteration_cm))
         
         if iteration_accuracy > best_accuracy:
             best_weights    = iteration_weights
@@ -63,14 +60,14 @@ try:
             best_cm         = iteration_cm
             best_accuracy   = iteration_accuracy
         
-        print('(Current best weights) ' + str(best_weights))
+        print('\n(Current best weights) ' + str(best_weights))
         print('(Current best threshold) ' + str(best_treshold))
         print('Score: ' + str(best_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(best_cm))
-        
-    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(ensemble_models, best_weights, best_treshold, train_records)
-    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(ensemble_models, best_weights, best_treshold, test_records)
     
-    print('Train set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold)
+    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(test_records, test_records_predictions, best_weights, best_treshold)
+    
+    print('\nTrain set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
     print('Test set ensemble confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     
     print('\nLast timestamp: ' + str(time.getTimestamp()))
