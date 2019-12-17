@@ -151,28 +151,45 @@ class crossover_detector:
                 
         return peaks_array
         
+    
+    # Given a matrix containing the predictions of all ensemble models for a specific record (num_models x signal_len), return the weighted voting result prediction over the record's peaks
+    def combine_peak_predictions(self, record_predictions, models_weights, threshold):
+        if len(record_predictions) != len(models_weights):
+            print("Number of models in predictions and in weights must be the same")
+            exit(-1)
         
-    # Given a solution archive and a record set, returned the detected peaks by the rule of weighted majority voting
-    # When all the weights are equal to 1 and threshold = 0.5, it is equivalent to unweighted voting
-    def ensemble_join_detections(self, ensemble_models, models_weights, threshold, ppg_signal):
+        ensemble_size = len(record_predictions)
         
-        ensemble_models = np.array(ensemble_models)
-        ensemble_size = len(ensemble_models)
-        alphas_fast = ensemble_models[:, 0]
-        alphas_slow = ensemble_models[:, 1]     
-        individual_predictions = []
-        for i in range(0, ensemble_size):
-            # Individual detections based on each model's parameters
-            self.reset_state()
-            self.set_parameters_cross(alphas_fast[i], alphas_slow[i])
-            _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
-            # Keep detected peaks
-            individual_predictions.append(list( np.array(detected_peaks) * models_weights[i] ))
+        # Weight predictions matrix according to each model's weights
+        weighted_predictions_matrix = []
+        for index, model_predictions in enumerate(record_predictions):
+            weighted_predictions_matrix.append(list( np.array(model_predictions) * models_weights[index] ))
             
-        voted_peaks = ( (np.sum(individual_predictions, axis=0) / float(ensemble_size)) > threshold ) * 1
-        #voted_peaks = ( (np.sum(individual_predictions, axis=0)) > float(ensemble_size) / 2 ) * 1
+        ensemble_predictions = ( (np.sum(weighted_predictions_matrix, axis=0) / float(ensemble_size)) > threshold ) * 1
         
-        return voted_peaks
+        return ensemble_predictions
+      
+    # Given a solution archive and a record set, return the detected peaks by the rule of weighted majority voting
+    # When all the weights are equal to 1 and threshold = 0.5, it is equivalent to unweighted voting
+    # def ensemble_join_detections(self, ensemble_models, models_weights, threshold, ppg_signal):
+        
+        # ensemble_models = np.array(ensemble_models)
+        # ensemble_size = len(ensemble_models)
+        # alphas_fast = ensemble_models[:, 0]
+        # alphas_slow = ensemble_models[:, 1]     
+        # individual_predictions = []
+        # for i in range(ensemble_size):
+            # # Individual detections based on each model's parameters
+            # self.reset_state()
+            # self.set_parameters_cross(alphas_fast[i], alphas_slow[i])
+            # _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
+            # # Keep detected peaks
+            # individual_predictions.append(list( np.array(detected_peaks) * models_weights[i] ))
+            
+        # voted_peaks = ( (np.sum(individual_predictions, axis=0) / float(ensemble_size)) > threshold ) * 1
+        # #voted_peaks = ( (np.sum(individual_predictions, axis=0)) > float(ensemble_size) / 2 ) * 1
+        
+        # return voted_peaks
         
         
     def calculate_heart_rates(self, peaks_array, freq):
@@ -290,6 +307,7 @@ class crossover_detector:
         return true_positives, true_negatives, false_positives, false_negatives, confusion_array
             
 
+            
     def record_set_confusion_matrix(self, ppg_records, method):
         """ Given a set of records containing ppg signals and peak references, returns the confusion matrix."""
         
@@ -324,28 +342,62 @@ class crossover_detector:
                         
         return true_positives, true_negatives, false_positives, false_negatives
         
-        
-    def ensemble_records_confusion_matrix(self, ensemble_models, models_weights, threshold, ppg_records):
+        combine_peak_predictions(self, predictions_matrix, models_weights, threshold)
     
-        if len(ensemble_models) != len(models_weights):
-            print("Number of models and weights do not match")
+    
+    # Given the predictions of each ensemble's model over a set of records (num_records x num_models x record_len), a set of model weights and a threshold, return the weighted voting confusion matrix
+    def ensemble_records_confusion_matrix(self, records, records_predictions, models_weights, threshold):
+        if len(records) != len(records_predictions):
+            print("Number of records do not match")
+            exit(-1)
+    
+        if len(records_predictions[0]) != len(models_weights):
+            print("Number of models and weights are different")
             exit(-1)
             
         true_positives = 0 
         true_negatives = 0 
         false_positives = 0
         false_negatives = 0
-        for index, record in enumerate(ppg_records):
-            #print('Cost calculation for record ', index)
-            ppg_signal = record.ppg[1]
-            reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
-            # 
-            voted_peaks = self.ensemble_join_detections(ensemble_models, models_weights, threshold, ppg_signal)
-            # Get record's confusion matrix and regularization term
-            tp, tn, fp, fn, _ = self.signal_confusion_matrix(voted_peaks, reference_peaks)
+        
+        # For each record, compute the combined predictions of all models and extract the resulting confusion matrix
+        for index in range(len(records)):
+            single_record = records[index]
+            single_record_predictions = records_predictions[index]
+            
+            # Combine all models' predictions over the given record
+            combined_predictions = self.combine_peak_predictions(single_record_predictions, models_weights, threshold)
+            # Extract reference peaks for comparison
+            reference_peaks = np.array(single_record.beats[0]) - single_record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            
+            # Get record's confusion matrix
+            tp, tn, fp, fn, _ = self.signal_confusion_matrix(combined_predictions, reference_peaks)
             true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
        
         return true_positives, true_negatives, false_positives, false_negatives
+    
+        
+    # def ensemble_records_confusion_matrix_og(self, ensemble_models, models_weights, threshold, ppg_records):
+    
+        # if len(ensemble_models) != len(models_weights):
+            # print("Number of models and weights are different")
+            # exit(-1)
+            
+        # true_positives = 0 
+        # true_negatives = 0 
+        # false_positives = 0
+        # false_negatives = 0
+        # for index, record in enumerate(ppg_records):
+            # #print('Cost calculation for record ', index)
+            # ppg_signal = record.ppg[1]
+            # reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            # # 
+            # voted_peaks = self.ensemble_join_detections(ensemble_models, models_weights, threshold, ppg_signal)
+            # # Get record's confusion matrix and regularization term
+            # tp, tn, fp, fn, _ = self.signal_confusion_matrix(voted_peaks, reference_peaks)
+            # true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
+       
+        # return true_positives, true_negatives, false_positives, false_negatives
     
       
     def signal_regularization(self, detected_peaks, peaks_reference):
@@ -412,7 +464,40 @@ class crossover_detector:
         return total_cost
         
     
+# Given the number of iterations and alphas range, performs random search on the crossover's alphas using train data accuracy as fitness metric
+def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, verbosity):
+    if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
+        print("Minimum and maximum alphas must be between 0 and 1")
+        exit(-1)
     
+    if verbosity != False and verbosity != True:
+        print("Verbosity must be boolean")
+        exit(-1)
+    
+    peak_detector = crossover_detector()
+    best_solution = [0, 0, float('inf')]
+    
+    # Optimization loop
+    for iteration in range(num_iterations):
+        if verbosity == True: print('\n[Search iteration ' + str(iteration) + ']')
+
+        # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
+        alpha_fast = np.random.uniform(min_alpha, max_alpha)
+        alpha_slow = np.random.uniform(alpha_fast, max_alpha)
+        peak_detector.set_parameters_cross(alpha_fast, alpha_slow)
+        
+        # Run the detector defined above in the train records and extract accuracy
+        tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover")
+        accuracy = float(tp + tn) / float(tp + tn + fp + fn)
+        cost = 1 - accuracy
+        
+        if verbosity == True: print('[randomized] alpha_fast: ', alpha_fast, ', alpha_slow: ', alpha_slow,', cost: ', cost)
+        # Keep solutions in a matrix
+        if cost < best_solution[-1]:
+            best_solution = [alpha_fast, alpha_slow, cost]
+        if verbosity == True: print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
+    
+    return best_solution 
     
     
     

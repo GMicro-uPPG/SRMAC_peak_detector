@@ -1,0 +1,14 @@
+﻿LOG HISTORY:
+
+Single Model:
+
+
+Ensemble
+03-11-19: bagging original, minimizando 1-acc sem regularização, fast alphas de 0 a 1
+
+04-11-19_1: bagging 25% 
+
+04-11-19_2: bagging 10%, fast alphas de 0.9 a 1
+
+
+Weighted ensemble:

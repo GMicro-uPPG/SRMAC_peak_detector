@@ -64,7 +64,7 @@ def getMIMICppg():
     for item in list_of_recs:
         if (len(item) == 3): # To not read trash
 
-            print('Getting record number ' + item)
+            #print('Getting record number ' + item)
     
             # PPG signals file
             x_ppg, ppg = [], []
@@ -112,7 +112,7 @@ def getHUSMppg():
     dataset = 'ppg-dataset_husm/dataset'
     list_of_vol = os.listdir(dataset)
 
-    print('\nLoading ' + str(dataset) + ' dataset\n')
+    print('\nLoading ' + str(dataset) + '\n')
     for type_vol in list_of_vol:
         if (4 <= len(type_vol) <= 6): # To not read trash
 
@@ -124,7 +124,7 @@ def getHUSMppg():
                     for protocol in list_of_protocol:
                         if (4 <= len(protocol) <= 8): # To not read trash
 
-                            print('Getting record ' + protocol + ' from ' + type_vol + ' volunteer number ' + volunteer)
+                            #print('Getting record ' + protocol + ' from ' + type_vol + ' volunteer number ' + volunteer)
 
 
                             # PPG signals file

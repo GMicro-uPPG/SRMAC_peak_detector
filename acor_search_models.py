@@ -5,7 +5,7 @@
 import numpy as np
 import pickle as pkl
 from ppg_peak_detection import crossover_detector
-from modified_ant_colony_for_continuous_domains import ACOr
+from ant_colony_for_continuous_domains import ACOr
 from read_datasets import records
 from time_manager import time
 
@@ -29,10 +29,10 @@ test_records = records[40:60]
 print('\nrecords[0:40]')
 
 # Search parameters
-num_iterations = 50
+num_iterations = 100
 archive_size = 20
-colony_size = 5
-search_locality = 0.1
+colony_size = 2
+search_locality = 0.7
 speed_of_convergence = 0.85
 
 alphas_ranges = [[0.9, 1],
@@ -54,7 +54,7 @@ colony.set_variables(2, alphas_ranges)
 solution_archive = colony.optimize()
 best_solution = solution_archive[0,:]
 
-print("Solution archive: \n")
+print("\nFinal Solution archive:")
 print(solution_archive)
 
 # Results for train and test sets
@@ -65,7 +65,7 @@ peak_detector.set_parameters_cross(best_solution[0], best_solution[1])
 train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover")
 test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records, "crossover")
 
-print('Train set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+print('\nTrain set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
 print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
 
 

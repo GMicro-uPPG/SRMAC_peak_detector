@@ -121,6 +121,7 @@ class ACOr:
             w = norm.pdf(x,1,self.q*self.k)                                 # Weights as a gaussian function of rank with mean 1, std qk
             p = w/sum(w)                                                    # Probabilities of selecting solutions as search guides
             
+            print("Initialized Solution Archive")
             print(self.SA)
             
             if self.verbosity:   print("ALGORITHM MAIN LOOP")
@@ -141,25 +142,26 @@ class ACOr:
                         sigma = self.xi * (sigma_sum/(self.k - 1))
                         
                         pop[ant, var] = np.random.normal(Mi[l, var], sigma)                                         # Sample from normal distribution with mean Mi and st. dev. sigma
-                        print(str(Mi[l, var]) + " " + str(sigma))
-                        print(pop[ant, var])
+                        #print(pop[ant, var])
                         # SLOW ALPHAS LOWER RANGE IS DEPENDENT UPON THE FAST ALPHA VALUE
                         if var == 1:
                             self.var_ranges[var][0] = pop[ant, 0]
                         
                         # Deals with search space violation using the random position strategy
                         if pop[ant, var] < self.var_ranges[var][0] or pop[ant, var] > self.var_ranges[var][1]:      
-                            print("Violation occurred")
+                            print("Violation occurred in variable %d of ant %d" % (var, ant))
                             pop[ant, var] = np.random.uniform(self.var_ranges[var][0], self.var_ranges[var][1])
                         
                     pop[ant, -1] = self.cost_function(pop[ant, 0:self.num_var])                                     # Evaluate cost of new solution
                     
-                    print(pop[ant, :])
-                    
+                                        
                 self.SA = np.append(self.SA, pop, axis = 0)                                                         # Append new solutions to the Archive
                 self.SA = self.SA[self.SA[:, -1].argsort()]                                                         # Sort solution archive according to the fitness of each solution
                 self.SA = self.SA[0:self.k, :]                                                                      # Remove worst solutions
-            
+                print("Current Solution Archive")
+                print(self.SA)
+                
+                
             self.best_solution = self.SA[0, :]
             return self.SA  
     # end def
