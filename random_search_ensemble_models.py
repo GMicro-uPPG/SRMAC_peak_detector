@@ -11,12 +11,20 @@ from read_datasets import records # This will load 60 records (o to 59). Rercord
 from time_manager import time
 
 try:
-    train_records = records[0:40]
-    test_records = records[40:60]
+    # Load reference data (44 records for training and 22 for testing)
+    # Test data is composed of an equal number of healty and dpoc records
+    if len(records) != 66:
+        print("Number of records is not 66")
+        exit(-1)
+        
+    print('Train records: [11:-11]')
+    train_records = records[11:-11]
+    print('Test records: [0:11] u [-11:])')
+    test_records = records[0:11] + records[-11:]
+    
     num_iterations = 1000                            # Number of random search iterations
     ensemble_size = 10
     
-    print('records[0:40]')
     print('\nIterations per model = ' + str(num_iterations))
     print('\nEnsemble size = ' + str(ensemble_size))
     

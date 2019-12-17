@@ -11,10 +11,16 @@ from time_manager import time
 from plot import *
 
 try:
-    # Load reference data
-    print('Train records: [0:40]')
-    train_records = records[0:40]
-    test_records = records[40:60]
+    # Load reference data (44 records for training and 22 for testing)
+    # Test data is composed of an equal number of healty and dpoc records
+    if len(records) != 66:
+        print("Number of records is not 66")
+        exit(-1)
+        
+    print('Train records: [11:-11]')
+    train_records = records[11:-11]
+    print('Test records: [0:11] u [-11:])')
+    test_records = records[0:11] + records[-11:]
     
     # Load each member's predictions on train and test data
     train_records_predictions = pkl.load(open("ensemble_train_predictions.pickle","rb"))
@@ -31,7 +37,7 @@ try:
     
     # Initial solution is the unweighted voting of the loaded models
     # Compute train accuracies of this initial solution
-    peak_detector = crossover_detector()
+    peak_detector = crossover_detector()    
     best_weights = np.ones(ensemble_size)
     best_treshold = 0.5
     best_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold)
