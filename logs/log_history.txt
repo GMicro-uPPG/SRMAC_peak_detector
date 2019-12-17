@@ -10,5 +10,6 @@ Ensemble
 
 04-11-19_2: bagging 10%, fast alphas de 0.9 a 1
 
+16-12-19: optimize models using function and generate predictions matrix
 
 Weighted ensemble:

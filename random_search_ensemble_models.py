@@ -14,8 +14,8 @@ try:
     
     train_records = records[0:40]
     test_records = records[40:60]
-    num_iterations = 10                            # Number of random search iterations
-    ensemble_size = 5
+    num_iterations = 1000                            # Number of random search iterations
+    ensemble_size = 10
     
     print('records[0:40]')
     print('\nIterations per model = ' + str(num_iterations))
