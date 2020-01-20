@@ -24,16 +24,18 @@ class crossover_detector:
         self.average_slow = 0
         self.crossover_index = 0.0
         self.first_pass = True
+        self.percentage_threshold = 0.0
         
         # Variance
         self.var_average = 0.0
         self.variance = 0.0
         
         
-    def set_parameters_cross(self, alpha_fast, alpha_slow):
+    def set_parameters_cross(self, alpha_fast, alpha_slow, percentage_threshold):
         """ Define exponential average and threshold parameters """ 
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
+        self.percentage_threshold = percentage_threshold
         
         
     def set_parameters_var(self, var_alpha, var_threshold):
@@ -64,6 +66,7 @@ class crossover_detector:
         """ Resets fast and slow averages """
         self.average_fast = 0.0
         self.average_slow = 0.0
+        self.percentage_threshold = 0.0
         self.first_pass = True
 
         
@@ -106,11 +109,16 @@ class crossover_detector:
             #print(self.crossover_index)
             
             # Crossover detection
-            if self.crossover_index > 0:
+            # Bad if to explicit the inequation
+            # Signal clipping
+            if self.crossover_index < 0:
+                peaks_array.append(0)
+            # (MAfast - MAslow) ^ 2 > %(MAfast - MAslow)
+            elif (self.crossover_index**2) * (1 - self.percentage_threshold) > 0:
                 peaks_array.append(1)
             else:
                 peaks_array.append(0)
-        
+            
         return fast_averages, slow_averages, crossover_indices, peaks_array
         
         
@@ -212,6 +220,7 @@ class crossover_detector:
             old_state = state
             
         return heart_rates
+        
         
     def signal_confusion_matrix(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the confusion matrix."""
@@ -341,8 +350,6 @@ class crossover_detector:
             true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
                         
         return true_positives, true_negatives, false_positives, false_negatives
-        
-        combine_peak_predictions(self, predictions_matrix, models_weights, threshold)
     
     
     # Given the predictions of each ensemble's model over a set of records (num_records x num_models x record_len), a set of model weights and a threshold, return the weighted voting confusion matrix
@@ -465,7 +472,7 @@ class crossover_detector:
         
     
 # Given the number of iterations and alphas range, performs random search on the crossover's alphas using train data accuracy as fitness metric
-def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, verbosity):
+def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, min_threshold, max_threshold, verbosity):
     if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
         print("Minimum and maximum alphas must be between 0 and 1")
         exit(-1)
@@ -484,18 +491,21 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
         alpha_fast = np.random.uniform(min_alpha, max_alpha)
         alpha_slow = np.random.uniform(alpha_fast, max_alpha)
-        peak_detector.set_parameters_cross(alpha_fast, alpha_slow)
+        percentage_threshold = np.random.uniform(min_threshold, max_threshold)
+        peak_detector.set_parameters_cross(alpha_fast, alpha_slow, percentage_threshold)
         
         # Run the detector defined above in the train records and extract accuracy
         tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover")
         accuracy = float(tp + tn) / float(tp + tn + fp + fn)
         cost = 1 - accuracy
         
-        if verbosity == True: print('[randomized] alpha_fast: ', alpha_fast, ', alpha_slow: ', alpha_slow,', cost: ', cost)
-        # Keep solutions in a matrix
         if cost < best_solution[-1]:
-            best_solution = [alpha_fast, alpha_slow, cost]
-        if verbosity == True: print('[current best solution] alpha_fast: ', best_solution[0], ', alpha_slow: ', best_solution[1], ', cost: ', best_solution[-1])
+            best_solution = [alpha_fast, alpha_slow, percentage_threshold, cost]
+        
+        if verbosity == True:
+            print('Alpha fast\t\t\tAlpha slow\t\t\t% threshold\t\t\tcost')
+            print('[randomized]\t', alpha_fast, '\t', alpha_slow,'\t', percentage_threshold, '\t', cost)
+            print('[best til now]\t', best_solution[0], '\t', best_solution[1], '\t',  best_solution[2], '\t', best_solution[-1])
     
     return best_solution 
     

@@ -26,10 +26,10 @@ try:
     print('\n Number of iterations = ' + str(num_iterations))
     
     # Optimizes model
-    best_solution = random_search_crossover(train_records, num_iterations, 0.9, 1, verbosity=True)
+    best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, verbosity=True)
     
     peak_detector = crossover_detector()
-    peak_detector.set_parameters_cross(best_solution[0], best_solution[1])
+    peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2])
 
     # Get results for train and test data
     train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover")

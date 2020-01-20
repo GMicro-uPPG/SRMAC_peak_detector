@@ -38,13 +38,14 @@ try:
         
         # Random search of model's alphas over the saampled train records
         print("\nSearch for model " + str(model_index))
-        model_parameters = random_search_crossover(sampled_train_records, num_iterations, 0.9, 1, verbosity = False)
+        model_parameters = random_search_crossover(sampled_train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, verbosity=False)
         print("Model parameters: " + str(model_parameters[0:-1]))
         
         # Print costs on partition and train set
         detector = crossover_detector()
-        detector.set_parameters_cross(model_parameters[0], model_parameters[1])
+        detector.set_parameters_cross(model_parameters[0], model_parameters[1], model_parameters[2])
         train_cm = detector.record_set_confusion_matrix(train_records, "crossover")
+        # Cost = 1 - acc
         train_cost = 1 - (train_cm[0]+train_cm[1])/(sum(train_cm))
         
         print("Cost on partition: " + str(model_parameters[-1]) + " / Cost on train set: " + str(train_cost))
@@ -63,7 +64,7 @@ try:
         for model_parameters in ensemble_models:
             # Specify model with the given parameters
             model = crossover_detector()
-            model.set_parameters_cross(model_parameters[0], model_parameters[1])
+            model.set_parameters_cross(model_parameters[0], model_parameters[1], model_parameters[2])
             # Append this model's predictions over the given record
             single_record_predictions.append( model.detect_peaks_cross(ppg_signal)[-1] )
         # Append predictions from all models over the given record
@@ -77,7 +78,7 @@ try:
         for model_parameters in ensemble_models:
             # Specify model with the given parameters
             model = crossover_detector()
-            model.set_parameters_cross(model_parameters[0], model_parameters[1])
+            model.set_parameters_cross(model_parameters[0], model_parameters[1], model_parameters[2])
             # Append this model's predictions over the given record
             single_record_predictions.append( model.detect_peaks_cross(ppg_signal)[-1] )
         # Append predictions from all models over the given record

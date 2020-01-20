@@ -106,8 +106,8 @@ def getMIMICppg():
 # Read signals from PPG HUSM -------------------------------------------------------------
 def getHUSMppg():
 
-    print('\nFirst timestamp: ' + str(time.getTimestamp()))
-    print('First time: ' + str(time.getTime()))
+    #print('\nFirst timestamp: ' + str(time.getTimestamp()))
+    #print('First time: ' + str(time.getTime()))
 
     dataset = 'ppg-dataset_husm/dataset'
     list_of_vol = os.listdir(dataset)
