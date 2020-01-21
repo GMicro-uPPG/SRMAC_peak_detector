@@ -40,7 +40,8 @@ try:
     peak_detector = crossover_detector()    
     best_weights = np.ones(ensemble_size)
     best_treshold = 0.5
-    best_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold)
+    best_len_thr = 20
+    best_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold, True, best_len_thr)
     best_accuracy = (best_cm[0] + best_cm[1])/(sum(best_cm))
     print('Initial score: ' + str(best_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(best_cm))
     
@@ -51,27 +52,31 @@ try:
         # Keep ensemble_size best solutions and build voting ensemble by bootstrap sampling (ensemble)
         iteration_weights = np.random.uniform(0, 1, ensemble_size)
         iteration_threshold = np.random.uniform(0, 1)
+        iteration_peak_len_threshold = np.random.randint(0, 30)
 
         # iteration ensemble confusion matrix
-        iteration_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, iteration_weights, iteration_threshold)
+        iteration_cm = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, iteration_weights, iteration_threshold, True, iteration_peak_len_threshold)
         iteration_accuracy = (iteration_cm[0] + iteration_cm[1])/(sum(iteration_cm))
         
         print('(Randomized weights) ' + str(iteration_weights))
         print('(Randomized threshold) ' + str(iteration_threshold))
+        print('(Randomized peak len thr) ' + str(iteration_peak_len_threshold))
         print('Score: ' + str(iteration_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(iteration_cm))
         
         if iteration_accuracy > best_accuracy:
             best_weights    = iteration_weights
             best_treshold   = iteration_threshold
+            best_len_thr    = iteration_peak_len_threshold
             best_cm         = iteration_cm
             best_accuracy   = iteration_accuracy
         
         print('\n(Current best weights) ' + str(best_weights))
         print('(Current best threshold) ' + str(best_treshold))
+        print('(Current best peak len thr) ' + str(best_len_thr))
         print('Score: ' + str(best_accuracy) + ', Matrix [TP,TN,FP,FN]' + str(best_cm))
     
-    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold)
-    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(test_records, test_records_predictions, best_weights, best_treshold)
+    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, best_weights, best_treshold, True, best_len_thr)
+    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(test_records, test_records_predictions, best_weights, best_treshold, True, best_len_thr)
     
     print('\nTrain set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
     print('Test set ensemble confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))

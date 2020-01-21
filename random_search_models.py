@@ -21,19 +21,19 @@ try:
     print('Test records: [0:11] u [-11:])')
     test_records = records[0:11] + records[-11:]
 
-    # Random search of alphas, using regularized confusion matrix-based cost
+    # Random search of alphas, using confusion matrix-based cost
     num_iterations = 1000                                                               # Number of random search iterations
     print('\n Number of iterations = ' + str(num_iterations))
     
     # Optimizes model
-    best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, verbosity=True)
+    best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, large_peaks_only=True, verbosity=True)
     
     peak_detector = crossover_detector()
-    peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2], best_solution[3])
+    peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2])
 
     # Get results for train and test data
-    train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover")
-    test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records, "crossover")
+    train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
+    test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
     print('\nTrain set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
     print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     

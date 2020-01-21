@@ -25,19 +25,17 @@ class crossover_detector:
         self.crossover_index = 0.0
         self.first_pass = True
         self.percentage_threshold = 0.0
-        self.peak_len_threshold = 20
         
         # Variance
         self.var_average = 0.0
         self.variance = 0.0
         
         
-    def set_parameters_cross(self, alpha_fast, alpha_slow, percentage_threshold, peak_len_threshold):
+    def set_parameters_cross(self, alpha_fast, alpha_slow, percentage_threshold):
         """ Define exponential average and threshold parameters """ 
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
         self.percentage_threshold = percentage_threshold
-        self.peak_len_threshold = peak_len_threshold
         
     def set_parameters_var(self, var_alpha, var_threshold):
         self.var_alpha = var_alpha
@@ -103,26 +101,18 @@ class crossover_detector:
         crossover_indices = []
         peaks_array = []
         
-        peak_len_counter = 0
-        
         for index, value in enumerate(ppg_array):
             self.update_model(value)
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
-            #print(self.crossover_index)
             
             # Crossover detection
             # (MAfast - MAslow) > %(MAfast - MAslow)
             if (self.crossover_index) * (1 - self.percentage_threshold) > 0:
                 peaks_array.append(1)
-                peak_len_counter += 1
                 
-            else:
-                # ignore very small peaks
-                if peak_len_counter > 0 and peak_len_counter < self.peak_len_threshold:
-                   peaks_array[(-1 * peak_len_counter) :] = [0]*peak_len_counter
-                peak_len_counter = 0    
+            else:  
                 peaks_array.append(0)
             
         return fast_averages, slow_averages, crossover_indices, peaks_array
@@ -185,18 +175,18 @@ class crossover_detector:
       
       
     # Ignore peaks with low duration 
-    # def ignore_short_peaks(self, detected_peaks, peak_len_threshold):
-        # peaks_array = list(detected_peaks)
-        # peak_len_counter = 0
-        # for index, peak_state in enumerate(peaks_array):
-            # if peak_state == 1:
-                # peak_len_counter += 1
-            # else:
-                # if peak_len_counter < self.peak_len_threshold and peak_len_counter > 0:
-                    # peaks_array[(index - peak_len_counter) : index] = [0]*peak_len_counter
-                # peak_len_counter = 0    
+    def ignore_short_peaks(self, detected_peaks, peak_len_threshold):
+        peaks_array = list(detected_peaks)
+        peak_len_counter = 0
+        for index, peak_state in enumerate(peaks_array):
+            if peak_state == 1:
+                peak_len_counter += 1
+            else:
+                if peak_len_counter < peak_len_threshold and peak_len_counter > 0:
+                    peaks_array[(index - peak_len_counter) : index] = [0]*peak_len_counter
+                peak_len_counter = 0    
         
-        # return peaks_array
+        return peaks_array
     
     
     # Given a solution archive and a record set, return the detected peaks by the rule of weighted majority voting
@@ -337,9 +327,8 @@ class crossover_detector:
                         
         return true_positives, true_negatives, false_positives, false_negatives, confusion_array
             
-
             
-    def record_set_confusion_matrix(self, ppg_records, method):#, large_peaks_only = True, peak_len_threshold):
+    def record_set_confusion_matrix(self, ppg_records, method, large_peaks_only, peak_len_threshold):
         """ Given a set of records containing ppg signals and peak references, returns the confusion matrix."""
         
         if method != 'crossover' and method != 'variance' and method != 'mix':
@@ -366,8 +355,8 @@ class crossover_detector:
             else:
                 print("No match for method argument in total cost")
                 sys.exit(-1)
-            #if large_peaks_only == True:
-            #    detected_peaks = self.ignore_short_peaks(detected_peaks, peak_len_threshold)
+            if large_peaks_only == True:
+                detected_peaks = self.ignore_short_peaks(detected_peaks, peak_len_threshold)
             
             
             # Get record's confusion matrix and regularization term
@@ -378,7 +367,7 @@ class crossover_detector:
     
     
     # Given the predictions of each ensemble's model over a set of records (num_records x num_models x record_len), a set of model weights and a threshold, return the weighted voting confusion matrix
-    def ensemble_records_confusion_matrix(self, records, records_predictions, models_weights, decision_threshold):#, large_peaks_only = True, peak_len_threshold):
+    def ensemble_records_confusion_matrix(self, records, records_predictions, models_weights, decision_threshold, large_peaks_only, peak_len_threshold):
         if len(records) != len(records_predictions):
             print("Number of records do not match")
             exit(-1)
@@ -399,8 +388,8 @@ class crossover_detector:
             
             # Combine all models' predictions over the given record
             combined_predictions = self.combine_peak_predictions(single_record_predictions, models_weights, decision_threshold)
-            #if large_peaks_only == True:
-            #    combined_predictions = self.ignore_short_peaks(combined_predictions, peak_len_threshold)
+            if large_peaks_only == True:
+                combined_predictions = self.ignore_short_peaks(combined_predictions, peak_len_threshold)
             # Extract reference peaks for comparison
             reference_peaks = np.array(single_record.beats[0]) - single_record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
             
@@ -500,7 +489,7 @@ class crossover_detector:
         
     
 # Given the number of iterations and alphas range, performs random search on the crossover's alphas using train data accuracy as fitness metric
-def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, min_threshold, max_threshold, verbosity):
+def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, min_threshold, max_threshold, large_peaks_only, verbosity):
     if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
         print("Minimum and maximum alphas must be between 0 and 1")
         exit(-1)
@@ -521,10 +510,10 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         alpha_slow = np.random.uniform(alpha_fast, max_alpha)
         percentage_threshold = np.random.uniform(min_threshold, max_threshold)
         peak_len_threshold = np.random.randint(0, 30)
-        peak_detector.set_parameters_cross(alpha_fast, alpha_slow, percentage_threshold, peak_len_threshold)
+        peak_detector.set_parameters_cross(alpha_fast, alpha_slow, percentage_threshold)
         
         # Run the detector defined above in the train records and extract accuracy
-        tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover")
+        tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only, peak_len_threshold)
         accuracy = float(tp + tn) / float(tp + tn + fp + fn)
         cost = 1 - accuracy
         
