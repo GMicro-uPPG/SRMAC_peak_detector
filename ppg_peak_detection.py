@@ -533,8 +533,6 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         
         if verbosity == True:
             print('Alpha fast     Alpha slow     % threshold     peak samples threshold     cost')
-            print(percentage_threshold)
-            print(peak_len_threshold)
             print('[randomized]\t', alpha_fast, '\t', alpha_slow,'\t', percentage_threshold, '\t', peak_len_threshold, '\t', cost)
             print('[best til now]\t', best_solution[0], '\t', best_solution[1], '\t',  best_solution[2], '\t', best_solution[3], '\t', best_solution[-1])
     
