@@ -21,9 +21,11 @@ detector = crossover_detector()
 
 # Apply crossover detector
 #detector.set_parameters(alpha_fast = 0.8329186816539544, alpha_slow = 0.9463972836760943)                   # Current best set (17/10/19), with cost of 0.4324561691187358
-detector.set_parameters_cross(alpha_fast = 0.9684424413846544, alpha_slow = 0.9689074349612342)                    # Current best set of husm (07/11/19), with cost of 0.95
+#detector.set_parameters_cross(alpha_fast = 0.9684424413846544, alpha_slow = 0.9689074349612342)                    # Current best set of husm (07/11/19), with cost of 0.95
+detector.set_parameters_cross(alpha_fast = 0.9684424413846544, alpha_slow = 0.9689074349612342, percentage_threshold = 0.8, peak_len_threshold = 10)                    # Current best set of husm (07/11/19), with cost of 0.95
+
 fast_averages, slow_averages, crossover_indices, detected_peaks = detector.detect_peaks_cross(sample_signal)
-print(crossover_indices)
+#print(crossover_indices)
 confusion_matrix = detector.signal_confusion_matrix(detected_peaks, sample_peaks)[:-1]
 print('Record confusion matrix: [TP,TN,FP,FN]' + str(confusion_matrix))
 
