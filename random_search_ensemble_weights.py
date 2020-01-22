@@ -32,7 +32,7 @@ try:
     
     ensemble_size = len(train_records_predictions[0])
     
-    num_iterations = 10                                        # Number of random search iterations
+    num_iterations = 5000                                        # Number of random search iterations
     print('\nNumber of iterations = ' + str(num_iterations))
     
     # Initial solution is the unweighted voting of the loaded models

@@ -1,0 +1,123 @@
+
+Loading ppg-dataset_husm/dataset
+
+Getting record balke from dpoc volunteer number 0680298
+Getting record recovery from dpoc volunteer number 0680298
+Getting record rest from dpoc volunteer number 0680298
+Getting record balke from dpoc volunteer number 0840595
+Getting record recovery from dpoc volunteer number 0840595
+Getting record rest from dpoc volunteer number 0840595
+Getting record balke from dpoc volunteer number 1806256
+Getting record recovery from dpoc volunteer number 1806256
+Getting record rest from dpoc volunteer number 1806256
+Getting record balke from dpoc volunteer number 2627180
+Getting record recovery from dpoc volunteer number 2627180
+Getting record rest from dpoc volunteer number 2627180
+Getting record balke from dpoc volunteer number 2703908
+Getting record recovery from dpoc volunteer number 2703908
+Getting record rest from dpoc volunteer number 2703908
+Getting record balke from dpoc volunteer number 2841328
+Getting record recovery from dpoc volunteer number 2841328
+Getting record rest from dpoc volunteer number 2841328
+Getting record balke from dpoc volunteer number 2888246
+Getting record recovery from dpoc volunteer number 2888246
+Getting record rest from dpoc volunteer number 2888246
+Getting record balke from dpoc volunteer number 3450871
+Getting record recovery from dpoc volunteer number 3450871
+Getting record rest from dpoc volunteer number 3450871
+Getting record balke from dpoc volunteer number 3715687
+Getting record recovery from dpoc volunteer number 3715687
+Getting record rest from dpoc volunteer number 3715687
+Getting record balke from dpoc volunteer number 3740537
+Getting record recovery from dpoc volunteer number 3740537
+Getting record rest from dpoc volunteer number 3740537
+Getting record balke from dpoc volunteer number 3809662
+Getting record recovery from dpoc volunteer number 3809662
+Getting record rest from dpoc volunteer number 3809662
+Getting record balke from health volunteer number 0000001
+Getting record recovery from health volunteer number 0000001
+Getting record rest from health volunteer number 0000001
+Getting record balke from health volunteer number 0000002
+Getting record recovery from health volunteer number 0000002
+Getting record rest from health volunteer number 0000002
+Getting record balke from health volunteer number 0000003
+Getting record recovery from health volunteer number 0000003
+Getting record rest from health volunteer number 0000003
+Getting record balke from health volunteer number 0000004
+Getting record recovery from health volunteer number 0000004
+Getting record rest from health volunteer number 0000004
+Getting record balke from health volunteer number 0000005
+Getting record recovery from health volunteer number 0000005
+Getting record rest from health volunteer number 0000005
+Getting record balke from health volunteer number 0000006
+Getting record recovery from health volunteer number 0000006
+Getting record rest from health volunteer number 0000006
+Getting record balke from health volunteer number 0000007
+Getting record recovery from health volunteer number 0000007
+Getting record rest from health volunteer number 0000007
+Getting record balke from health volunteer number 0000008
+Getting record recovery from health volunteer number 0000008
+Getting record rest from health volunteer number 0000008
+Getting record balke from health volunteer number 0000009
+Getting record recovery from health volunteer number 0000009
+Getting record rest from health volunteer number 0000009
+Getting record balke from health volunteer number 0000010
+Getting record recovery from health volunteer number 0000010
+Getting record rest from health volunteer number 0000010
+Getting record balke from health volunteer number 0000011
+Getting record recovery from health volunteer number 0000011
+Getting record rest from health volunteer number 0000011
+Train records: [11:-11]
+Test records: [0:11] u [-11:])
+
+Iterations per model = 1000
+
+Ensemble size = 10
+
+Sampling percentage = 0.1
+
+Search for model 0
+Model parameters: [0.9661244700040837, 0.9690057949718711, 0.41585185974207306, 6]
+Cost on partition: 0.06112469437652812 / Cost on train set: 0.08310217290799815
+
+Search for model 1
+Model parameters: [0.9597104600379491, 0.9703323181026631, 0.7513727611715284, 9]
+Cost on partition: 0.008230452674897082 / Cost on train set: 0.08655957471397202
+
+Search for model 2
+Model parameters: [0.9647673185278663, 0.9678532430574714, 0.8659481005476548, 29]
+Cost on partition: 0.04533333333333334 / Cost on train set: 0.08610725843735556
+
+Search for model 3
+Model parameters: [0.9613875872205092, 0.968568352533922, 0.14030653946946614, 28]
+Cost on partition: 0.142483660130719 / Cost on train set: 0.08528833930428747
+
+Search for model 4
+Model parameters: [0.9503143525618014, 0.9552095343456584, 0.012947868472407587, 14]
+Cost on partition: 0.12576312576312576 / Cost on train set: 0.10084324823841972
+
+Search for model 5
+Model parameters: [0.9619244036768735, 0.9638721764737438, 0.7597136763796833, 29]
+Cost on partition: 0.01763907734056991 / Cost on train set: 0.0916339265079732
+
+Search for model 6
+Model parameters: [0.9698565175300754, 0.97133986352785, 0.48590693829941567, 10]
+Cost on partition: 0.08975979772439946 / Cost on train set: 0.0846047156726768
+
+Search for model 7
+Model parameters: [0.9592470207538897, 0.9761429703716358, 0.24375720800591116, 18]
+Cost on partition: 0.13561643835616444 / Cost on train set: 0.08738874118599005
+
+Search for model 8
+Model parameters: [0.9566699720671499, 0.9637693730483128, 0.7334486245746847, 14]
+Cost on partition: 0.025104602510460206 / Cost on train set: 0.09384028660580146
+
+Search for model 9
+Model parameters: [0.9627614206530152, 0.9682527536709217, 0.3453696067029518, 5]
+Cost on partition: 0.13005780346820806 / Cost on train set: 0.08563503987056509
+
+Train set ensemble confusion matrix: [TP,TN,FP,FN](4275, 3633, 692, 53)
+Test set ensemble confusion matrix: [TP,TN,FP,FN](2153, 1913, 302, 63)
+
+Last timestamp: 1579710441.533731
+Last time: 2020-01-22 13:27:21.533731

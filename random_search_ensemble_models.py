@@ -22,14 +22,15 @@ try:
     print('Test records: [0:11] u [-11:])')
     test_records = records[0:11] + records[-11:]
     
-    num_iterations = 20                            # Number of random search iterations
+    num_iterations = 1000                            # Number of random search iterations
     ensemble_size = 10
     
     print('\nIterations per model = ' + str(num_iterations))
     print('\nEnsemble size = ' + str(ensemble_size))
     
     # Percentage of train data sampling for each model's optimization
-    sampling_percentage = 0.20
+    sampling_percentage = 0.10
+    print('\nSampling percentage = ' + str(sampling_percentage))
     # Optimize each model for its own subset of the train records
     ensemble_models = []
     for model_index in range(ensemble_size):
@@ -38,13 +39,13 @@ try:
         
         # Random search of model's alphas over the saampled train records
         print("\nSearch for model " + str(model_index))
-        model_parameters = random_search_crossover(sampled_train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, large_peaks_only=False, verbosity=False)
+        model_parameters = random_search_crossover(sampled_train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, large_peaks_only=True, verbosity=False)
         print("Model parameters: " + str(model_parameters[0:-1]))
         
         # Print costs on partition and train set
         detector = crossover_detector()
         detector.set_parameters_cross(model_parameters[0], model_parameters[1], model_parameters[2])
-        train_cm = detector.record_set_confusion_matrix(train_records, "crossover", False, 0)
+        train_cm = detector.record_set_confusion_matrix(train_records, "crossover", True, model_parameters[3])
         # Cost = 1 - acc
         train_cost = 1 - (train_cm[0]+train_cm[1])/(sum(train_cm))
         
@@ -92,8 +93,8 @@ try:
     models_weights = np.ones(ensemble_size)
     voting_threshold = 0.5
     peak_detector = crossover_detector()
-    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, models_weights, voting_threshold, False, 0)
-    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(test_records, test_records_predictions, models_weights, voting_threshold, False, 0)
+    train_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(train_records, train_records_predictions, models_weights, voting_threshold, True, 20)
+    test_confusion_matrix = peak_detector.ensemble_records_confusion_matrix(test_records, test_records_predictions, models_weights, voting_threshold, True, 20)
     print('\nTrain set ensemble confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
     print('Test set ensemble confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
     
