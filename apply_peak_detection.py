@@ -17,6 +17,7 @@ record_number = int(sys.argv[1])
 sample_record = records[record_number]
 sample_signal = sample_record.ppg[1]
 sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
+
 detector = crossover_detector()
 
 # Apply crossover detector
@@ -27,15 +28,19 @@ detector.set_parameters_cross(alpha_fast = 0.9194304850895123 , alpha_slow = 0.9
 
 fast_averages, slow_averages, crossover_indices, detected_peaks = detector.detect_peaks_cross(sample_signal)
 detected_peaks = detector.ignore_short_peaks(detected_peaks, 13)
-#print(crossover_indices)
+detected_positions = detector.peak_positions(sample_signal, detected_peaks)
 confusion_matrix = detector.signal_confusion_matrix(detected_peaks, sample_peaks)[:-1]
 print('Record confusion matrix: [TP,TN,FP,FN]' + str(confusion_matrix))
+
+lit_cm = detector.literature_signal_confusion_matrix(detected_positions, sample_peaks)
+print('Record literature confusion matrix: [TP,FP,FN]' + str(lit_cm))
 
 #Plot signal and reference
 plt.figure()
 plt.title("PPG peak detection")
 plt.plot(sample_signal, color='k', label="PPG signal")
 plt.scatter(sample_peaks, [1]*len(sample_peaks), label="Reference peaks")
+plt.scatter(detected_positions, [1]*len(detected_positions), label="Found peaks")
 
 # Plot detector's output
 plt.plot(fast_averages, color='magenta', label="fast average")

@@ -13,6 +13,7 @@ class crossover_detector:
         # Crossover
         self.alpha_fast = 0.0 #0.548263
         self.alpha_slow = 0.0 #0.964244
+        self.percentage_threshold = 0.0
         
         # Variance
         self.var_alpha = 0.5
@@ -24,7 +25,7 @@ class crossover_detector:
         self.average_slow = 0
         self.crossover_index = 0.0
         self.first_pass = True
-        self.percentage_threshold = 0.0
+        
         
         # Variance
         self.var_average = 0.0
@@ -93,8 +94,8 @@ class crossover_detector:
         self.var_average = self.exponential_ma(self.avg_alpha, self.crosssover_index, self.var_average)
         
         
-    # Crossover based peak detection
     def detect_peaks_cross(self, ppg_array):
+        """ Crossover based peak detection  """
         self.reset_state()
         fast_averages = []
         slow_averages = []
@@ -156,8 +157,8 @@ class crossover_detector:
         return peaks_array
         
     
-    # Given a matrix containing the predictions of all ensemble models for a specific record (num_models x signal_len), return the weighted voting result prediction over the record's peaks
     def combine_peak_predictions(self, record_predictions, models_weights, threshold):
+        """ Given a matrix containing the predictions of all ensemble models for a specific record (num_models x signal_len), return the weighted voting result prediction over the record's peaks """
         if len(record_predictions) != len(models_weights):
             print("Number of models in predictions and in weights must be the same")
             exit(-1)
@@ -174,8 +175,8 @@ class crossover_detector:
         return ensemble_predictions
       
       
-    # Ignore peaks with low duration 
     def ignore_short_peaks(self, detected_peaks, peak_len_threshold):
+        """ Ignore peaks with low duration  """
         peaks_array = list(detected_peaks)
         peak_len_counter = 0
         for index, peak_state in enumerate(peaks_array):
@@ -187,30 +188,54 @@ class crossover_detector:
                 peak_len_counter = 0    
         
         return peaks_array
-    
-    
-    # Given a solution archive and a record set, return the detected peaks by the rule of weighted majority voting
-    # When all the weights are equal to 1 and threshold = 0.5, it is equivalent to unweighted voting
-    # def ensemble_join_detections(self, ensemble_models, models_weights, threshold, ppg_signal):
         
-        # ensemble_models = np.array(ensemble_models)
-        # ensemble_size = len(ensemble_models)
-        # alphas_fast = ensemble_models[:, 0]
-        # alphas_slow = ensemble_models[:, 1]     
-        # individual_predictions = []
-        # for i in range(ensemble_size):
-            # # Individual detections based on each model's parameters
-            # self.reset_state()
-            # self.set_parameters_cross(alphas_fast[i], alphas_slow[i])
-            # _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
-            # # Keep detected peaks
-            # individual_predictions.append(list( np.array(detected_peaks) * models_weights[i] ))
+    def peak_positions(self, ppg_signal, detected_peaks):
+        """ From detected peak regions, extract exact peak locations """
+        if len(ppg_signal) != len(detected_peaks):
+            print("PPG signal and detected peaks do not match")
+            exit()
             
-        # voted_peaks = ( (np.sum(individual_predictions, axis=0) / float(ensemble_size)) > threshold ) * 1
-        # #voted_peaks = ( (np.sum(individual_predictions, axis=0)) > float(ensemble_size) / 2 ) * 1
+        # Aux. to determine edges in the detected peak regions
+        state = detected_peaks[0]               
+        # State defines initial value for flag used in sample comparison with the current peak
+        if state == 0:                  
+            flag_max = False                    
+        else: 
+            flag_max = True
         
-        # return voted_peaks
+        current_peak = 0
+        current_location = 0
         
+        peak_positions = []
+        for i in range(len(ppg_signal)):
+            # Check for edges to decide when to check for peaks and when to store them 
+            if state != detected_peaks[i]:
+                # Rising edge 
+                if state == 0:
+                    # keep first region sample (magnitude and location)
+                    current_peak = ppg_signal[i]
+                    current_location = i
+                    # signal to start updating the current peak
+                    flag_max = True
+                # Falling edge
+                else:
+                    peak_positions.append(current_location)
+                    # signal to stop updating the current peak
+                    flag_max = False
+                    
+                state = detected_peaks[i]
+                    
+            # Find peak locations when "detected_peaks" is high (1-valued)
+            if flag_max and ppg_signal[i] > current_peak:
+                current_peak = ppg_signal[i]
+                current_location = i
+        
+        # Include possible last peak not detected because falling edge did not occurred
+        if flag_max:
+            peak_positions.append(current_location)
+        
+        return peak_positions
+    
         
     def calculate_heart_rates(self, peaks_array, freq):
         """ Use the beats to calculate Heart Rates in bpm """
@@ -236,11 +261,8 @@ class crossover_detector:
         
     def signal_confusion_matrix(self, detected_peaks, peaks_reference):
         """ Given a set of detected peaks and peaks reference, returns the confusion matrix."""
-        # DEPRECATED DESCRIPTION
-        # Confusion matrix:
-        # Between a falling and a rising edge: for 0 reference peaks, TN++;    for N reference peaks, FN += N
-        # Between a rising and a falling edge: for N reference peaks, TP += 1; for 0 reference peaks, FP++
-        # In this way, TP + FN = len(peaks_reference)
+        # Our confusion matrix, not used in the literature
+        
         true_positives = 0 
         true_negatives = 0 
         false_positives = 0
@@ -326,8 +348,8 @@ class crossover_detector:
                 false_positives += state_peaks - 1
                         
         return true_positives, true_negatives, false_positives, false_negatives, confusion_array
-            
-            
+    
+
     def record_set_confusion_matrix(self, ppg_records, method, large_peaks_only, peak_len_threshold):
         """ Given a set of records containing ppg signals and peak references, returns the confusion matrix."""
         
@@ -366,8 +388,69 @@ class crossover_detector:
         return true_positives, true_negatives, false_positives, false_negatives
     
     
-    # Given the predictions of each ensemble's model over a set of records (num_records x num_models x record_len), a set of model weights and a threshold, return the weighted voting confusion matrix
+    def literature_signal_confusion_matrix(self, detected_locations, reference_locations):
+        """ The confusion (triangular) matrix defined in the literature considers if a peak was detected in the neighborhood of a reference peak, and has no definition of true negatives """
+        
+        # running through the reference peaks one can extract true positives and false negatives
+        # false positives = all detected - true positives
+        
+        # Sampling interval in seconds
+        T = 0.005
+        # Neighborhood definition in seconds
+        neighborhood_time = 0.05
+        # Neighborhood definition in number of samples
+        neighborhood_samples = int(neighborhood_time / T)
+        
+        true_positives = 0 
+        false_positives = 0
+        false_negatives = 0
+                
+        for reference in reference_locations:
+            # Detection of the reference peak is initially assumed to be false
+            correct_detection = False
+            for detected in detected_locations:
+                if detected > (reference - neighborhood_samples) and detected < (reference + neighborhood_samples):
+                    correct_detection = True
+            
+            if correct_detection:
+                true_positives += 1
+            else:
+                false_negatives += 1
+                
+        false_positives = len(detected_locations) - true_positives
+        
+        return true_positives, false_positives, false_negatives    
+    
+    
+    def literature_record_set_confusion_matrix(self, ppg_records, large_peaks_only, peak_len_threshold):
+        """ Given a set of records containing ppg signals and peak references, returns the confusion (triangular) matrix based on the literature."""
+
+        true_positives = 0
+        false_positives = 0
+        false_negatives = 0
+        
+        for index, record in enumerate(ppg_records):
+            #print('Cost calculation for record ', index)
+            ppg_signal = record.ppg[1]
+            reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            
+            # Detect peaks using current set of parameters
+            _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
+            
+            if large_peaks_only == True:
+                detected_peaks = self.ignore_short_peaks(detected_peaks, peak_len_threshold)
+            
+            detected_locations = self.peak_positions(ppg_signal, detected_peaks)
+            
+            # Get record's confusion matrix and regularization term
+            tp, fp, fn = self.literature_signal_confusion_matrix(detected_locations, reference_peaks)
+            true_positives += tp; false_positives += fp; false_negatives += fn
+                        
+        return true_positives, false_positives, false_negatives
+        
+    
     def ensemble_records_confusion_matrix(self, records, records_predictions, models_weights, decision_threshold, large_peaks_only, peak_len_threshold):
+        """ Given the predictions of each ensemble's model over a set of records (num_records x num_models x record_len), a set of model weights and a threshold, return the weighted voting confusion matrix """
         if len(records) != len(records_predictions):
             print("Number of records do not match")
             exit(-1)
@@ -398,29 +481,6 @@ class crossover_detector:
             true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
        
         return true_positives, true_negatives, false_positives, false_negatives
-    
-        
-    # def ensemble_records_confusion_matrix_og(self, ensemble_models, models_weights, threshold, ppg_records):
-    
-        # if len(ensemble_models) != len(models_weights):
-            # print("Number of models and weights are different")
-            # exit(-1)
-            
-        # true_positives = 0 
-        # true_negatives = 0 
-        # false_positives = 0
-        # false_negatives = 0
-        # for index, record in enumerate(ppg_records):
-            # #print('Cost calculation for record ', index)
-            # ppg_signal = record.ppg[1]
-            # reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
-            # # 
-            # voted_peaks = self.ensemble_join_detections(ensemble_models, models_weights, threshold, ppg_signal)
-            # # Get record's confusion matrix and regularization term
-            # tp, tn, fp, fn, _ = self.signal_confusion_matrix(voted_peaks, reference_peaks)
-            # true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
-       
-        # return true_positives, true_negatives, false_positives, false_negatives
     
       
     def signal_regularization(self, detected_peaks, peaks_reference):
