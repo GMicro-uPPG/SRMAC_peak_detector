@@ -573,9 +573,15 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         peak_detector.set_parameters_cross(alpha_fast, alpha_slow, percentage_threshold)
         
         # Run the detector defined above in the train records and extract accuracy
-        tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only, peak_len_threshold)
-        accuracy = float(tp + tn) / float(tp + tn + fp + fn)
-        cost = 1 - accuracy
+        # tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only, peak_len_threshold)
+        # accuracy = float(tp + tn) / float(tp + tn + fp + fn)
+        # cost = 1 - accuracy
+        
+        # Run the detector defined above in the train records and extract SE and P+
+        tp, fp, fn = peak_detector.literature_record_set_confusion_matrix(train_records, large_peaks_only, peak_len_threshold)
+        SE = tp / (tp + fn)
+        Pp = tp / (tp + fp)
+        cost = 2 - (SE + Pp)
         
         if cost < best_solution[-1]:
             best_solution = [alpha_fast, alpha_slow, percentage_threshold, peak_len_threshold, cost]

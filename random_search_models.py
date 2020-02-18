@@ -32,11 +32,14 @@ try:
     peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2])
 
     # Get results for train and test data
-    train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
-    test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
-    print('\nTrain set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
-    print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
-    
+    # train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
+    # test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
+    # print('\nTrain set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
+    # print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
+    train_cm = peak_detector.literature_record_set_confusion_matrix(train_records, True, 13)
+    test_cm = peak_detector.literature_record_set_confusion_matrix(test_records, True, 13)
+    print('\nTrain set confusion matrix: [TP,FP,FN]' + str(train_cm))
+    print('Test set confusion matrix: [TP,FP,FN]' + str(test_cm))
 
     print('\nLast timestamp: ' + str(time.getTimestamp()))
     print('Last time: ' + str(time.getTime()))
