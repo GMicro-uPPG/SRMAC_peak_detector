@@ -11,32 +11,31 @@ class crossover_detector:
         """ Constructor method """
         ## Parameters
         # Crossover
-        self.alpha_fast = 0.0 #0.548263
-        self.alpha_slow = 0.0 #0.964244
-        self.percentage_threshold = 0.0
+        self.alpha_crossover =  0.0 
+        self.alpha_fast =       0.0 #0.548263
+        self.alpha_slow =       0.0 #0.964244
+
         
         # Variance
         self.var_alpha = 0.5
         self.var_threshold = 1.0
-        
+       
         ## Variables
         # Crossover
-        self.average_fast = 0
-        self.average_slow = 0
+        self.average_fast = 0.0
+        self.average_slow = 0.0
         self.crossover_index = 0.0
-        self.first_pass = True
-        
         
         # Variance
         self.var_average = 0.0
         self.variance = 0.0
         
         
-    def set_parameters_cross(self, alpha_fast, alpha_slow, percentage_threshold):
+    def set_parameters_cross(self, alpha_crossover, alpha_fast, alpha_slow):
         """ Define exponential average and threshold parameters """ 
         self.alpha_fast = alpha_fast
         self.alpha_slow = alpha_slow
-        self.percentage_threshold = percentage_threshold
+        self.alpha_crossover = alpha_crossover
         
     def set_parameters_var(self, var_alpha, var_threshold):
         self.var_alpha = var_alpha
@@ -51,7 +50,6 @@ class crossover_detector:
         self.var_threshold = var_threshold
         
         
-        
     def exponential_ma(self, alpha, input_value, old_average):
         """ Returns exponential moving average without internal memory """
         return (1-alpha)*input_value + alpha*old_average
@@ -63,20 +61,18 @@ class crossover_detector:
         return variance
 
         
-    def reset_state(self):
+    def reset_state(self, first_ppg_val):
         """ Resets fast and slow averages """
-        self.average_fast = 0.0
-        self.average_slow = 0.0
-        self.percentage_threshold = 0.0
-        self.first_pass = True
-
+        self.average_fast = first_ppg_val
+        self.average_slow = first_ppg_val
+        self.crossover_index = 0.0
         
     def update_model(self, ppg_value):
         """ Updates current_index in an online way (value by value) """
         # Crossover process
-        self.average_fast = self.exponential_ma(self.alpha_fast, ppg_value, self.average_fast)
-        self.average_slow = self.exponential_ma(self.alpha_slow, ppg_value, self.average_slow)
-        self.crossover_index = self.average_fast - self.average_slow
+        self.average_fast       = self.exponential_ma(self.alpha_fast       , ppg_value, self.average_fast)
+        self.average_slow       = self.exponential_ma(self.alpha_slow       , ppg_value, self.average_slow)
+        self.crossover_index    = self.exponential_ma(self.alpha_crossover  , self.average_fast - self.average_slow, self.crossover_index)
         
         
     def update_model_var(self, ppg_value):
@@ -96,31 +92,52 @@ class crossover_detector:
         
     def detect_peaks_cross(self, ppg_array):
         """ Crossover based peak detection  """
-        self.reset_state()
+        self.reset_state(ppg_array[0])
+        
         fast_averages = []
         slow_averages = []
         crossover_indices = []
         peaks_array = []
         
+        
+        from scipy.signal import butter, lfilter, lfilter_zi
+        # This function will apply the filter considering the initial transient.
+        
+        def butter_lowpass(highcut, sRate, order):
+            nyq = 0.5 * sRate
+            high = highcut / nyq
+            b, a = butter(order, high, btype='low')
+            return b, a
+        
+        def butter_bandpass_filter_zi(data, highcut, sRate, order):
+            b, a = butter_lowpass(highcut, sRate, order)
+            zi = lfilter_zi(b, a)
+            y, zo = lfilter(b, a, data, zi=zi*data[0])
+            return y
+        
+        sRate = 200
+        highcut = 8
+        order = 2
+        ppg_array = butter_bandpass_filter_zi(ppg_array, highcut, sRate, order)
+        
         for index, value in enumerate(ppg_array):
             self.update_model(value)
+
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
-            
-            # Crossover detection
-            # (MAfast - MAslow) > %(MAfast - MAslow)
-            if (self.crossover_index) * (1 - self.percentage_threshold) > 0:
+
+            if self.crossover_index > 0:
                 peaks_array.append(1)
-                
             else:  
                 peaks_array.append(0)
             
+        
         return fast_averages, slow_averages, crossover_indices, peaks_array
         
         
     def detect_peaks_var(self, ppg_array):
-        self.reset_state()
+        self.reset_state(ppg_array[0])
         averages = []
         variances = []
         peaks_array = []
@@ -139,7 +156,7 @@ class crossover_detector:
         
         
     def detect_peaks_mix(self, ppg_array):
-        self.reset_state()
+        self.reset_state(ppg_array[0])
         # fast_averages = []
         # slow_averages = []
         # crossover_indices = []
@@ -235,7 +252,7 @@ class crossover_detector:
             peak_positions.append(current_location)
         
         return peak_positions
-    
+        
         
     def calculate_heart_rates(self, peaks_array, freq):
         """ Use the beats to calculate Heart Rates in bpm """
@@ -369,6 +386,7 @@ class crossover_detector:
             
             # Detect peaks using current set of parameters
             if method == 'crossover':
+                # _, _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
                 _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
             elif method == 'variance':
                 _, _, detected_peaks = self.detect_peaks_var(ppg_signal)
@@ -397,7 +415,7 @@ class crossover_detector:
         # Sampling interval in seconds
         T = 0.005
         # Neighborhood definition in seconds
-        neighborhood_time = 0.05
+        neighborhood_time = 0.1
         # Neighborhood definition in number of samples
         neighborhood_samples = int(neighborhood_time / T)
         
@@ -428,24 +446,42 @@ class crossover_detector:
         true_positives = 0
         false_positives = 0
         false_negatives = 0
-        
         for index, record in enumerate(ppg_records):
             #print('Cost calculation for record ', index)
             ppg_signal = record.ppg[1]
             reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
-            
             # Detect peaks using current set of parameters
+            # _, _, _,_, detected_peaks = self.detect_peaks_cross(ppg_signal)
             _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
             
             if large_peaks_only == True:
                 detected_peaks = self.ignore_short_peaks(detected_peaks, peak_len_threshold)
             
             detected_locations = self.peak_positions(ppg_signal, detected_peaks)
-            
             # Get record's confusion matrix and regularization term
             tp, fp, fn = self.literature_signal_confusion_matrix(detected_locations, reference_peaks)
             true_positives += tp; false_positives += fp; false_negatives += fn
-                        
+            
+        return true_positives, false_positives, false_negatives
+        
+    def terma_record_set_confusion_matrix(self, ppg_records):
+        """ Given a set of records containing ppg signals and peak references, returns the TERMA (triangular) confusion matrix based on the literature."""
+    
+        import terma
+            
+        true_positives = 0
+        false_positives = 0
+        false_negatives = 0
+        for index, record in enumerate(ppg_records):
+            #print('Cost calculation for record ', index)
+            ppg_signal = record.ppg[1]
+            reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
+            # Detect peaks using TERMA
+            detected_locations = terma.peak_positions_terma(ppg_signal)
+            # Get record's confusion matrix and regularization term
+            tp, fp, fn = self.literature_signal_confusion_matrix(detected_locations, reference_peaks)
+            true_positives += tp; false_positives += fp; false_negatives += fn
+            
         return true_positives, false_positives, false_negatives
         
     
@@ -514,6 +550,7 @@ class crossover_detector:
             
             # Detect peaks using current set of parameters
             if method == 'crossover':
+                # _, _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
                 _, _, _, detected_peaks = self.detect_peaks_cross(ppg_signal)
             #elif method == 'ensemble':
             #    detected_peaks = self.ensemble_join_detections(models, weights, ppg_signal)
@@ -549,7 +586,8 @@ class crossover_detector:
         
     
 # Given the number of iterations and alphas range, performs random search on the crossover's alphas using train data accuracy as fitness metric
-def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, min_threshold, max_threshold, large_peaks_only, verbosity):
+#def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, min_threshold, max_threshold, large_peaks_only, verbosity):
+def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, large_peaks_only, verbosity):
     if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
         print("Minimum and maximum alphas must be between 0 and 1")
         exit(-1)
@@ -568,10 +606,10 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
         alpha_fast = np.random.uniform(min_alpha, max_alpha)
         alpha_slow = np.random.uniform(alpha_fast, max_alpha)
-        percentage_threshold = np.random.uniform(min_threshold, max_threshold)
-        peak_len_threshold = np.random.randint(0, 30)
-        peak_detector.set_parameters_cross(alpha_fast, alpha_slow, percentage_threshold)
-        
+        alpha_crossover = np.random.uniform(min_alpha, max_alpha)
+        peak_len_threshold = np.random.randint(0, 20)
+        peak_detector.set_parameters_cross(alpha_crossover, alpha_fast, alpha_slow)
+
         # Run the detector defined above in the train records and extract accuracy
         # tp, tn, fp, fn = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only, peak_len_threshold)
         # accuracy = float(tp + tn) / float(tp + tn + fp + fn)
@@ -579,17 +617,18 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         
         # Run the detector defined above in the train records and extract SE and P+
         tp, fp, fn = peak_detector.literature_record_set_confusion_matrix(train_records, large_peaks_only, peak_len_threshold)
+        
         SE = tp / (tp + fn)
         Pp = tp / (tp + fp)
-        cost = 2 - (SE + Pp)
+        cost = 1 - (SE + Pp)/2
         
         if cost < best_solution[-1]:
-            best_solution = [alpha_fast, alpha_slow, percentage_threshold, peak_len_threshold, cost]
+            best_solution = [alpha_crossover, alpha_fast, alpha_slow, peak_len_threshold, cost]
         
         if verbosity == True:
-            print('Alpha fast     Alpha slow     % threshold     peak samples threshold     cost')
-            print('[randomized]\t', alpha_fast, '\t', alpha_slow,'\t', percentage_threshold, '\t', peak_len_threshold, '\t', cost)
-            print('[best til now]\t', best_solution[0], '\t', best_solution[1], '\t',  best_solution[2], '\t', best_solution[3], '\t', best_solution[-1])
+            print('Alpha crossover     Alpha fast     Alpha slow     peak samples thr     cost')
+            print('[randomized]\t', alpha_crossover,'\t', alpha_fast, '\t', alpha_slow,'\t', peak_len_threshold, '\t', cost)
+            print('[best til now]\t', best_solution[0], '\t', best_solution[1], '\t',  best_solution[2], '\t', best_solution[3],'\t', best_solution[-1])
     
     return best_solution 
     
