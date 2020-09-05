@@ -21,30 +21,43 @@ try:
     test_records = records[0:11] + records[-11:]
     print('Test records: [0:11] u [-11:]), len = ' + str(len(test_records)))
 
+    # Number of runs to extract stats from
+    num_runs = 30
+    print('\nNumber of runs = ' + str(num_runs))
     # Random search of alphas, using confusion matrix-based cost
     num_iterations = 100                                                               # Number of random search iterations
-    print('\n Number of iterations = ' + str(num_iterations))
+    print('Number of iterations = ' + str(num_iterations))
     
     # Optimizes model
     #best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, large_peaks_only=True, verbosity=True)
     
     ignore_short_peaks = False
     
-    best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.7, max_alpha = 1, large_peaks_only=ignore_short_peaks, verbosity=True)
-    peak_detector = crossover_detector()
-    peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2])
-
-    # Get results for train and test data
-    # train_confusion_matrix = peak_detector.record_set_confusion_matrix(train_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
-    # test_confusion_matrix = peak_detector.record_set_confusion_matrix(test_records, "crossover", large_peaks_only = True, peak_len_threshold = best_solution[3])
-    # print('\nTrain set confusion matrix: [TP,TN,FP,FN]' + str(train_confusion_matrix))
-    # print('Test set confusion matrix: [TP,TN,FP,FN]' + str(test_confusion_matrix))
+    train_accuracies = []
+    test_accuracies = []
+    for _ in range(num_runs):
+        best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.7, max_alpha = 1, large_peaks_only=ignore_short_peaks, verbosity=True)
+        peak_detector = crossover_detector()
+        peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2])
+        # Get results for train and test data
+        train_cm = peak_detector.literature_record_set_confusion_matrix(train_records, ignore_short_peaks, best_solution[3])
+        test_cm = peak_detector.literature_record_set_confusion_matrix(test_records, ignore_short_peaks, best_solution[3])
+        # print('\nTrain set confusion matrix: [TP,FP,FN]' + str(train_cm))
+        # print('Test set confusion matrix: [TP,FP,FN]' + str(test_cm))
+        
+        # Compute precision and recall
+        train_precision = train_cm[0] / (train_cm[0] + train_cm[1])
+        train_recall =    train_cm[0] / (train_cm[0] + train_cm[2])
+        train_accuracies.append((train_precision + train_recall)/2)
+        #
+        test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
+        test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])
+        test_accuracies.append((test_precision + test_recall)/2)
+        
+    print(f'Train acc: {np.mean(train_accuracies)} ({np.std(train_accuracies)})')
+    print(f'Test acc:  {np.mean(test_accuracies)} ({np.std(test_accuracies)})')
     
-    train_cm = peak_detector.literature_record_set_confusion_matrix(train_records, ignore_short_peaks, best_solution[3])
-    test_cm = peak_detector.literature_record_set_confusion_matrix(test_records, ignore_short_peaks, best_solution[3])
-    print('\nTrain set confusion matrix: [TP,FP,FN]' + str(train_cm))
-    print('Test set confusion matrix: [TP,FP,FN]' + str(test_cm))
-
+    
     print('\nLast timestamp: ' + str(time.getTimestamp()))
     print('Last time: ' + str(time.getTime()))
 #/try
