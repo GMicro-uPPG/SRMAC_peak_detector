@@ -20,6 +20,8 @@ try:
     test_records = records[0:11] + records[-11:]
     print('Test records: [0:11] u [-11:]), len = ' + str(len(test_records)))
 
+    # Sampling frequency
+    fs = 200
     # Number of runs to extract stats from
     num_runs = 30
     print('\nNumber of runs = ' + str(num_runs))
@@ -34,7 +36,7 @@ try:
     for _ in range(num_runs):
         # Optimize parameters and define model with them
         alpha_cross, alpha_fast, alpha_slow, train_cost = random_search_crossover(train_records, num_iterations, min_alpha = 0.7, max_alpha = 1, verbosity=verbosity)
-        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow)
+        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, fs)
         
         # Get results for train and test data
         # Train

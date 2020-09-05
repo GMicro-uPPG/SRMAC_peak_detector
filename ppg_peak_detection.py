@@ -1,18 +1,30 @@
 #!python3
 # Author: Victor O. Costa 
 
-import numpy as np
 import sys
+import numpy as np
+import scipy
 
 class crossover_detector:
     ''' Class to process the PPG signal and indicate peaks using a crossover of moving averages '''
     
-    def __init__(self, alpha_crossover, alpha_fast, alpha_slow):
+    def __init__(self, alpha_crossover:float, alpha_fast:float, alpha_slow:float, sampling_frequency:float):
         ''' Constructor '''
-        # Parameters
+        
+        # Sanity check
+        if any([1 <= alpha <= 0  for alpha in [alpha_crossover, alpha_fast, alpha_slow]]):
+            print('Error, alphas must be in 0 <= a <= 1')
+            exit(-1)
+        if sampling_frequency < 0:
+            print('Sampling frequency must be positive')
+            exit(-1)
+            
+        # Smoothing constants
         self.alpha_crossover =  alpha_crossover 
         self.alpha_fast =       alpha_fast
         self.alpha_slow =       alpha_slow
+        # Sampling frequency
+        self.fs = sampling_frequency
         
         # Variables
         self.average_fast = 0.0
@@ -29,37 +41,25 @@ class crossover_detector:
         self.average_slow = first_ppg_val
         self.crossover_index = 0.0
               
-    def detect_peaks_cross(self, ppg_array):
+    def detect_peaks_cross(self, raw_ppg):
         ''' Crossover based peak detection  '''
-        self.reset_state(ppg_array[0])
+        self.reset_state(raw_ppg[0])
         
         fast_averages = []
         slow_averages = []
         crossover_indices = []
         peaks_array = []
         
-        from scipy.signal import butter, lfilter, lfilter_zi
-        
-        # Applies the butter considering the initial transient.
-        # Todo: compare with cascaded butter
-        def butter_lowpass(highcut, sRate, order):
-            nyq = 0.5 * sRate
-            high = highcut / nyq
-            b, a = butter(order, high, btype='low')
-            return b, a
-        
-        def butter_bandpass_filter_zi(data, highcut, sRate, order):
-            b, a = butter_lowpass(highcut, sRate, order)
-            zi = lfilter_zi(b, a)
-            y, zo = lfilter(b, a, data, zi=zi*data[0])
-            return y
-        
-        sampling_rate = 200
-        highcut = 8
+        # Low-pass filter parameters
         order = 2
-        ppg_array = butter_bandpass_filter_zi(ppg_array, highcut, sampling_rate, order)
+        nyquist_freq = 0.5 * self.fs                # 
+        freq_cut_hz = 8                             # Analog cutoff frequency
+        freq_cut_norm = freq_cut_hz / nyquist_freq   # Digital (normalized) cutoff frequency
+        # Butterworth LP as cascaded biquads
+        sos = scipy.signal.iirfilter(N=order, Wn=freq_cut_norm, btype='lowpass', analog=False, ftype='butter', output='sos')
+        filtered_ppg = scipy.signal.sosfilt(sos, raw_ppg)
         
-        for index, ppg_value in enumerate(ppg_array):
+        for index, ppg_value in enumerate(filtered_ppg):
             # Update model
             self.average_fast       = self.exponential_ma(self.alpha_fast       , ppg_value, self.average_fast)
             self.average_slow       = self.exponential_ma(self.alpha_slow       , ppg_value, self.average_slow)
@@ -68,7 +68,7 @@ class crossover_detector:
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
-
+            
             if self.crossover_index > 0:
                 peaks_array.append(1)
             else:  
@@ -282,7 +282,7 @@ class crossover_detector:
         # false positives = all detected - true positives
         
         # Sampling interval in seconds
-        T = 0.005
+        T = 1/self.fs
         # Neighborhood definition in seconds
         neighborhood_time = 0.1
         # Neighborhood definition in number of samples

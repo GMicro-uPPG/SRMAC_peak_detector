@@ -19,8 +19,7 @@ if first_rec > last_rec:
     exit(-1)
     
 # Define crossover detector
-detector = crossover_detector()
-detector.set_parameters_cross(alpha_crossover = 0.8705192717851324, alpha_fast = 0.903170529094925  , alpha_slow = 0.9586798163470798)                    
+detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798, 200)              
 
 # Get sample signal and reference from records
 #record_number = int(sys.argv[1])
