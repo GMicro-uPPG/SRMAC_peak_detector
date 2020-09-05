@@ -1,9 +1,8 @@
 #!python3
 # Author: Victor O. Costa 
-# Performs random search on the crossover's alphas and threshold using confusion matrix-based cost function 
+# Performs random search on the crossover's alphas and threshold using a confusion matrix-based cost function 
 
 import numpy as np
-import pickle as pkl
 from ppg_peak_detection import crossover_detector
 from ppg_peak_detection import random_search_crossover
 from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 200 Hz
@@ -24,35 +23,32 @@ try:
     # Number of runs to extract stats from
     num_runs = 30
     print('\nNumber of runs = ' + str(num_runs))
-    # Random search of alphas, using confusion matrix-based cost
-    num_iterations = 100                                                               # Number of random search iterations
+    # Number of random search iterations
+    num_iterations = 10                                       
     print('Number of iterations = ' + str(num_iterations))
     
-    # Optimizes model
-    #best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.9, max_alpha = 1, min_threshold = 0, max_threshold = 1, large_peaks_only=True, verbosity=True)
-    
-    ignore_short_peaks = False
+    verbosity = True
     
     train_accuracies = []
     test_accuracies = []
     for _ in range(num_runs):
-        best_solution = random_search_crossover(train_records, num_iterations, min_alpha = 0.7, max_alpha = 1, large_peaks_only=ignore_short_peaks, verbosity=True)
-        peak_detector = crossover_detector()
-        peak_detector.set_parameters_cross(best_solution[0], best_solution[1], best_solution[2])
-        # Get results for train and test data
-        train_cm = peak_detector.literature_record_set_confusion_matrix(train_records, ignore_short_peaks, best_solution[3])
-        test_cm = peak_detector.literature_record_set_confusion_matrix(test_records, ignore_short_peaks, best_solution[3])
-        # print('\nTrain set confusion matrix: [TP,FP,FN]' + str(train_cm))
-        # print('Test set confusion matrix: [TP,FP,FN]' + str(test_cm))
+        # Optimize parameters and define model with them
+        alpha_cross, alpha_fast, alpha_slow, train_cost = random_search_crossover(train_records, num_iterations, min_alpha = 0.7, max_alpha = 1, verbosity=verbosity)
+        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow)
         
-        # Compute precision and recall
-        train_precision = train_cm[0] / (train_cm[0] + train_cm[1])
-        train_recall =    train_cm[0] / (train_cm[0] + train_cm[2])
-        train_accuracies.append((train_precision + train_recall)/2)
-        #
+        # Get results for train and test data
+        # Train
+        # train_cm = peak_detector.literature_record_set_confusion_matrix(train_records)
+        # train_precision = train_cm[0] / (train_cm[0] + train_cm[1])
+        # train_recall =    train_cm[0] / (train_cm[0] + train_cm[2])
+        # train_accuracy = (train_precision + train_recall)/2
+        train_accuracy = 1 - train_cost     # Train cost is 1 - acc
+        # Test
+        test_cm = peak_detector.literature_record_set_confusion_matrix(test_records)
         test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
         test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])
-        test_accuracies.append((test_precision + test_recall)/2)
+        test_accuracy = (test_precision + test_recall)/2
+        test_accuracies.append(test_accuracy)
         
     print(f'Train acc: {np.mean(train_accuracies)} ({np.std(train_accuracies)})')
     print(f'Test acc:  {np.mean(test_accuracies)} ({np.std(test_accuracies)})')
