@@ -1,5 +1,4 @@
 #!python3
-# Author: Cesar Abascal
 
 import matplotlib.pyplot as plt
 import numpy as np

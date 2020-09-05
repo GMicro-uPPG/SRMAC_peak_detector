@@ -1,12 +1,34 @@
 #!python3
-# Author: Victor O. Costa 
-# Performs random search on the crossover's alphas and threshold using a confusion matrix-based cost function 
 
-import numpy as np
+# MIT License
+
+# Copyright (c) 2016 Grupo de Microeletrônica (Universidade Federal de Santa Maria)
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# Own
 from ppg_peak_detection import crossover_detector
 from ppg_peak_detection import random_search_crossover
 from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 200 Hz
-from time_manager import time
+# Third party
+import numpy as np
+import time_manager
 
 try:
     # Load reference data (44 records for training and 22 for testing)
@@ -56,33 +78,33 @@ try:
     print(f'Test acc:  {np.mean(test_accuracies)} ({np.std(test_accuracies)})')
     
     
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 #/try
 
 
 except IOError:
     print('Error: An error occurred trying to read the file.\n')
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 except ValueError:
     print('Error: Non-numeric data found in the file.\n')
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 except ImportError:
     print('Error: No module found.\n')
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 except EOFError:
     print('Error: Why did you do an EOF on me?\n')
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 except KeyboardInterrupt:
     print('Error: You cancelled the operation.\n')
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 except Exception as e:
     print('An error occurred:', e)
-    print('\nLast timestamp: ' + str(time.getTimestamp()))
-    print('Last time: ' + str(time.getTime()))
+    print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
+    print('Last time: ' + str(time_manager.time.getTime()))
 #/except
