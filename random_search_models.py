@@ -5,7 +5,7 @@
 # Copyright (c) 2016 Grupo de Microeletrônica (Universidade Federal de Santa Maria)
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
+# of this software and associated documentation files (the 'Software'), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
@@ -14,7 +14,7 @@
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -34,7 +34,7 @@ try:
     # Load reference data (44 records for training and 22 for testing)
     # Test data is composed of an equal number of healty and dpoc records
     if len(records) != 66:
-        print("Number of records is not 66")
+        print('Number of records is not 66')
         exit(-1)
         
     train_records = records[11:-11]
@@ -43,9 +43,9 @@ try:
     print('Test records: [0:11] u [-11:]), len = ' + str(len(test_records)))
 
     # Sampling frequency
-    fs = 200
+    Fs = 200
     # Number of runs to extract stats from
-    num_runs = 30
+    num_runs = 3
     print('\nNumber of runs = ' + str(num_runs))
     # Number of random search iterations
     num_iterations = 10                                       
@@ -57,8 +57,9 @@ try:
     test_accuracies = []
     for _ in range(num_runs):
         # Optimize parameters and define model with them
-        alpha_cross, alpha_fast, alpha_slow, train_cost = random_search_crossover(train_records, num_iterations, min_alpha = 0.7, max_alpha = 1, verbosity=verbosity)
-        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, fs)
+        rs_solution = random_search_crossover(train_records = train_records, num_iterations = num_iterations, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+        alpha_cross, alpha_fast, alpha_slow, train_cost = rs_solution
+        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)
         
         # Get results for train and test data
         # Train
@@ -80,7 +81,6 @@ try:
     
     print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
     print('Last time: ' + str(time_manager.time.getTime()))
-#/try
 
 
 except IOError:

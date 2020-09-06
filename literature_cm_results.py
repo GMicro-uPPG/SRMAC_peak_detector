@@ -29,8 +29,8 @@ from ppg_peak_detection import crossover_detector
 import numpy as np
 
 if len(records) != 66:
-        print('Number of records is not 66')
-        exit(-1)
+    print('Number of records is not 66')
+    exit(-1)
         
 train_records = records[11:-11]
 print('Train records: [11:-11], len = ' + str(len(train_records)))

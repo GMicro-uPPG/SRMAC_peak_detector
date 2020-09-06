@@ -35,7 +35,7 @@ class crossover_detector:
         ''' Constructor '''
         
         # Sanity check
-        if any([1 <= alpha <= 0  for alpha in [alpha_crossover, alpha_fast, alpha_slow]]):
+        if any([(alpha >= 1) or (alpha <= 0) for alpha in [alpha_crossover, alpha_fast, alpha_slow]]):
             print('Error, alphas must be in 0 <= a <= 1')
             exit(-1)
         if sampling_frequency < 0:
@@ -352,6 +352,7 @@ class crossover_detector:
             
         return true_positives, false_positives, false_negatives
         
+
     def terma_record_set_confusion_matrix(self, ppg_records):
         ''' Given a set of records containing ppg signals and peak references, returns the TERMA (triangular) confusion matrix based on the literature.'''
     
@@ -374,7 +375,7 @@ class crossover_detector:
             
             
 # Given the number of iterations and alphas range, performs random search on the crossover's alphas using train data accuracy as fitness metric
-def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, verbosity):
+def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, sampling_frequency, verbosity):
     if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
         print('Minimum and maximum alphas must be between 0 and 1')
         exit(-1)
@@ -383,17 +384,19 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         print('Verbosity must be boolean')
         exit(-1)
     
-    best_solution = [0, 0, float('inf')]
+    # The initial solution has infinite cost, and therefore any solution is better than the initial one
+    best_solution = [0, 0, 0, float('inf')]
     
     # Optimization loop
     for iteration in range(num_iterations):
         if verbosity == True: print('\n[Search iteration ' + str(iteration) + ']')
 
-        # Randomize alphas, with fast alpha depending on slow alpha, thus guaranteeing fast alpha < slow alpha
+        # Slow alpha depends on fast alpha (fast alpha < slow alpha)
         alpha_fast = np.random.uniform(min_alpha, max_alpha)
         alpha_slow = np.random.uniform(alpha_fast, max_alpha)
+        # The crossover alpha is independent of fast and slow alphas
         alpha_crossover = np.random.uniform(min_alpha, max_alpha)
-        peak_detector = crossover_detector(alpha_crossover, alpha_fast, alpha_slow)
+        peak_detector = crossover_detector(alpha_crossover, alpha_fast, alpha_slow, sampling_frequency)
         
         # Run the detector defined above in the train records and extract SE and P+
         tp, fp, fn = peak_detector.literature_record_set_confusion_matrix(train_records)
@@ -406,9 +409,9 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
             best_solution = [alpha_crossover, alpha_fast, alpha_slow, cost]
         
         if verbosity == True:
-            print('Alpha crossover     Alpha fast     Alpha slow     cost')
-            print('[randomized]\t', alpha_crossover,'\t', alpha_fast, '\t', alpha_slow, '\t', cost)
-            print('[best til now]\t', best_solution[0], '\t', best_solution[1], '\t',  best_solution[2], '\t', best_solution[-1])
+            print('Alphas: crossover, fast, slow : cost')
+            print(f'[{iteration}] {alpha_crossover}, {alpha_fast}, {alpha_slow} : {cost}')
+            print(f'[best] {best_solution[0]} {best_solution[1]} {best_solution[2]} : {best_solution[-1]}')
     
     return best_solution 
         
