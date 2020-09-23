@@ -1,0 +1,2103 @@
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(repeated_cross_validation.py:20471): Gdk-CRITICAL **: 03:46:34.881: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+Loading ppg-dataset_husm/dataset
+
+Getting record balke from dpoc volunteer number 0680298
+Getting record recovery from dpoc volunteer number 0680298
+Getting record rest from dpoc volunteer number 0680298
+Getting record balke from dpoc volunteer number 0840595
+Getting record recovery from dpoc volunteer number 0840595
+Getting record rest from dpoc volunteer number 0840595
+Getting record balke from dpoc volunteer number 1806256
+Getting record recovery from dpoc volunteer number 1806256
+Getting record rest from dpoc volunteer number 1806256
+Getting record balke from dpoc volunteer number 2627180
+Getting record recovery from dpoc volunteer number 2627180
+Getting record rest from dpoc volunteer number 2627180
+Getting record balke from dpoc volunteer number 2703908
+Getting record recovery from dpoc volunteer number 2703908
+Getting record rest from dpoc volunteer number 2703908
+Getting record balke from dpoc volunteer number 2841328
+Getting record recovery from dpoc volunteer number 2841328
+Getting record rest from dpoc volunteer number 2841328
+Getting record balke from dpoc volunteer number 2888246
+Getting record recovery from dpoc volunteer number 2888246
+Getting record rest from dpoc volunteer number 2888246
+Getting record balke from dpoc volunteer number 3450871
+Getting record recovery from dpoc volunteer number 3450871
+Getting record rest from dpoc volunteer number 3450871
+Getting record balke from dpoc volunteer number 3715687
+Getting record recovery from dpoc volunteer number 3715687
+Getting record rest from dpoc volunteer number 3715687
+Getting record balke from dpoc volunteer number 3740537
+Getting record recovery from dpoc volunteer number 3740537
+Getting record rest from dpoc volunteer number 3740537
+Getting record balke from dpoc volunteer number 3809662
+Getting record recovery from dpoc volunteer number 3809662
+Getting record rest from dpoc volunteer number 3809662
+Getting record balke from health volunteer number 0000001
+Getting record recovery from health volunteer number 0000001
+Getting record rest from health volunteer number 0000001
+Getting record balke from health volunteer number 0000002
+Getting record recovery from health volunteer number 0000002
+Getting record rest from health volunteer number 0000002
+Getting record balke from health volunteer number 0000003
+Getting record recovery from health volunteer number 0000003
+Getting record rest from health volunteer number 0000003
+Getting record balke from health volunteer number 0000004
+Getting record recovery from health volunteer number 0000004
+Getting record rest from health volunteer number 0000004
+Getting record balke from health volunteer number 0000005
+Getting record recovery from health volunteer number 0000005
+Getting record rest from health volunteer number 0000005
+Getting record balke from health volunteer number 0000006
+Getting record recovery from health volunteer number 0000006
+Getting record rest from health volunteer number 0000006
+Getting record balke from health volunteer number 0000007
+Getting record recovery from health volunteer number 0000007
+Getting record rest from health volunteer number 0000007
+Getting record balke from health volunteer number 0000008
+Getting record recovery from health volunteer number 0000008
+Getting record rest from health volunteer number 0000008
+Getting record balke from health volunteer number 0000009
+Getting record recovery from health volunteer number 0000009
+Getting record rest from health volunteer number 0000009
+Getting record balke from health volunteer number 0000010
+Getting record recovery from health volunteer number 0000010
+Getting record rest from health volunteer number 0000010
+Getting record balke from health volunteer number 0000011
+Getting record recovery from health volunteer number 0000011
+Getting record rest from health volunteer number 0000011
+Loaded 66 records
+The size of each fold is 3 records
+RS iterations per run = 100
+RS runs per folds = 30
+Run 0
+Train acc = 0.9846647864547156
+Validation acc = 0.9807626245276537
+Run 1
+Train acc = 0.9846674716532815
+Validation acc = 0.9807626245276537
+Run 2
+Train acc = 0.9846621500766997
+Validation acc = 0.9790688575899844
+Run 3
+Train acc = 0.9845813715716167
+Validation acc = 0.9807626245276537
+Run 4
+Train acc = 0.9845032054197058
+Validation acc = 0.9807626245276537
+Run 5
+Train acc = 0.9845199061909078
+Validation acc = 0.9773868122228179
+Run 6
+Train acc = 0.9844007706566638
+Validation acc = 0.9807626245276537
+Run 7
+Train acc = 0.984740328848267
+Validation acc = 0.9807626245276537
+Run 8
+Train acc = 0.9844606564241312
+Validation acc = 0.9724098012733937
+Run 9
+Train acc = 0.9848374932574211
+Validation acc = 0.9773868122228179
+Run 10
+Train acc = 0.9842862212329071
+Validation acc = 0.9773868122228179
+Run 11
+Train acc = 0.9848493983185558
+Validation acc = 0.9757163671685285
+Run 12
+Train acc = 0.9845866695433019
+Validation acc = 0.9807626245276537
+Run 13
+Train acc = 0.9846160793467833
+Validation acc = 0.9757163671685285
+Run 14
+Train acc = 0.9845643709178133
+Validation acc = 0.9807626245276537
+Run 15
+Train acc = 0.9844606564241312
+Validation acc = 0.9740574028362616
+Run 16
+Train acc = 0.9848290746490823
+Validation acc = 0.9790688575899844
+Run 17
+Train acc = 0.9845949823045428
+Validation acc = 0.9790688575899844
+Run 18
+Train acc = 0.9846758197076919
+Validation acc = 0.9790688575899844
+Run 19
+Train acc = 0.984532012112201
+Validation acc = 0.9757163671685285
+Run 20
+Train acc = 0.9845199061909078
+Validation acc = 0.9773868122228179
+Run 21
+Train acc = 0.9844511036502752
+Validation acc = 0.9757163671685285
+Run 22
+Train acc = 0.9847510191037541
+Validation acc = 0.9773868122228179
+Run 23
+Train acc = 0.9846647864547156
+Validation acc = 0.9790688575899844
+Run 24
+Train acc = 0.984592162672216
+Validation acc = 0.9790688575899844
+Run 25
+Train acc = 0.9845893917363383
+Validation acc = 0.9790688575899844
+Run 26
+Train acc = 0.984562138717781
+Validation acc = 0.9807626245276537
+Run 27
+Train acc = 0.9846647864547156
+Validation acc = 0.9807626245276537
+Run 28
+Train acc = 0.9844449770750414
+Validation acc = 0.9790688575899844
+Run 29
+Train acc = 0.9847566566919183
+Validation acc = 0.9790688575899844
+Fold accs len = 30
+Fold avg accuracy = 0.9785170899161416
+Run 0
+Train acc = 0.9839454632220331
+Validation acc = 0.9923223716327165
+Run 1
+Train acc = 0.983867859175843
+Validation acc = 0.9961389961389961
+Run 2
+Train acc = 0.9838619664626151
+Validation acc = 0.9961389961389961
+Run 3
+Train acc = 0.9840320727289913
+Validation acc = 0.9942748091603053
+Run 4
+Train acc = 0.9837189559100664
+Validation acc = 0.9942748091603053
+Run 5
+Train acc = 0.983809330573294
+Validation acc = 0.9942748091603053
+Run 6
+Train acc = 0.9836745117541903
+Validation acc = 0.9980694980694981
+Run 7
+Train acc = 0.9838534893068254
+Validation acc = 0.9942233442233442
+Run 8
+Train acc = 0.9839396436872381
+Validation acc = 0.9980694980694981
+Run 9
+Train acc = 0.9838534893068254
+Validation acc = 0.9980694980694981
+Run 10
+Train acc = 0.983867859175843
+Validation acc = 0.9961389961389961
+Run 11
+Train acc = 0.9840260372882507
+Validation acc = 0.9942233442233442
+Run 12
+Train acc = 0.9839484452811678
+Validation acc = 0.9961389961389961
+Run 13
+Train acc = 0.9839396436872381
+Validation acc = 0.9961389961389961
+Run 14
+Train acc = 0.9839484452811678
+Validation acc = 0.9942233442233442
+Run 15
+Train acc = 0.984122117800599
+Validation acc = 0.9942748091603053
+Run 16
+Train acc = 0.9834802063882929
+Validation acc = 0.9961389961389961
+Run 17
+Train acc = 0.983654682015495
+Validation acc = 0.9942748091603053
+Run 18
+Train acc = 0.9840117923622247
+Validation acc = 0.9942233442233442
+Run 19
+Train acc = 0.9840290309492725
+Validation acc = 0.9942748091603053
+Run 20
+Train acc = 0.9837525810892196
+Validation acc = 0.9980694980694981
+Run 21
+Train acc = 0.9838834327615235
+Validation acc = 0.9942748091603053
+Run 22
+Train acc = 0.9840201945048253
+Validation acc = 0.9923223716327165
+Run 23
+Train acc = 0.9840978842217648
+Validation acc = 0.9961389961389961
+Run 24
+Train acc = 0.9840230917915433
+Validation acc = 0.9942233442233442
+Run 25
+Train acc = 0.9840173454738294
+Validation acc = 0.9942233442233442
+Run 26
+Train acc = 0.9838562667091614
+Validation acc = 0.9980694980694981
+Run 27
+Train acc = 0.9838428639315697
+Validation acc = 0.9980694980694981
+Run 28
+Train acc = 0.9838060355401844
+Validation acc = 0.9942748091603053
+Run 29
+Train acc = 0.9841036538109755
+Validation acc = 0.9961389961389961
+Fold accs len = 30
+Fold avg accuracy = 0.9953904079805632
+Run 0
+Train acc = 0.9848324542328512
+Validation acc = 0.9777777777777777
+Run 1
+Train acc = 0.9848297559517767
+Validation acc = 0.9777777777777777
+Run 2
+Train acc = 0.9846500506858331
+Validation acc = 0.9777777777777777
+Run 3
+Train acc = 0.9846841730029612
+Validation acc = 0.9777777777777777
+Run 4
+Train acc = 0.9845862034266194
+Validation acc = 0.9777777777777777
+Run 5
+Train acc = 0.9845666835218818
+Validation acc = 0.9777777777777777
+Run 6
+Train acc = 0.9848324542328512
+Validation acc = 0.9777777777777777
+Run 7
+Train acc = 0.9849109393140181
+Validation acc = 0.9777777777777777
+Run 8
+Train acc = 0.9846000085896782
+Validation acc = 0.9777777777777777
+Run 9
+Train acc = 0.9846119369547113
+Validation acc = 0.9777777777777777
+Run 10
+Train acc = 0.9848324542328512
+Validation acc = 0.9777777777777777
+Run 11
+Train acc = 0.9847624962145647
+Validation acc = 0.9777777777777777
+Run 12
+Train acc = 0.9846547566166342
+Validation acc = 0.9777777777777777
+Run 13
+Train acc = 0.9847596130650536
+Validation acc = 0.9777777777777777
+Run 14
+Train acc = 0.9846812526146016
+Validation acc = 0.9777777777777777
+Run 15
+Train acc = 0.9844555638105437
+Validation acc = 0.9777777777777777
+Run 16
+Train acc = 0.9846841730029612
+Validation acc = 0.9777777777777777
+Run 17
+Train acc = 0.9846727861955242
+Validation acc = 0.9777777777777777
+Run 18
+Train acc = 0.9845666835218818
+Validation acc = 0.9777777777777777
+Run 19
+Train acc = 0.9845306452124679
+Validation acc = 0.9777777777777777
+Run 20
+Train acc = 0.9848324542328512
+Validation acc = 0.9777777777777777
+Run 21
+Train acc = 0.9846812526146016
+Validation acc = 0.9777777777777777
+Run 22
+Train acc = 0.9848324542328512
+Validation acc = 0.9777777777777777
+Run 23
+Train acc = 0.9848865557387506
+Validation acc = 0.9777777777777777
+Run 24
+Train acc = 0.9846673880082719
+Validation acc = 0.9777777777777777
+Run 25
+Train acc = 0.9848099483881204
+Validation acc = 0.9777777777777777
+Run 26
+Train acc = 0.9846812526146016
+Validation acc = 0.9777777777777777
+Run 27
+Train acc = 0.9846901608711218
+Validation acc = 0.9777777777777777
+Run 28
+Train acc = 0.9844973629534921
+Validation acc = 0.9777777777777777
+Run 29
+Train acc = 0.9842244804756501
+Validation acc = 0.9762306610407876
+Fold accs len = 30
+Fold avg accuracy = 0.977726207219878
+Run 0
+Train acc = 0.9837235791534162
+Validation acc = 1.0
+Run 1
+Train acc = 0.9835940092101991
+Validation acc = 0.9985714285714286
+Run 2
+Train acc = 0.9834331598219392
+Validation acc = 0.9985714285714286
+Run 3
+Train acc = 0.9837050128924011
+Validation acc = 0.9985714285714286
+Run 4
+Train acc = 0.9837301634438587
+Validation acc = 1.0
+Run 5
+Train acc = 0.9835275274431445
+Validation acc = 0.9985714285714286
+Run 6
+Train acc = 0.9836092171075519
+Validation acc = 0.9985714285714286
+Run 7
+Train acc = 0.9833995129243864
+Validation acc = 1.0
+Run 8
+Train acc = 0.983702092062638
+Validation acc = 0.9985714285714286
+Run 9
+Train acc = 0.9836013878683416
+Validation acc = 0.9985714285714286
+Run 10
+Train acc = 0.9836756258574386
+Validation acc = 0.9985714285714286
+Run 11
+Train acc = 0.9836232635972391
+Validation acc = 0.9985714285714286
+Run 12
+Train acc = 0.9837838289357302
+Validation acc = 0.9985714285714286
+Run 13
+Train acc = 0.9833723170376597
+Validation acc = 0.9985714285714286
+Run 14
+Train acc = 0.9837301634438587
+Validation acc = 1.0
+Run 15
+Train acc = 0.9837110034973029
+Validation acc = 1.0
+Run 16
+Train acc = 0.9833242426711875
+Validation acc = 1.0
+Run 17
+Train acc = 0.9835197344389175
+Validation acc = 0.9985714285714286
+Run 18
+Train acc = 0.9837050128924011
+Validation acc = 1.0
+Run 19
+Train acc = 0.9835248797751687
+Validation acc = 0.9985714285714286
+Run 20
+Train acc = 0.9836805190938854
+Validation acc = 0.9985714285714286
+Run 21
+Train acc = 0.9833209358135784
+Validation acc = 1.0
+Run 22
+Train acc = 0.9834626982587478
+Validation acc = 0.9985714285714286
+Run 23
+Train acc = 0.9836292302886602
+Validation acc = 1.0
+Run 24
+Train acc = 0.9836830408818095
+Validation acc = 0.9985714285714286
+Run 25
+Train acc = 0.9836262221268279
+Validation acc = 1.0
+Run 26
+Train acc = 0.9835444604176349
+Validation acc = 1.0
+Run 27
+Train acc = 0.9836292302886602
+Validation acc = 1.0
+Run 28
+Train acc = 0.9836353953182221
+Validation acc = 1.0
+Run 29
+Train acc = 0.9834597636693516
+Validation acc = 0.9985714285714286
+Fold accs len = 30
+Fold avg accuracy = 0.9991904761904761
+Run 0
+Train acc = 0.9835781593803954
+Validation acc = 0.9987437185929648
+Run 1
+Train acc = 0.9832402299091691
+Validation acc = 0.9987437185929648
+Run 2
+Train acc = 0.9833171621748361
+Validation acc = 0.9987437185929648
+Run 3
+Train acc = 0.9833942479937532
+Validation acc = 0.9987437185929648
+Run 4
+Train acc = 0.983587206686962
+Validation acc = 0.9987437185929648
+Run 5
+Train acc = 0.9834987426293476
+Validation acc = 0.9987437185929648
+Run 6
+Train acc = 0.9835017462744075
+Validation acc = 0.9987437185929648
+Run 7
+Train acc = 0.9834163600450803
+Validation acc = 0.9987437185929648
+Run 8
+Train acc = 0.9834739847861482
+Validation acc = 0.9987437185929648
+Run 9
+Train acc = 0.9834987426293476
+Validation acc = 0.9987437185929648
+Run 10
+Train acc = 0.9835537474335344
+Validation acc = 0.9987437185929648
+Run 11
+Train acc = 0.9835048002945375
+Validation acc = 0.9987437185929648
+Run 12
+Train acc = 0.9835811247575954
+Validation acc = 0.9987437185929648
+Run 13
+Train acc = 0.9834286282009885
+Validation acc = 0.9987437185929648
+Run 14
+Train acc = 0.983160647537325
+Validation acc = 0.9987437185929648
+Run 15
+Train acc = 0.9833399861187702
+Validation acc = 0.9987437185929648
+Run 16
+Train acc = 0.9834286282009885
+Validation acc = 0.9987437185929648
+Run 17
+Train acc = 0.9836857573813376
+Validation acc = 0.9987437185929648
+Run 18
+Train acc = 0.9834223934385485
+Validation acc = 0.9987437185929648
+Run 19
+Train acc = 0.9835537474335344
+Validation acc = 0.9987437185929648
+Run 20
+Train acc = 0.9835781593803954
+Validation acc = 0.9987437185929648
+Run 21
+Train acc = 0.9832606463343645
+Validation acc = 0.9987437185929648
+Run 22
+Train acc = 0.9833339770045723
+Validation acc = 0.9987437185929648
+Run 23
+Train acc = 0.9835562569308198
+Validation acc = 0.9987437185929648
+Run 24
+Train acc = 0.9834193515462866
+Validation acc = 0.9987437185929648
+Run 25
+Train acc = 0.9832515935076023
+Validation acc = 0.9987437185929648
+Run 26
+Train acc = 0.98365760181188
+Validation acc = 0.9987437185929648
+Run 27
+Train acc = 0.9835048002945375
+Validation acc = 0.9987437185929648
+Run 28
+Train acc = 0.983587206686962
+Validation acc = 0.9987437185929648
+Run 29
+Train acc = 0.9831976166832175
+Validation acc = 0.9987437185929648
+Fold accs len = 30
+Fold avg accuracy = 0.9987437185929651
+Run 0
+Train acc = 0.9855104092023359
+Validation acc = 0.9487774768300997
+Run 1
+Train acc = 0.9854181506795527
+Validation acc = 0.9507530900747538
+Run 2
+Train acc = 0.9855781148275402
+Validation acc = 0.9527455170491499
+Run 3
+Train acc = 0.9857357316698283
+Validation acc = 0.9527455170491499
+Run 4
+Train acc = 0.9858204640194033
+Validation acc = 0.9487774768300997
+Run 5
+Train acc = 0.9854524116004713
+Validation acc = 0.9487774768300997
+Run 6
+Train acc = 0.9855004919270143
+Validation acc = 0.9527455170491499
+Run 7
+Train acc = 0.9855104092023359
+Validation acc = 0.9507530900747538
+Run 8
+Train acc = 0.9858204640194033
+Validation acc = 0.9487774768300997
+Run 9
+Train acc = 0.9857404715471578
+Validation acc = 0.9507530900747538
+Run 10
+Train acc = 0.985580485501137
+Validation acc = 0.9507530900747538
+Run 11
+Train acc = 0.9858279696340879
+Validation acc = 0.9487774768300997
+Run 12
+Train acc = 0.985745403951059
+Validation acc = 0.9487774768300997
+Run 13
+Train acc = 0.9857404715471578
+Validation acc = 0.9487774768300997
+Run 14
+Train acc = 0.9851005185383281
+Validation acc = 0.9527455170491499
+Run 15
+Train acc = 0.9853782433226015
+Validation acc = 0.9487774768300997
+Run 16
+Train acc = 0.9855130086214253
+Validation acc = 0.9487774768300997
+Run 17
+Train acc = 0.9855183512627187
+Validation acc = 0.9487774768300997
+Run 18
+Train acc = 0.9857357316698283
+Validation acc = 0.9507530900747538
+Run 19
+Train acc = 0.9857380775199251
+Validation acc = 0.9527455170491499
+Run 20
+Train acc = 0.9855053543936978
+Validation acc = 0.9507530900747538
+Run 21
+Train acc = 0.9857357316698283
+Validation acc = 0.9527455170491499
+Run 22
+Train acc = 0.9856629092065505
+Validation acc = 0.9507530900747538
+Run 23
+Train acc = 0.985658096355597
+Validation acc = 0.9527455170491499
+Run 24
+Train acc = 0.9857357316698283
+Validation acc = 0.9507530900747538
+Run 25
+Train acc = 0.9858157007841795
+Validation acc = 0.9487774768300997
+Run 26
+Train acc = 0.9853358806948507
+Validation acc = 0.9527455170491499
+Run 27
+Train acc = 0.9853636880545783
+Validation acc = 0.9487774768300997
+Run 28
+Train acc = 0.9855004919270143
+Validation acc = 0.9507530900747538
+Run 29
+Train acc = 0.9856604787077936
+Validation acc = 0.9527455170491499
+Fold accs len = 30
+Fold avg accuracy = 0.950560572869211
+Run 0
+Train acc = 0.9833841530655004
+Validation acc = 1.0
+Run 1
+Train acc = 0.9837644064035648
+Validation acc = 1.0
+Run 2
+Train acc = 0.9836428327610276
+Validation acc = 0.998422712933754
+Run 3
+Train acc = 0.983300096454456
+Validation acc = 1.0
+Run 4
+Train acc = 0.9836856233892544
+Validation acc = 1.0
+Run 5
+Train acc = 0.9836428327610276
+Validation acc = 1.0
+Run 6
+Train acc = 0.9836832401381386
+Validation acc = 1.0
+Run 7
+Train acc = 0.983693070705848
+Validation acc = 1.0
+Run 8
+Train acc = 0.9837994008137012
+Validation acc = 1.0
+Run 9
+Train acc = 0.9836337941863895
+Validation acc = 1.0
+Run 10
+Train acc = 0.9837151039945831
+Validation acc = 1.0
+Run 11
+Train acc = 0.9836428327610276
+Validation acc = 1.0
+Run 12
+Train acc = 0.9836308795064637
+Validation acc = 1.0
+Run 13
+Train acc = 0.9834545662702574
+Validation acc = 1.0
+Run 14
+Train acc = 0.9836397708606242
+Validation acc = 1.0
+Run 15
+Train acc = 0.9837121774710827
+Validation acc = 1.0
+Run 16
+Train acc = 0.9835584369617412
+Validation acc = 1.0
+Run 17
+Train acc = 0.9832895151098076
+Validation acc = 1.0
+Run 18
+Train acc = 0.9837121774710827
+Validation acc = 1.0
+Run 19
+Train acc = 0.983552483935779
+Validation acc = 1.0
+Run 20
+Train acc = 0.9834469295138373
+Validation acc = 1.0
+Run 21
+Train acc = 0.9836093360612175
+Validation acc = 1.0
+Run 22
+Train acc = 0.9835584369617412
+Validation acc = 1.0
+Run 23
+Train acc = 0.9838183537916567
+Validation acc = 1.0
+Run 24
+Train acc = 0.9835709311417726
+Validation acc = 1.0
+Run 25
+Train acc = 0.9835439230335046
+Validation acc = 0.998422712933754
+Run 26
+Train acc = 0.9836523121532035
+Validation acc = 1.0
+Run 27
+Train acc = 0.9836397708606242
+Validation acc = 1.0
+Run 28
+Train acc = 0.9837093000996733
+Validation acc = 1.0
+Run 29
+Train acc = 0.9837905857703875
+Validation acc = 1.0
+Fold accs len = 30
+Fold avg accuracy = 0.9998948475289169
+Run 0
+Train acc = 0.9852124565664376
+Validation acc = 0.9632107023411371
+Run 1
+Train acc = 0.9853685160311909
+Validation acc = 0.9681769208323046
+Run 2
+Train acc = 0.9855081462509137
+Validation acc = 0.9630980935328761
+Run 3
+Train acc = 0.9851818694685639
+Validation acc = 0.9630980935328761
+Run 4
+Train acc = 0.9854408037715772
+Validation acc = 0.9630980935328761
+Run 5
+Train acc = 0.9853542493596533
+Validation acc = 0.9630980935328761
+Run 6
+Train acc = 0.9852760220765959
+Validation acc = 0.9630980935328761
+Run 7
+Train acc = 0.985348885076665
+Validation acc = 0.9630980935328761
+Run 8
+Train acc = 0.9854325015241621
+Validation acc = 0.9647304076651904
+Run 9
+Train acc = 0.9854102453211417
+Validation acc = 0.9613689776733255
+Run 10
+Train acc = 0.9854352200119776
+Validation acc = 0.9630980935328761
+Run 11
+Train acc = 0.9855134599347639
+Validation acc = 0.9630980935328761
+Run 12
+Train acc = 0.9851612668160279
+Validation acc = 0.9613689776733255
+Run 13
+Train acc = 0.9853339709867687
+Validation acc = 0.9630980935328761
+Run 14
+Train acc = 0.9854352200119776
+Validation acc = 0.9630980935328761
+Run 15
+Train acc = 0.9854102453211417
+Validation acc = 0.9630980935328761
+Run 16
+Train acc = 0.9854408037715772
+Validation acc = 0.9630980935328761
+Run 17
+Train acc = 0.9854352200119776
+Validation acc = 0.9630980935328761
+Run 18
+Train acc = 0.9852816563549475
+Validation acc = 0.9630980935328761
+Run 19
+Train acc = 0.9853598094781109
+Validation acc = 0.9630980935328761
+Run 20
+Train acc = 0.9853655650588398
+Validation acc = 0.9630980935328761
+Run 21
+Train acc = 0.9855161902624665
+Validation acc = 0.9630980935328761
+Run 22
+Train acc = 0.9854408037715772
+Validation acc = 0.9630980935328761
+Run 23
+Train acc = 0.9854148464603399
+Validation acc = 0.9630980935328761
+Run 24
+Train acc = 0.9855674957890763
+Validation acc = 0.9613689776733255
+Run 25
+Train acc = 0.9851950387845427
+Validation acc = 0.9630980935328761
+Run 26
+Train acc = 0.985488858013199
+Validation acc = 0.9630980935328761
+Run 27
+Train acc = 0.9855081462509137
+Validation acc = 0.9630980935328761
+Run 28
+Train acc = 0.9852530951404952
+Validation acc = 0.9630980935328761
+Run 29
+Train acc = 0.9854102453211417
+Validation acc = 0.9630980935328761
+Fold accs len = 30
+Fold avg accuracy = 0.9631526402882548
+Run 0
+Train acc = 0.9842184776599989
+Validation acc = 0.991765459440681
+Run 1
+Train acc = 0.9841196910227148
+Validation acc = 0.991765459440681
+Run 2
+Train acc = 0.9841196910227148
+Validation acc = 0.991765459440681
+Run 3
+Train acc = 0.9838814894943546
+Validation acc = 0.991765459440681
+Run 4
+Train acc = 0.9840646447218859
+Validation acc = 0.991765459440681
+Run 5
+Train acc = 0.9835083453909157
+Validation acc = 0.991765459440681
+Run 6
+Train acc = 0.9838054013850878
+Validation acc = 0.991765459440681
+Run 7
+Train acc = 0.9838421649552176
+Validation acc = 0.991765459440681
+Run 8
+Train acc = 0.9841196910227148
+Validation acc = 0.991765459440681
+Run 9
+Train acc = 0.9841983261796134
+Validation acc = 0.991765459440681
+Run 10
+Train acc = 0.9838453351572896
+Validation acc = 0.991765459440681
+Run 11
+Train acc = 0.9840410809768354
+Validation acc = 0.991765459440681
+Run 12
+Train acc = 0.9839807406001843
+Validation acc = 0.991765459440681
+Run 13
+Train acc = 0.9841669000951212
+Validation acc = 0.991765459440681
+Run 14
+Train acc = 0.9842480827476151
+Validation acc = 0.991765459440681
+Run 15
+Train acc = 0.9839952447866374
+Validation acc = 0.991765459440681
+Run 16
+Train acc = 0.984170117127831
+Validation acc = 0.991765459440681
+Run 17
+Train acc = 0.9840618299633328
+Validation acc = 0.991765459440681
+Run 18
+Train acc = 0.9840387091951536
+Validation acc = 0.991765459440681
+Run 19
+Train acc = 0.9841983261796134
+Validation acc = 0.991765459440681
+Run 20
+Train acc = 0.9840646447218859
+Validation acc = 0.991765459440681
+Run 21
+Train acc = 0.983992246136175
+Validation acc = 0.991765459440681
+Run 22
+Train acc = 0.984070421146445
+Validation acc = 0.991765459440681
+Run 23
+Train acc = 0.9840733827189838
+Validation acc = 0.991765459440681
+Run 24
+Train acc = 0.9836893809781415
+Validation acc = 0.991765459440681
+Run 25
+Train acc = 0.9839140959946848
+Validation acc = 0.991765459440681
+Run 26
+Train acc = 0.9839952447866374
+Validation acc = 0.991765459440681
+Run 27
+Train acc = 0.9840733827189838
+Validation acc = 0.991765459440681
+Run 28
+Train acc = 0.9837243701732528
+Validation acc = 0.991765459440681
+Run 29
+Train acc = 0.9838551375247818
+Validation acc = 0.991765459440681
+Fold accs len = 30
+Fold avg accuracy = 0.9917654594406812
+Run 0
+Train acc = 0.9855236097719513
+Validation acc = 0.9594386104613546
+Run 1
+Train acc = 0.9856181038957313
+Validation acc = 0.9612795238980845
+Run 2
+Train acc = 0.9854451570386656
+Validation acc = 0.9559112626287762
+Run 3
+Train acc = 0.9855194017741461
+Validation acc = 0.9611307420494699
+Run 4
+Train acc = 0.9854616939424696
+Validation acc = 0.9612795238980845
+Run 5
+Train acc = 0.9852122754014947
+Validation acc = 0.9594386104613546
+Run 6
+Train acc = 0.9854642522721708
+Validation acc = 0.9612795238980845
+Run 7
+Train acc = 0.9853887657249132
+Validation acc = 0.9612795238980845
+Run 8
+Train acc = 0.9853809797137421
+Validation acc = 0.9612795238980845
+Run 9
+Train acc = 0.985360267364042
+Validation acc = 0.9559112626287762
+Run 10
+Train acc = 0.9855173717595322
+Validation acc = 0.9559112626287762
+Run 11
+Train acc = 0.9853809797137421
+Validation acc = 0.9612795238980845
+Run 12
+Train acc = 0.9853914586461842
+Validation acc = 0.9612795238980845
+Run 13
+Train acc = 0.9853623720732194
+Validation acc = 0.9611307420494699
+Run 14
+Train acc = 0.9856181038957313
+Validation acc = 0.9612795238980845
+Run 15
+Train acc = 0.9853080156529066
+Validation acc = 0.9612795238980845
+Run 16
+Train acc = 0.9854616939424696
+Validation acc = 0.9612795238980845
+Run 17
+Train acc = 0.9855236097719513
+Validation acc = 0.9594386104613546
+Run 18
+Train acc = 0.9852756225443953
+Validation acc = 0.9523839147961977
+Run 19
+Train acc = 0.9855424077869037
+Validation acc = 0.9612795238980845
+Run 20
+Train acc = 0.9855173717595322
+Validation acc = 0.9575971731448764
+Run 21
+Train acc = 0.9855398864996981
+Validation acc = 0.9612795238980845
+Run 22
+Train acc = 0.9855257876609701
+Validation acc = 0.9594386104613546
+Run 23
+Train acc = 0.9854668594406952
+Validation acc = 0.9612795238980845
+Run 24
+Train acc = 0.9851912231655964
+Validation acc = 0.9540636042402827
+Run 25
+Train acc = 0.9855280147473846
+Validation acc = 0.9594386104613546
+Run 26
+Train acc = 0.9854894694208487
+Validation acc = 0.9614508563056352
+Run 27
+Train acc = 0.9853914586461842
+Validation acc = 0.9612795238980845
+Run 28
+Train acc = 0.9854668594406952
+Validation acc = 0.9612795238980845
+Run 29
+Train acc = 0.9857201281018955
+Validation acc = 0.9596048827497591
+Fold accs len = 30
+Fold avg accuracy = 0.9597160538000019
+Run 0
+Train acc = 0.9838346221679555
+Validation acc = 0.9945454545454546
+Run 1
+Train acc = 0.9839815862953739
+Validation acc = 0.9945454545454546
+Run 2
+Train acc = 0.9841401906774332
+Validation acc = 0.9945454545454546
+Run 3
+Train acc = 0.9839123830630876
+Validation acc = 0.9945454545454546
+Run 4
+Train acc = 0.9839094370923349
+Validation acc = 0.9945454545454546
+Run 5
+Train acc = 0.9840651062684962
+Validation acc = 0.9945454545454546
+Run 6
+Train acc = 0.9840414413051426
+Validation acc = 0.9945454545454546
+Run 7
+Train acc = 0.983604628102493
+Validation acc = 0.9945454545454546
+Run 8
+Train acc = 0.9838346221679555
+Validation acc = 0.9927536231884058
+Run 9
+Train acc = 0.9838346221679555
+Validation acc = 0.9945454545454546
+Run 10
+Train acc = 0.9838044815554345
+Validation acc = 0.9945454545454546
+Run 11
+Train acc = 0.983685431161712
+Validation acc = 0.9945454545454546
+Run 12
+Train acc = 0.9838229819133146
+Validation acc = 0.9945454545454546
+Run 13
+Train acc = 0.983812118098059
+Validation acc = 0.9945454545454546
+Run 14
+Train acc = 0.9838981378715008
+Validation acc = 0.9945454545454546
+Run 15
+Train acc = 0.9841458135360575
+Validation acc = 0.9945454545454546
+Run 16
+Train acc = 0.9839153774080187
+Validation acc = 0.9945454545454546
+Run 17
+Train acc = 0.9836731103672206
+Validation acc = 0.9963503649635037
+Run 18
+Train acc = 0.9840679787354372
+Validation acc = 0.9945454545454546
+Run 19
+Train acc = 0.9838316394744514
+Validation acc = 0.9945454545454546
+Run 20
+Train acc = 0.983987259353113
+Validation acc = 0.9945454545454546
+Run 21
+Train acc = 0.9840567799446822
+Validation acc = 0.9945454545454546
+Run 22
+Train acc = 0.9837996347087257
+Validation acc = 0.9963503649635037
+Run 23
+Train acc = 0.9838316394744514
+Validation acc = 0.9945454545454546
+Run 24
+Train acc = 0.9840414413051426
+Validation acc = 0.9945454545454546
+Run 25
+Train acc = 0.9839901685816822
+Validation acc = 0.9945454545454546
+Run 26
+Train acc = 0.9840086388537717
+Validation acc = 0.9945454545454546
+Run 27
+Train acc = 0.9838346221679555
+Validation acc = 0.9945454545454546
+Run 28
+Train acc = 0.9839584657766476
+Validation acc = 0.9963503649635037
+Run 29
+Train acc = 0.9840595068269818
+Validation acc = 0.9945454545454546
+Fold accs len = 30
+Fold avg accuracy = 0.9946662178753581
+Run 0
+Train acc = 0.9847935060907372
+Validation acc = 0.9727773740310077
+Run 1
+Train acc = 0.9847380910234471
+Validation acc = 0.9727773740310077
+Run 2
+Train acc = 0.9849739969687483
+Validation acc = 0.9727773740310077
+Run 3
+Train acc = 0.9848962564733386
+Validation acc = 0.9727773740310077
+Run 4
+Train acc = 0.9850465874607385
+Validation acc = 0.9727773740310077
+Run 5
+Train acc = 0.9848989896514322
+Validation acc = 0.9727773740310077
+Run 6
+Train acc = 0.9847301066294258
+Validation acc = 0.9727773740310077
+Run 7
+Train acc = 0.9848693907761343
+Validation acc = 0.9727773740310077
+Run 8
+Train acc = 0.9849969192914251
+Validation acc = 0.9727773740310077
+Run 9
+Train acc = 0.9849713487788367
+Validation acc = 0.9727773740310077
+Run 10
+Train acc = 0.9848989896514322
+Validation acc = 0.9727773740310077
+Run 11
+Train acc = 0.9849687489860395
+Validation acc = 0.9727773740310077
+Run 12
+Train acc = 0.9848079447125041
+Validation acc = 0.9727773740310077
+Run 13
+Train acc = 0.9848185405404865
+Validation acc = 0.9727773740310077
+Run 14
+Train acc = 0.9847523638311283
+Validation acc = 0.9727773740310077
+Run 15
+Train acc = 0.9850465874607385
+Validation acc = 0.9727773740310077
+Run 16
+Train acc = 0.9846689164443676
+Validation acc = 0.9727773740310077
+Run 17
+Train acc = 0.9848715898987654
+Validation acc = 0.9727773740310077
+Run 18
+Train acc = 0.984789082725681
+Validation acc = 0.9727773740310077
+Run 19
+Train acc = 0.9848962564733386
+Validation acc = 0.9727773740310077
+Run 20
+Train acc = 0.9850713946921424
+Validation acc = 0.9727773740310077
+Run 21
+Train acc = 0.984789082725681
+Validation acc = 0.9727773740310077
+Run 22
+Train acc = 0.9849017711041823
+Validation acc = 0.9727773740310077
+Run 23
+Train acc = 0.9848693907761343
+Validation acc = 0.9727773740310077
+Run 24
+Train acc = 0.9848962564733386
+Validation acc = 0.9727773740310077
+Run 25
+Train acc = 0.9848935716156809
+Validation acc = 0.9727773740310077
+Run 26
+Train acc = 0.9849017711041823
+Validation acc = 0.9727773740310077
+Run 27
+Train acc = 0.984815819034435
+Validation acc = 0.9727773740310077
+Run 28
+Train acc = 0.985025706650381
+Validation acc = 0.9727773740310077
+Run 29
+Train acc = 0.9849496984638664
+Validation acc = 0.9727773740310077
+Fold accs len = 30
+Fold avg accuracy = 0.9727773740310077
+Run 0
+Train acc = 0.9837194752262338
+Validation acc = 0.9983498349834983
+Run 1
+Train acc = 0.983757870270593
+Validation acc = 0.9983552631578947
+Run 2
+Train acc = 0.9838004825598465
+Validation acc = 0.9983498349834983
+Run 3
+Train acc = 0.9836017438793412
+Validation acc = 0.9967213114754099
+Run 4
+Train acc = 0.9837548092703858
+Validation acc = 0.9983552631578947
+Run 5
+Train acc = 0.9835335258489644
+Validation acc = 0.9983552631578947
+Run 6
+Train acc = 0.9838054013850878
+Validation acc = 0.9983498349834983
+Run 7
+Train acc = 0.9836736473839858
+Validation acc = 0.9983552631578947
+Run 8
+Train acc = 0.9837980972348852
+Validation acc = 0.9983498349834983
+Run 9
+Train acc = 0.9838996508126845
+Validation acc = 0.9983552631578947
+Run 10
+Train acc = 0.9837488337538873
+Validation acc = 0.9983552631578947
+Run 11
+Train acc = 0.9836706469620704
+Validation acc = 0.9983552631578947
+Run 12
+Train acc = 0.9836408783284125
+Validation acc = 0.9983498349834983
+Run 13
+Train acc = 0.9837459193308828
+Validation acc = 0.9983552631578947
+Run 14
+Train acc = 0.9838790922106937
+Validation acc = 0.9983498349834983
+Run 15
+Train acc = 0.9838421649552176
+Validation acc = 0.9983552631578947
+Run 16
+Train acc = 0.9838329467600804
+Validation acc = 0.9967213114754099
+Run 17
+Train acc = 0.9836736473839858
+Validation acc = 0.9983552631578947
+Run 18
+Train acc = 0.9839052820263844
+Validation acc = 0.9983552631578947
+Run 19
+Train acc = 0.9837488337538873
+Validation acc = 0.9983552631578947
+Run 20
+Train acc = 0.9839024419118325
+Validation acc = 0.9983552631578947
+Run 21
+Train acc = 0.9837641385221503
+Validation acc = 0.9983552631578947
+Run 22
+Train acc = 0.9838270454380289
+Validation acc = 0.9983552631578947
+Run 23
+Train acc = 0.9837517970826126
+Validation acc = 0.9967213114754099
+Run 24
+Train acc = 0.983661939129068
+Validation acc = 0.9983552631578947
+Run 25
+Train acc = 0.9836797946642841
+Validation acc = 0.9967213114754099
+Run 26
+Train acc = 0.9838004825598465
+Validation acc = 0.9983498349834983
+Run 27
+Train acc = 0.9837980972348852
+Validation acc = 0.9983498349834983
+Run 28
+Train acc = 0.9838004825598465
+Validation acc = 0.9983498349834983
+Run 29
+Train acc = 0.9836484069920741
+Validation acc = 1.0
+Fold accs len = 30
+Fold avg accuracy = 0.9981905990426477
+Run 0
+Train acc = 0.9839393111404587
+Validation acc = 0.9949776660456555
+Run 1
+Train acc = 0.9835939004093748
+Validation acc = 0.9949776660456555
+Run 2
+Train acc = 0.9836468497624608
+Validation acc = 0.9932885906040269
+Run 3
+Train acc = 0.9839934974384026
+Validation acc = 0.9932885906040269
+Run 4
+Train acc = 0.9835911120405921
+Validation acc = 0.9932885906040269
+Run 5
+Train acc = 0.9839209800777229
+Validation acc = 0.9949776660456555
+Run 6
+Train acc = 0.9838943409445572
+Validation acc = 0.9932885906040269
+Run 7
+Train acc = 0.9840952185335843
+Validation acc = 0.9949776660456555
+Run 8
+Train acc = 0.983972876530062
+Validation acc = 0.9932885906040269
+Run 9
+Train acc = 0.9838488312301705
+Validation acc = 0.9949776660456555
+Run 10
+Train acc = 0.9840983701949593
+Validation acc = 0.9949776660456555
+Run 11
+Train acc = 0.9840491185622433
+Validation acc = 0.9932885906040269
+Run 12
+Train acc = 0.9839209800777229
+Validation acc = 0.9949776660456555
+Run 13
+Train acc = 0.9839907479367749
+Validation acc = 0.9932885906040269
+Run 14
+Train acc = 0.9838679676228848
+Validation acc = 0.9949776660456555
+Run 15
+Train acc = 0.9839934974384026
+Validation acc = 0.9932885906040269
+Run 16
+Train acc = 0.984132353495464
+Validation acc = 0.9932885906040269
+Run 17
+Train acc = 0.9840538051813391
+Validation acc = 0.9932885906040269
+Run 18
+Train acc = 0.9839827937215118
+Validation acc = 0.9932885906040269
+Run 19
+Train acc = 0.9839777366219729
+Validation acc = 0.9932885906040269
+Run 20
+Train acc = 0.9839180955883464
+Validation acc = 0.9949776660456555
+Run 21
+Train acc = 0.9837677355825847
+Validation acc = 0.9949776660456555
+Run 22
+Train acc = 0.984071759794189
+Validation acc = 0.9932885906040269
+Run 23
+Train acc = 0.9839268955462771
+Validation acc = 0.9949776660456555
+Run 24
+Train acc = 0.984179487476549
+Validation acc = 0.9949776660456555
+Run 25
+Train acc = 0.9840745211208818
+Validation acc = 0.9949776660456555
+Run 26
+Train acc = 0.9837424290723621
+Validation acc = 0.9932885906040269
+Run 27
+Train acc = 0.9839268955462771
+Validation acc = 0.9949776660456555
+Run 28
+Train acc = 0.983842841706958
+Validation acc = 0.9949776660456555
+Run 29
+Train acc = 0.9838370474402954
+Validation acc = 0.9949776660456555
+Fold accs len = 30
+Fold avg accuracy = 0.9941894308395622
+Run 0
+Train acc = 0.984023031988703
+Validation acc = 0.9887665924643416
+Run 1
+Train acc = 0.9841229769655335
+Validation acc = 0.9887665924643416
+Run 2
+Train acc = 0.9839577269764452
+Validation acc = 0.9887665924643416
+Run 3
+Train acc = 0.9841016783247492
+Validation acc = 0.9887665924643416
+Run 4
+Train acc = 0.984023031988703
+Validation acc = 0.9887665924643416
+Run 5
+Train acc = 0.9841803498034858
+Validation acc = 0.9887665924643416
+Run 6
+Train acc = 0.9842590464369718
+Validation acc = 0.9887665924643416
+Run 7
+Train acc = 0.9840535398140046
+Validation acc = 0.9903846153846154
+Run 8
+Train acc = 0.984177947200054
+Validation acc = 0.9887665924643416
+Run 9
+Train acc = 0.9841506934953986
+Validation acc = 0.9903846153846154
+Run 10
+Train acc = 0.9842191640415436
+Validation acc = 0.9903846153846154
+Run 11
+Train acc = 0.9840535398140046
+Validation acc = 0.9887665924643416
+Run 12
+Train acc = 0.9840597246823923
+Validation acc = 0.9903846153846154
+Run 13
+Train acc = 0.9840446296445292
+Validation acc = 0.9887665924643416
+Run 14
+Train acc = 0.9841317755264136
+Validation acc = 0.9903846153846154
+Run 15
+Train acc = 0.984263925123541
+Validation acc = 0.9887665924643416
+Run 16
+Train acc = 0.9842100361625923
+Validation acc = 0.9887665924643416
+Run 17
+Train acc = 0.9843067946112107
+Validation acc = 0.9903846153846154
+Run 18
+Train acc = 0.9842041958241375
+Validation acc = 0.9903846153846154
+Run 19
+Train acc = 0.9843354407739684
+Validation acc = 0.9887665924643416
+Run 20
+Train acc = 0.9842797465690997
+Validation acc = 0.9887665924643416
+Run 21
+Train acc = 0.9841378861464503
+Validation acc = 0.9903846153846154
+Run 22
+Train acc = 0.9840992381813399
+Validation acc = 0.9887665924643416
+Run 23
+Train acc = 0.9841287936434093
+Validation acc = 0.9887665924643416
+Run 24
+Train acc = 0.9839370137477781
+Validation acc = 0.9887665924643416
+Run 25
+Train acc = 0.9842320183447109
+Validation acc = 0.9903846153846154
+Run 26
+Train acc = 0.9839753290134606
+Validation acc = 0.9903846153846154
+Run 27
+Train acc = 0.9839692655523665
+Validation acc = 0.9903846153846154
+Run 28
+Train acc = 0.9841985518545129
+Validation acc = 0.9887665924643416
+Run 29
+Train acc = 0.9841229769655335
+Validation acc = 0.9903846153846154
+Fold accs len = 30
+Fold avg accuracy = 0.9894138016324513
+Run 0
+Train acc = 0.9836253985317494
+Validation acc = 0.9967741935483871
+Run 1
+Train acc = 0.9838141502019069
+Validation acc = 0.9967741935483871
+Run 2
+Train acc = 0.9838662164016032
+Validation acc = 0.9967741935483871
+Run 3
+Train acc = 0.9837040947688753
+Validation acc = 0.9967741935483871
+Run 4
+Train acc = 0.9837272672478954
+Validation acc = 0.9967741935483871
+Run 5
+Train acc = 0.9838170810809492
+Validation acc = 0.9967741935483871
+Run 6
+Train acc = 0.9838170810809492
+Validation acc = 0.9967741935483871
+Run 7
+Train acc = 0.9838170810809492
+Validation acc = 0.9967741935483871
+Run 8
+Train acc = 0.9836017273642599
+Validation acc = 0.995176848874598
+Run 9
+Train acc = 0.9838868078361613
+Validation acc = 0.9967741935483871
+Run 10
+Train acc = 0.9837388453685401
+Validation acc = 0.9967741935483871
+Run 11
+Train acc = 0.9837244954077985
+Validation acc = 0.9967741935483871
+Run 12
+Train acc = 0.9838170810809492
+Validation acc = 0.9967741935483871
+Run 13
+Train acc = 0.983666791637329
+Validation acc = 0.9967741935483871
+Run 14
+Train acc = 0.9838200609269212
+Validation acc = 0.9967741935483871
+Run 15
+Train acc = 0.9837329582500018
+Validation acc = 0.9967741935483871
+Run 16
+Train acc = 0.9837358773181459
+Validation acc = 0.995176848874598
+Run 17
+Train acc = 0.9839765327958732
+Validation acc = 0.9967741935483871
+Run 18
+Train acc = 0.9839652051355211
+Validation acc = 0.9967741935483871
+Run 19
+Train acc = 0.9838896033865969
+Validation acc = 0.9967741935483871
+Run 20
+Train acc = 0.9837358773181459
+Validation acc = 0.9967741935483871
+Run 21
+Train acc = 0.9838141502019069
+Validation acc = 0.9967741935483871
+Run 22
+Train acc = 0.9836253985317494
+Validation acc = 0.9967741935483871
+Run 23
+Train acc = 0.9838141502019069
+Validation acc = 0.9967741935483871
+Run 24
+Train acc = 0.9839707708120264
+Validation acc = 0.9967741935483871
+Run 25
+Train acc = 0.9837139002183496
+Validation acc = 0.9967741935483871
+Run 26
+Train acc = 0.9837272672478954
+Validation acc = 0.9967741935483871
+Run 27
+Train acc = 0.9838982844034458
+Validation acc = 0.9967741935483871
+Run 28
+Train acc = 0.9837329582500018
+Validation acc = 0.9967741935483871
+Run 29
+Train acc = 0.9838615627673474
+Validation acc = 0.9967741935483871
+Fold accs len = 30
+Fold avg accuracy = 0.9966677039034677
+Run 0
+Train acc = 0.9845122519977281
+Validation acc = 0.9843356918238994
+Run 1
+Train acc = 0.9842742240225835
+Validation acc = 0.9858931388012617
+Run 2
+Train acc = 0.9843225335892514
+Validation acc = 0.9827380952380953
+Run 3
+Train acc = 0.9844194580710383
+Validation acc = 0.984315664556962
+Run 4
+Train acc = 0.9845245445024471
+Validation acc = 0.984375
+Run 5
+Train acc = 0.9844528605261591
+Validation acc = 0.9828417056074766
+Run 6
+Train acc = 0.984327547963673
+Validation acc = 0.984315664556962
+Run 7
+Train acc = 0.9845122519977281
+Validation acc = 0.9843356918238994
+Run 8
+Train acc = 0.9844279787398962
+Validation acc = 0.9858931388012617
+Run 9
+Train acc = 0.9844309173639783
+Validation acc = 0.9827880094043887
+Run 10
+Train acc = 0.9842772862484801
+Validation acc = 0.9827880094043887
+Run 11
+Train acc = 0.9845035480762339
+Validation acc = 0.9858931388012617
+Run 12
+Train acc = 0.9845213978802985
+Validation acc = 0.984375
+Run 13
+Train acc = 0.9844495790314154
+Validation acc = 0.984375
+Run 14
+Train acc = 0.9844037493988166
+Validation acc = 0.984315664556962
+Run 15
+Train acc = 0.9844369419315699
+Validation acc = 0.98125
+Run 16
+Train acc = 0.9844037493988166
+Validation acc = 0.984315664556962
+Run 17
+Train acc = 0.9843495822963446
+Validation acc = 0.9858931388012617
+Run 18
+Train acc = 0.9844222490463068
+Validation acc = 0.9858931388012617
+Run 19
+Train acc = 0.9843381705206617
+Validation acc = 0.9858931388012617
+Run 20
+Train acc = 0.9844194580710383
+Validation acc = 0.984315664556962
+Run 21
+Train acc = 0.9842867668112801
+Validation acc = 0.98125
+Run 22
+Train acc = 0.9842514962896067
+Validation acc = 0.984315664556962
+Run 23
+Train acc = 0.9843466555284313
+Validation acc = 0.9858931388012617
+Run 24
+Train acc = 0.9843466555284313
+Validation acc = 0.9858931388012617
+Run 25
+Train acc = 0.9843437779450952
+Validation acc = 0.9858931388012617
+Run 26
+Train acc = 0.9843495822963446
+Validation acc = 0.9858931388012617
+Run 27
+Train acc = 0.9843617802736384
+Validation acc = 0.98125
+Run 28
+Train acc = 0.9844339051101926
+Validation acc = 0.9843356918238994
+Run 29
+Train acc = 0.9844309173639783
+Validation acc = 0.9858931388012617
+Fold accs len = 30
+Fold avg accuracy = 0.9843918803093901
+Run 0
+Train acc = 0.9870063408622596
+Validation acc = 0.9222222222222223
+Run 1
+Train acc = 0.9872452742478355
+Validation acc = 0.9222222222222223
+Run 2
+Train acc = 0.9872554326194773
+Validation acc = 0.9222222222222223
+Run 3
+Train acc = 0.9872404869396361
+Validation acc = 0.9222222222222223
+Run 4
+Train acc = 0.9869842264534368
+Validation acc = 0.9222222222222223
+Run 5
+Train acc = 0.9871648197223852
+Validation acc = 0.9222222222222223
+Run 6
+Train acc = 0.9870843648440354
+Validation acc = 0.9222222222222223
+Run 7
+Train acc = 0.9871577474147665
+Validation acc = 0.9222222222222223
+Run 8
+Train acc = 0.9868947206703248
+Validation acc = 0.9222222222222223
+Run 9
+Train acc = 0.9869991933274849
+Validation acc = 0.9222222222222223
+Run 10
+Train acc = 0.9871648197223852
+Validation acc = 0.9222222222222223
+Run 11
+Train acc = 0.9869991933274849
+Validation acc = 0.9222222222222223
+Run 12
+Train acc = 0.9871600560812658
+Validation acc = 0.9222222222222223
+Run 13
+Train acc = 0.9869822845211198
+Validation acc = 0.9222222222222223
+Run 14
+Train acc = 0.9870868079116801
+Validation acc = 0.9222222222222223
+Run 15
+Train acc = 0.9871410399151235
+Validation acc = 0.9222222222222223
+Run 16
+Train acc = 0.9867830696166748
+Validation acc = 0.9222222222222223
+Run 17
+Train acc = 0.9868692603838558
+Validation acc = 0.9222222222222223
+Run 18
+Train acc = 0.987011349344413
+Validation acc = 0.9222222222222223
+Run 19
+Train acc = 0.9871830238492809
+Validation acc = 0.9222222222222223
+Run 20
+Train acc = 0.9870750801107806
+Validation acc = 0.9222222222222223
+Run 21
+Train acc = 0.9869210833377781
+Validation acc = 0.9222222222222223
+Run 22
+Train acc = 0.9868692603838558
+Validation acc = 0.9222222222222223
+Run 23
+Train acc = 0.9869078852898023
+Validation acc = 0.9222222222222223
+Run 24
+Train acc = 0.9871830238492809
+Validation acc = 0.9222222222222223
+Run 25
+Train acc = 0.986916488356264
+Validation acc = 0.9222222222222223
+Run 26
+Train acc = 0.9870063408622596
+Validation acc = 0.9222222222222223
+Run 27
+Train acc = 0.9870892996405016
+Validation acc = 0.9222222222222223
+Run 28
+Train acc = 0.9870626207328381
+Validation acc = 0.9222222222222223
+Run 29
+Train acc = 0.9871391724065184
+Validation acc = 0.9222222222222223
+Fold accs len = 30
+Fold avg accuracy = 0.9222222222222219
+Run 0
+Train acc = 0.9839192880429994
+Validation acc = 0.9962825278810409
+Run 1
+Train acc = 0.9838330155427424
+Validation acc = 0.9962825278810409
+Run 2
+Train acc = 0.9837667312841554
+Validation acc = 0.9962825278810409
+Run 3
+Train acc = 0.9837392482177152
+Validation acc = 0.9962825278810409
+Run 4
+Train acc = 0.9840028473997717
+Validation acc = 0.9962825278810409
+Run 5
+Train acc = 0.9839373701004619
+Validation acc = 0.9962825278810409
+Run 6
+Train acc = 0.9837392482177152
+Validation acc = 0.9962825278810409
+Run 7
+Train acc = 0.9836445922408485
+Validation acc = 0.9962825278810409
+Run 8
+Train acc = 0.9836951940044724
+Validation acc = 0.9962825278810409
+Run 9
+Train acc = 0.9837728087675124
+Validation acc = 0.9962825278810409
+Run 10
+Train acc = 0.983856645184879
+Validation acc = 0.9962825278810409
+Run 11
+Train acc = 0.9838474218275663
+Validation acc = 0.9962825278810409
+Run 12
+Train acc = 0.9839711948227048
+Validation acc = 0.9962825278810409
+Run 13
+Train acc = 0.983893027480748
+Validation acc = 0.9962825278810409
+Run 14
+Train acc = 0.9838198217104678
+Validation acc = 0.9962825278810409
+Run 15
+Train acc = 0.9838474218275663
+Validation acc = 0.9962825278810409
+Run 16
+Train acc = 0.9837579772981926
+Validation acc = 0.9962825278810409
+Run 17
+Train acc = 0.9837608469338137
+Validation acc = 0.9962825278810409
+Run 18
+Train acc = 0.9837759198196203
+Validation acc = 0.9962825278810409
+Run 19
+Train acc = 0.9840028473997717
+Validation acc = 0.9962825278810409
+Run 20
+Train acc = 0.9838474218275663
+Validation acc = 0.9962825278810409
+Run 21
+Train acc = 0.9840988185834524
+Validation acc = 0.9962825278810409
+Run 22
+Train acc = 0.9839164434672162
+Validation acc = 0.9962825278810409
+Run 23
+Train acc = 0.9836983416216956
+Validation acc = 0.9962825278810409
+Run 24
+Train acc = 0.9839251223212322
+Validation acc = 0.9962825278810409
+Run 25
+Train acc = 0.9837728087675124
+Validation acc = 0.9962825278810409
+Run 26
+Train acc = 0.983689043298618
+Validation acc = 0.9962825278810409
+Run 27
+Train acc = 0.9840749096362398
+Validation acc = 0.9962825278810409
+Run 28
+Train acc = 0.9839108996722379
+Validation acc = 0.9962825278810409
+Run 29
+Train acc = 0.9836562051376054
+Validation acc = 0.9962825278810409
+Fold accs len = 30
+Fold avg accuracy = 0.9962825278810405
+Run 0
+Train acc = 0.9841961229988245
+Validation acc = 0.9783832353115903
+Run 1
+Train acc = 0.9847751073451607
+Validation acc = 0.9784069658719028
+Run 2
+Train acc = 0.9846988001826711
+Validation acc = 0.9784069658719028
+Run 3
+Train acc = 0.9846850602434689
+Validation acc = 0.9797356017086464
+Run 4
+Train acc = 0.9847836883847108
+Validation acc = 0.9784069658719028
+Run 5
+Train acc = 0.9846959519088012
+Validation acc = 0.9784069658719028
+Run 6
+Train acc = 0.9842917426000634
+Validation acc = 0.9824722440772795
+Run 7
+Train acc = 0.9847016985027859
+Validation acc = 0.9811097475455821
+Run 8
+Train acc = 0.9846799159480293
+Validation acc = 0.9783832353115903
+Run 9
+Train acc = 0.9847669774500174
+Validation acc = 0.9756587498522983
+Run 10
+Train acc = 0.9846850602434689
+Validation acc = 0.9797356017086464
+Run 11
+Train acc = 0.9842483693409996
+Validation acc = 0.9756720430107527
+Run 12
+Train acc = 0.9844419172883471
+Validation acc = 0.9810941746425618
+Run 13
+Train acc = 0.9848515661524077
+Validation acc = 0.9743077036382384
+Run 14
+Train acc = 0.9845292452340138
+Validation acc = 0.9824722440772795
+Run 15
+Train acc = 0.9847046468208692
+Validation acc = 0.9811097475455821
+Run 16
+Train acc = 0.9842729316382975
+Validation acc = 0.9770276710451851
+Run 17
+Train acc = 0.9845212246001539
+Validation acc = 0.9783832353115903
+Run 18
+Train acc = 0.9845907209247833
+Validation acc = 0.9770276710451851
+Run 19
+Train acc = 0.9847669774500174
+Validation acc = 0.9756587498522983
+Run 20
+Train acc = 0.9846959519088012
+Validation acc = 0.9784069658719028
+Run 21
+Train acc = 0.9846256306682362
+Validation acc = 0.9824722440772795
+Run 22
+Train acc = 0.9847669774500174
+Validation acc = 0.9756587498522983
+Run 23
+Train acc = 0.9848598829243991
+Validation acc = 0.9784069658719028
+Run 24
+Train acc = 0.984467674547594
+Validation acc = 0.9824722440772795
+Run 25
+Train acc = 0.9847751073451607
+Validation acc = 0.9743341830007911
+Run 26
+Train acc = 0.9847751073451607
+Validation acc = 0.9757041841982235
+Run 27
+Train acc = 0.9847836883847108
+Validation acc = 0.9784069658719028
+Run 28
+Train acc = 0.9846850602434689
+Validation acc = 0.9783844526705447
+Run 29
+Train acc = 0.9844445787014661
+Validation acc = 0.9797356017086464
+Fold accs len = 30
+Fold avg accuracy = 0.978528069212423
+Run 0
+Train acc = 0.9841570418768701
+Validation acc = 0.9900440019556425
+Run 1
+Train acc = 0.984229358478077
+Validation acc = 0.9900440019556425
+Run 2
+Train acc = 0.9838941407902875
+Validation acc = 0.9883827234820612
+Run 3
+Train acc = 0.9840789283513742
+Validation acc = 0.9917052426410331
+Run 4
+Train acc = 0.9841540694717258
+Validation acc = 0.9900440019556425
+Run 5
+Train acc = 0.9840850935728263
+Validation acc = 0.9917052426410331
+Run 6
+Train acc = 0.9840914535537724
+Validation acc = 0.9917052426410331
+Run 7
+Train acc = 0.9841570418768701
+Validation acc = 0.9917052426410331
+Run 8
+Train acc = 0.9842105263157894
+Validation acc = 0.9883827234820612
+Run 9
+Train acc = 0.9841694191735565
+Validation acc = 0.9917052426410331
+Run 10
+Train acc = 0.9840850935728263
+Validation acc = 0.9917052426410331
+Run 11
+Train acc = 0.9842156613023851
+Validation acc = 0.9883827234820612
+Run 12
+Train acc = 0.9841295221696695
+Validation acc = 0.9883827234820612
+Run 13
+Train acc = 0.9838994757883759
+Validation acc = 0.9883827234820612
+Run 14
+Train acc = 0.9841758997774334
+Validation acc = 0.9917052426410331
+Run 15
+Train acc = 0.984075918891608
+Validation acc = 0.9900440019556425
+Run 16
+Train acc = 0.9841346333530884
+Validation acc = 0.9883827234820612
+Run 17
+Train acc = 0.9839778366597407
+Validation acc = 0.9883827234820612
+Run 18
+Train acc = 0.9839700198159954
+Validation acc = 0.9883827234820612
+Run 19
+Train acc = 0.9843651289381798
+Validation acc = 0.9883827234820612
+Run 20
+Train acc = 0.9842080326999549
+Validation acc = 0.9883827234820612
+Run 21
+Train acc = 0.9841570418768701
+Validation acc = 0.9917052426410331
+Run 22
+Train acc = 0.9840819865939483
+Validation acc = 0.9917052426410331
+Run 23
+Train acc = 0.9842130691989714
+Validation acc = 0.9883827234820612
+Run 24
+Train acc = 0.9841295221696695
+Validation acc = 0.9883827234820612
+Run 25
+Train acc = 0.9841540694717258
+Validation acc = 0.9900440019556425
+Run 26
+Train acc = 0.9842105263157894
+Validation acc = 0.9883827234820612
+Run 27
+Train acc = 0.9841511459273047
+Validation acc = 0.9900440019556425
+Run 28
+Train acc = 0.9841600630961371
+Validation acc = 0.9917052426410331
+Run 29
+Train acc = 0.9838079848648995
+Validation acc = 0.9883827234820612
+Fold accs len = 30
+Fold avg accuracy = 0.9898224855631014
+Run 0
+Train acc = 0.9837554031976078
+Validation acc = 0.998062015503876
+Run 1
+Train acc = 0.9837836735071914
+Validation acc = 0.998062015503876
+Run 2
+Train acc = 0.9837954049592479
+Validation acc = 0.998062015503876
+Run 3
+Train acc = 0.9839447245486386
+Validation acc = 0.998062015503876
+Run 4
+Train acc = 0.9837954049592479
+Validation acc = 0.998062015503876
+Run 5
+Train acc = 0.9836845593656741
+Validation acc = 0.9961389961389961
+Run 6
+Train acc = 0.9838670714441823
+Validation acc = 0.998062015503876
+Run 7
+Train acc = 0.9838670714441823
+Validation acc = 0.998062015503876
+Run 8
+Train acc = 0.9838641992411215
+Validation acc = 0.998062015503876
+Run 9
+Train acc = 0.9839418889580609
+Validation acc = 0.998062015503876
+Run 10
+Train acc = 0.9838699918572326
+Validation acc = 0.998062015503876
+Run 11
+Train acc = 0.9839447245486386
+Validation acc = 0.998062015503876
+Run 12
+Train acc = 0.9839363626822645
+Validation acc = 0.998062015503876
+Run 13
+Train acc = 0.9838670714441823
+Validation acc = 0.998062015503876
+Run 14
+Train acc = 0.9837178739686581
+Validation acc = 0.998062015503876
+Run 15
+Train acc = 0.9838885241915422
+Validation acc = 0.998062015503876
+Run 16
+Train acc = 0.9840168525994845
+Validation acc = 0.998062015503876
+Run 17
+Train acc = 0.9836796852923035
+Validation acc = 0.9961389961389961
+Run 18
+Train acc = 0.9836434935927946
+Validation acc = 0.9961389961389961
+Run 19
+Train acc = 0.9836198317629522
+Validation acc = 0.998062015503876
+Run 20
+Train acc = 0.9840224021996744
+Validation acc = 0.998062015503876
+Run 21
+Train acc = 0.9834985111661911
+Validation acc = 0.998062015503876
+Run 22
+Train acc = 0.983835799987819
+Validation acc = 0.998062015503876
+Run 23
+Train acc = 0.9837554031976078
+Validation acc = 0.998062015503876
+Run 24
+Train acc = 0.9837923998501497
+Validation acc = 0.998062015503876
+Run 25
+Train acc = 0.983840526428143
+Validation acc = 0.998062015503876
+Run 26
+Train acc = 0.9839476083799574
+Validation acc = 0.998062015503876
+Run 27
+Train acc = 0.9839627495497926
+Validation acc = 0.998062015503876
+Run 28
+Train acc = 0.9839185470472965
+Validation acc = 0.9961389961389961
+Run 29
+Train acc = 0.9838613752937826
+Validation acc = 0.998062015503876
+Fold accs len = 30
+Fold avg accuracy = 0.9978056129218921
+Outter accs len = 22
+Outter avg accuracy = 0.9831643363300749

@@ -60,7 +60,7 @@ if leftovers > 0:
 Fs = 200
 # Number of random search iterations per run, and runs per fold
 num_iterations = 100   
-num_runs = 10                                    
+num_runs = 30                                    
 verbosity = False
 print(f'RS iterations per run = {num_iterations}\nRS runs per folds = {num_runs}')
 
