@@ -40,7 +40,6 @@ if num_folds <= 0 or num_folds > 66:
     print('Error, there are 66 records')
     exit(-1)
 
-
 # Load records (PPG signals and peak references)
 from read_datasets import records # This will load 60 records (o to 59). Record sample rate = 200 Hz
 num_recs = len(records)
@@ -59,48 +58,101 @@ if leftovers > 0:
 # Sampling frequency
 Fs = 200
 # Number of random search iterations per run, and runs per fold
-num_iterations = 100   
-num_runs = 30                                    
+iterations_of_interest = [i*50 for i in range(1,21)]
+num_runs = 30
 verbosity = False
-print(f'RS iterations per run = {num_iterations}\nRS runs per folds = {num_runs}')
+print(f'RS iterations of interest = {iterations_of_interest}\nRS runs per folds = {num_runs}')
 
 # Generate num_folds splits of the loaded record and run random search a number of times for each split
-cv_accuracies = []
+cv_parameters = []
+cv_precisions = []
+cv_recalls = []
 for fold_i in range(num_folds):
     # Split the record
     fold_validation = records[fold_i * fold_len : (fold_i + 1) * fold_len]
     fold_train      = records[0 : fold_i * fold_len] + records[(fold_i + 1) * fold_len : len(records) - leftovers]
     # print(f'Val: {len(fold_validation)}; Train: {len(fold_train)}')
     
-    # Run random search a number of times and report validation accuracies
-    validation_accuracies   = []
+    # Store validation precision and recall for each run and for all iterations of interest
+    fold_parameter_history = []
+    fold_precision_history = []
+    fold_recall_history = []
+    # Run random search a number of times
     for run in range(num_runs):
-        rs_solution = random_search_crossover(train_records = fold_train, num_iterations = num_iterations, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
-        alpha_cross, alpha_fast, alpha_slow, train_cost = rs_solution
-        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)
-    
-        # Here accuracy is the average between precision and recall
-        # Train
-        train_accuracy = 1 - train_cost     # Train cost is 1 - train_acc
-        print(f'Run {run}')
-        print(f'Train acc = {train_accuracy}')
+        # Get history of solutions defined by iterations of interest
+        solutions_of_interest = random_search_crossover(train_records = fold_train, iterations_of_interest = iterations_of_interest,
+                                                        min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+        # Parameters found, and also precisions and recalls of interest for this run
+        run_parameter_sets = []
+        run_precisions = []
+        run_recalls = []
+        # For each solution define a model and extract validation precision, recall and accuracy
+        for soi in solutions_of_interest:
+            alpha_cross, alpha_fast, alpha_slow, train_cost = soi
+            peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)
+            
+            # Validation triangular confusion matrix
+            validation_conf_mat = peak_detector.literature_record_set_confusion_matrix(fold_validation)
+            tp, fp, fn = validation_conf_mat
+            val_precision = tp / (tp + fp)
+            val_recall    = tp / (tp + fn)
+            
+            # Keep parameters, precisions and recalls for this run
+            run_parameter_sets.append(list(soi[:-1]))
+            run_precisions.append(val_precision)
+            run_recalls.append(val_recall)
+            
+            # Compute acc to validate code
+            # val_accuracy  = (val_precision + val_recall)/2          # Here accuracy is the average between precision and recall
+            # validation_accuracies.append(val_accuracy)
+            # print(f'Validation acc = {val_accuracy}')
         
-        # Validation accuracy
-        validation_conf_mat = peak_detector.literature_record_set_confusion_matrix(fold_validation)
-        tp, fp, fn = validation_conf_mat
-        val_precision = tp / (tp + fp)
-        val_recall    = tp / (tp + fn)
-        val_accuracy  = (val_precision + val_recall)/2
-        validation_accuracies.append(val_accuracy)
-        print(f'Validation acc = {val_accuracy}')
+        # Validation 1
+        # run_accs = (np.array(run_precisions) + np.array(run_recalls))/2
+        # print('run accs')
+        # print(run_accs)
+        
+        # Validation 2
+        print('Run check')
+        print(f'{np.shape(run_parameter_sets)} .. should be ({len(iterations_of_interest)},3)')
+        print(f'{np.shape(run_precisions)} .... should be ({len(iterations_of_interest)})')
+        print(f'{np.shape(run_recalls)} .... should be ({len(iterations_of_interest)})')
+        
+        # Keep data of each run
+        fold_parameter_history.append(list(run_parameter_sets))
+        fold_precision_history.append(list(run_precisions))
+        fold_recall_history.append(list(run_recalls))
+    
+    # Validation 3
+    print('Fold check')
+    print(f'{np.shape(fold_parameter_history)} .. should be ({num_runs},{len(iterations_of_interest)},3)')
+    print(f'{np.shape(fold_precision_history)} .... should be ({num_runs},{len(iterations_of_interest)})')
+    print(f'{np.shape(fold_recall_history)} .... should be ({num_runs},{len(iterations_of_interest)})')
+    
+    # Keep data of each fold
+    cv_parameters.append(list(fold_parameter_history))
+    cv_precisions.append(list(fold_precision_history))
+    cv_recalls.append(list(fold_recall_history))
 
-    
-    fold_accuracy = np.mean(validation_accuracies)
-    cv_accuracies.append(fold_accuracy)
-    print(f'Fold accs len = {len(validation_accuracies)}')
-    print(f'Fold avg accuracy = {fold_accuracy}')
-    
+# Validation 4
+print('Full CV check')
+print(f'{np.shape(cv_parameters)} .. should be ({num_folds},{num_runs},{len(iterations_of_interest)},3)')
+print(f'{np.shape(cv_precisions)} .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')
+print(f'{np.shape(cv_recalls)}    .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')
+
+if num_folds == 22:
+    base_filename = f'LOSOCV_{num_folds}folds_{num_runs}runs_'
+else:
+    base_filename = f'CV_{num_folds}folds_{num_runs}runs_'
+np.save(base_filename + 'parameters.npy', cv_parameters)
+np.save(base_filename + 'precisions.npy', cv_precisions)
+np.save(base_filename + 'recalls.npy',    cv_recalls)
+
+# fold_accuracy = np.mean(validation_accuracies)
+# cv_accuracies.append(fold_accuracy)
+# print(f'Fold accs len = {len(validation_accuracies)}')
+# print(f'Fold avg accuracy = {fold_accuracy}')
 # print(cv_accuracies)
-mean_acc = np.mean(cv_accuracies)
-print(f'Outter accs len = {len(cv_accuracies)}')
-print(f'Outter avg accuracy = {mean_acc}')
+# mean_acc = np.mean(cv_accuracies)
+# print(f'Outter accs len = {len(cv_accuracies)}')
+# print(f'Outter avg accuracy = {mean_acc}')

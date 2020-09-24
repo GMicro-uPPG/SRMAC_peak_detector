@@ -381,6 +381,10 @@ def random_search_crossover(train_records, iterations_of_interest, min_alpha, ma
         exit(-1)
     if len(iterations_of_interest) == 0:
         print('Error, iterations of interest must not be empty')
+        exit(-1)
+    if np.min(iterations_of_interest) <= 0 : 
+        print('Error, the minimum iteration of interest must be 1')
+        exit(-1)
     if verbosity != False and verbosity != True:
         print('Error, erbosity must be boolean')
         exit(-1)
