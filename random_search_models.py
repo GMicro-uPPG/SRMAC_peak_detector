@@ -47,36 +47,41 @@ try:
     # Number of runs to extract stats from
     num_runs = 3
     print('\nNumber of runs = ' + str(num_runs))
-    # Number of random search iterations
-    num_iterations = 10                                       
-    print('Number of iterations = ' + str(num_iterations))
+    # Iterations of interest for random search
+    iterations_of_interest = [2,10]                                       
+    print('Iterations of interest = ' + str(iterations_of_interest))
     
     verbosity = True
-    
-    train_accuracies = []
-    test_accuracies = []
+    # Train acc histories
+    hist_train_accs = []
+    hist_test_accs = []
     for _ in range(num_runs):
-        # Optimize parameters and define model with them
-        rs_solution = random_search_crossover(train_records = train_records, num_iterations = num_iterations, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
-        alpha_cross, alpha_fast, alpha_slow, train_cost = rs_solution
-        peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)
-        
-        # Get results for train and test data
-        # Train
-        # train_cm = peak_detector.literature_record_set_confusion_matrix(train_records)
-        # train_precision = train_cm[0] / (train_cm[0] + train_cm[1])
-        # train_recall =    train_cm[0] / (train_cm[0] + train_cm[2])
-        # train_accuracy = (train_precision + train_recall)/2
-        train_accuracy = 1 - train_cost     # Train cost is 1 - acc
-        # Test
-        test_cm = peak_detector.literature_record_set_confusion_matrix(test_records)
-        test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
-        test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])
-        test_accuracy = (test_precision + test_recall)/2
-        test_accuracies.append(test_accuracy)
-        
-    print(f'Train acc: {np.mean(train_accuracies)} ({np.std(train_accuracies)})')
-    print(f'Test acc:  {np.mean(test_accuracies)} ({np.std(test_accuracies)})')
+        # Get history of solutions defined by iterations of interest
+        solutions_of_interest = random_search_crossover(train_records = train_records, iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+        run_train_accuracies = []
+        run_test_accuracies = []
+        # For each solution define a model and extract test acc
+        for soi in solutions_of_interest:
+            alpha_cross, alpha_fast, alpha_slow, train_cost = soi
+            peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)            # Get results for train and test data
+            # Train
+            train_accuracy = 1 - train_cost     # Train cost is 1 - acc
+            run_train_accuracies.append(train_accuracy)
+            # Test
+            test_cm = peak_detector.literature_record_set_confusion_matrix(test_records)
+            test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
+            test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])
+            test_accuracy = (test_precision + test_recall)/2
+            run_test_accuracies.append(test_accuracy)
+        hist_train_accs.append(list(run_train_accuracies))
+        hist_test_accs.append(list(run_test_accuracies))
+    
+    print('Train accuracies history')
+    print(hist_train_accs)
+    print('Test accuracies history')
+    print(hist_test_accs)
+    # print(f'Train acc: {np.mean(train_accuracies)} ({np.std(train_accuracies)})')
+    # print(f'Test acc:  {np.mean(test_accuracies)} ({np.std(test_accuracies)})')
     
     
     print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))

@@ -99,19 +99,19 @@ class crossover_detector:
             
         return fast_averages, slow_averages, crossover_indices, peaks_array
         
-    def ignore_short_peaks(self, detected_peaks, peak_len_threshold):
-        ''' Ignore peaks with low duration  '''
-        peaks_array = list(detected_peaks)
-        peak_len_counter = 0
-        for index, peak_state in enumerate(peaks_array):
-            if peak_state == 1:
-                peak_len_counter += 1
-            else:
-                if peak_len_counter < peak_len_threshold and peak_len_counter > 0:
-                    peaks_array[(index - peak_len_counter) : index] = [0]*peak_len_counter
-                peak_len_counter = 0    
+    # def ignore_short_peaks(self, detected_peaks, peak_len_threshold):
+        # ''' Ignore peaks with low duration  '''
+        # peaks_array = list(detected_peaks)
+        # peak_len_counter = 0
+        # for index, peak_state in enumerate(peaks_array):
+            # if peak_state == 1:
+                # peak_len_counter += 1
+            # else:
+                # if peak_len_counter < peak_len_threshold and peak_len_counter > 0:
+                    # peaks_array[(index - peak_len_counter) : index] = [0]*peak_len_counter
+                # peak_len_counter = 0    
         
-        return peaks_array
+        # return peaks_array
         
     def peak_positions(self, ppg_signal, detected_peaks):
         ''' From detected peak regions, extract exact peak locations '''
@@ -375,17 +375,21 @@ class crossover_detector:
             
             
 # Given the number of iterations and alphas range, performs random search on the crossover's alphas using train data accuracy as fitness metric
-def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha, sampling_frequency, verbosity):
+def random_search_crossover(train_records, iterations_of_interest, min_alpha, max_alpha, sampling_frequency, verbosity):
     if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
-        print('Minimum and maximum alphas must be between 0 and 1')
+        print('Error, minimum and maximum alphas must be between 0 and 1')
+        exit(-1)
+    if len(iterations_of_interest) == 0:
+        print('Error, iterations of interest must not be empty')
+    if verbosity != False and verbosity != True:
+        print('Error, erbosity must be boolean')
         exit(-1)
     
-    if verbosity != False and verbosity != True:
-        print('Verbosity must be boolean')
-        exit(-1)
+    num_iterations = int(np.max(iterations_of_interest))
     
     # The initial solution has infinite cost, and therefore any solution is better than the initial one
     best_solution = [0, 0, 0, float('inf')]
+    solutions_of_interest = []
     
     # Optimization loop
     for iteration in range(num_iterations):
@@ -408,10 +412,14 @@ def random_search_crossover(train_records, num_iterations, min_alpha, max_alpha,
         if cost < best_solution[-1]:
             best_solution = [alpha_crossover, alpha_fast, alpha_slow, cost]
         
+        # Store current best solution in iterations of interest
+        if iteration in (np.array(iterations_of_interest) - 1):
+            solutions_of_interest.append(list(best_solution))
+            
         if verbosity == True:
             print('Alphas: crossover, fast, slow : cost')
             print(f'[{iteration}] {alpha_crossover}, {alpha_fast}, {alpha_slow} : {cost}')
             print(f'[best] {best_solution[0]} {best_solution[1]} {best_solution[2]} : {best_solution[-1]}')
     
-    return best_solution 
+    return solutions_of_interest 
         
