@@ -2,7 +2,7 @@
 
 # MIT License
 
-# Copyright (c) 2016 Grupo de Microeletrônica (Universidade Federal de Santa Maria)
+# Copyright (c) 2021 Grupo de Microeletrônica (Universidade Federal de Santa Maria)
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+# Author: Victor O. Costa
 
 # Python std library
 import sys
@@ -41,7 +43,7 @@ if num_folds <= 0 or num_folds > 66:
     exit(-1)
 
 # Load records (PPG signals and peak references)
-from read_datasets import records # This will load 60 records (o to 59). Record sample rate = 200 Hz
+from read_datasets import records   # This import will load 66 records. Record sample rate = 200 Hz
 num_recs = len(records)
 print(f'Loaded {num_recs} records')
 if num_recs == 0:
@@ -53,7 +55,7 @@ print(f'The size of each fold is {fold_len} records')
 leftovers = num_recs % num_folds
 if leftovers > 0:
     print(f'There are {leftovers} unused records')
-    print(f'This wont happen if num_folds is a divisor of {num_recs}')
+    print(f'This wont happen if {num_recs} is divisible by num_folds')
 
 # Sampling frequency
 Fs = 200

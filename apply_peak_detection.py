@@ -2,7 +2,7 @@
 
 # MIT License
 
-# Copyright (c) 2016 Grupo de Microeletrônica (Universidade Federal de Santa Maria)
+# Copyright (c) 2021 Grupo de Microeletrônica (Universidade Federal de Santa Maria)
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Author: Victor O. Costa
+
 # Python std library
 import sys
+if len(sys.argv) != 3:
+    print('Please enter the first and last record numbers')
+    exit(-1)
 # Own
 from ppg_peak_detection import crossover_detector
 from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
@@ -31,17 +36,13 @@ from read_datasets import records # This will load 60 records (o to 59). Rercord
 import numpy as np
 import matplotlib.pyplot as plt
 
-if len(sys.argv) != 3:
-    print('Please enter the first and last record numbers')
-    exit(-1)
-    
 first_rec = int(sys.argv[1])
 last_rec = int(sys.argv[2])
 
 if first_rec > last_rec:
     print('Error, last rec must be greater than first rec')
     exit(-1)
-    
+
 # Define crossover detector
 detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798, 200)              
 
