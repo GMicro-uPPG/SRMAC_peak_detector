@@ -28,7 +28,7 @@
 import sys
 # Own
 from ppg_peak_detection import crossover_detector
-from ppg_peak_detection import random_search_crossover
+import optimization_utilities
 # Third party
 import numpy as np
 
@@ -82,7 +82,7 @@ for fold_i in range(num_folds):
     # Run random search a number of times
     for run in range(num_runs):
         # Get history of solutions defined by iterations of interest
-        solutions_of_interest = random_search_crossover(train_records = fold_train, iterations_of_interest = iterations_of_interest,
+        solutions_of_interest = optimization_utilities.random_search_crossover(train_records = fold_train, iterations_of_interest = iterations_of_interest,
                                                         min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
         # Parameters found, and also precisions and recalls of interest for this run
         run_parameter_sets = []
@@ -94,7 +94,7 @@ for fold_i in range(num_folds):
             peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)
             
             # Validation triangular confusion matrix
-            validation_conf_mat = peak_detector.literature_record_set_confusion_matrix(fold_validation)
+            validation_conf_mat = optimization_utilities.record_set_confusion_matrix(peak_detector, fold_validation, Fs)
             tp, fp, fn = validation_conf_mat
             val_precision = tp / (tp + fp)
             val_recall    = tp / (tp + fn)

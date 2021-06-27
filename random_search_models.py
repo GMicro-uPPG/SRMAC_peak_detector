@@ -26,8 +26,8 @@
 
 # Own
 from ppg_peak_detection import crossover_detector
-from ppg_peak_detection import random_search_crossover
-from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 200 Hz
+from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
+import optimization_utilities
 # Third party
 import numpy as np
 import time_manager
@@ -50,7 +50,7 @@ try:
     num_runs = 3
     print('\nNumber of runs = ' + str(num_runs))
     # Iterations of interest for random search
-    iterations_of_interest = [2,10]                                       
+    iterations_of_interest = [2,5]                                       
     print('Iterations of interest = ' + str(iterations_of_interest))
     
     verbosity = True
@@ -59,7 +59,7 @@ try:
     hist_test_accs = []
     for _ in range(num_runs):
         # Get history of solutions defined by iterations of interest
-        solutions_of_interest = random_search_crossover(train_records = train_records, iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+        solutions_of_interest = optimization_utilities.random_search_crossover(train_records = train_records, iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
         run_train_accuracies = []
         run_test_accuracies = []
         # For each solution define a model and extract test acc
@@ -70,7 +70,7 @@ try:
             train_accuracy = 1 - train_cost     # Train cost is 1 - acc
             run_train_accuracies.append(train_accuracy)
             # Test
-            test_cm = peak_detector.literature_record_set_confusion_matrix(test_records)
+            test_cm = optimization_utilities.record_set_confusion_matrix(peak_detector, test_records, Fs)
             test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
             test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])
             test_accuracy = (test_precision + test_recall)/2

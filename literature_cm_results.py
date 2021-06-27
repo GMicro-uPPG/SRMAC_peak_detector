@@ -27,6 +27,7 @@
 # Own
 from read_datasets import records
 from ppg_peak_detection import crossover_detector
+import optimization_utilities
 # Third party
 import numpy as np
 
@@ -41,13 +42,14 @@ print('Test records: [0:11] u [-11:]), len = ' + str(len(test_records)))
 
 peak_detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798)
 
-train_cm = peak_detector.literature_record_set_confusion_matrix(train_records)
-test_cm = peak_detector.literature_record_set_confusion_matrix(test_records)
+train_cm = optimization_utilities.record_set_confusion_matrix(peak_detector, train_records, 200)
+test_cm = optimization_utilities.record_set_confusion_matrix(peak_detector, test_records, 200)
 print('\nTrain set confusion matrix: [TP,FP,FN]' + str(train_cm))
 print('Test set confusion matrix: [TP,FP,FN]' + str(test_cm))
 
 print('\n\nTERMA')
-TERMA_train_cm = peak_detector.terma_record_set_confusion_matrix(train_records)
-TERMA_test_cm = peak_detector.terma_record_set_confusion_matrix(test_records)
+terma_detector = TODO
+TERMA_train_cm = optimization_utilities.terma_record_set_confusion_matrix(train_records)
+TERMA_test_cm = optimization_utilities.terma_record_set_confusion_matrix(test_records)
 print('\nTrain set confusion matrix: [TP,FP,FN]' + str(TERMA_train_cm))
 print('Test set confusion matrix: [TP,FP,FN]' + str(TERMA_test_cm))

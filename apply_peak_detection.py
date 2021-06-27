@@ -31,7 +31,9 @@ if len(sys.argv) != 3:
     exit(-1)
 # Own
 from ppg_peak_detection import crossover_detector
-from read_datasets import records # This will load 60 records (o to 59). Rercord sample rate = 125Hz
+from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
+import optimization_utilities
+
 # Third party
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,21 +49,16 @@ if first_rec > last_rec:
 detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798, 200)              
 
 # Get sample signal and reference from records
-#record_number = int(sys.argv[1])
 for record_number in range(first_rec, last_rec + 1):
 
     sample_record = records[record_number]
     sample_signal = sample_record.ppg[1]
     sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
 
-    fast_averages, slow_averages, crossover_indices, detected_peaks = detector.detect_peaks_cross(sample_signal)
-    #detected_peaks = detector.ignore_short_peaks(detected_peaks, 20)
-    detected_positions = detector.peak_positions(sample_signal, detected_peaks)
-    
-    # confusion_matrix = detector.signal_confusion_matrix(detected_peaks, sample_peaks)[:-1]
-    # print('Record confusion matrix: [TP,TN,FP,FN]' + str(confusion_matrix))
+    fast_averages, slow_averages, crossover_indices, detected_peaks = detector.get_peak_blocks(sample_signal)
+    detected_positions = optimization_utilities.peak_positions(sample_signal, detected_peaks)
 
-    lit_cm = detector.literature_signal_confusion_matrix(detected_positions, sample_peaks)
+    lit_cm = optimization_utilities.signal_confusion_matrix(detected_positions, sample_peaks, 200)
     print('\nRecord ' + str(record_number) + ' literature confusion matrix: [TP,FP,FN]' + str(lit_cm))
 
     #Plot signal and reference
@@ -77,5 +74,5 @@ for record_number in range(first_rec, last_rec + 1):
     plt.plot(crossover_indices, color='green', label='crossover index')
     plt.plot(0.3*np.array(detected_peaks), color='gray', label='Detected peaks')
     plt.legend()
-
+    
 plt.show()
