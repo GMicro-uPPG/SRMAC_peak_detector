@@ -26,28 +26,27 @@
 
 # Third party
 import numpy as np
-import scipy
+# Python standard lib
+from collections.abc import Iterable
+# Application modules
+from base_detector import base_detector
+import utilities
 
-class crossover_detector:
+class crossover_detector(base_detector):
     ''' Class to process the PPG signal and indicate peaks using a crossover of moving averages '''
     
-    def __init__(self, alpha_crossover:float, alpha_fast:float, alpha_slow:float, sampling_frequency:float):
+    def __init__(self, alpha_crossover:float, alpha_fast:float, alpha_slow:float):
         ''' Constructor '''
         
         # Sanity check
         if any([(alpha >= 1) or (alpha <= 0) for alpha in [alpha_crossover, alpha_fast, alpha_slow]]):
             print('Error, alphas must be in 0 <= a <= 1')
             exit(-1)
-        if sampling_frequency < 0:
-            print('Sampling frequency must be positive')
-            exit(-1)
             
         # Smoothing constants
         self.alpha_crossover =  alpha_crossover 
         self.alpha_fast =       alpha_fast
         self.alpha_slow =       alpha_slow
-        # Sampling frequency
-        self.fs = sampling_frequency
         
         # Variables
         self.average_fast = 0.0
@@ -64,37 +63,71 @@ class crossover_detector:
         self.average_slow = first_ppg_val
         self.crossover_index = 0.0
               
-    def get_peak_blocks(self, raw_ppg):
+    def get_peak_results(self, raw_ppg, sampling_frequency):
         ''' Crossover based peak detection  '''
+        # Sanity checks
+        if not isinstance(raw_ppg, Iterable):
+            print('Error, PPG signal must be an iterable')
+            exit(-1)
+        if len(raw_ppg) == 0:
+            print('Error, length of PPG signal must be greater than zero')
+            exit(-1)
+        if sampling_frequency < 0:
+            print('Sampling frequency must be positive')
+            exit(-1)
+        
         self.reset_state(raw_ppg[0])
         
+        # 
         fast_averages = []
         slow_averages = []
         crossover_indices = []
-        peaks_array = []
+        peak_blocks = []
+        peak_positions = []
+        # Aux varaibles to detect peak positions
+        peak_hei = 0.0
+        peak_pos = 0
+        peak_ocurring = False
         
         # Low-pass filter parameters
         order = 2
-        nyquist_freq = 0.5 * self.fs                # 
-        freq_cut_hz = 8                             # Analog cutoff frequency
-        freq_cut_norm = freq_cut_hz / nyquist_freq   # Digital (normalized) cutoff frequency
-        # Butterworth LP as cascaded biquads
-        sos = scipy.signal.iirfilter(N=order, Wn=freq_cut_norm, btype='lowpass', analog=False, ftype='butter', output='sos')
-        filtered_ppg = scipy.signal.sosfilt(sos, raw_ppg)
+        freq_cut = 8                    # Cutoff frequecy (Hz)
+        filtered_ppg = utilities.biquad_butter_lowpass(raw_ppg, order, freq_cut, sampling_frequency)
         
-        for index, ppg_value in enumerate(filtered_ppg):
+        # 
+        for index, ppg_sample in enumerate(filtered_ppg):
             # Update model
-            self.average_fast       = self.exponential_ma(self.alpha_fast       , ppg_value, self.average_fast)
-            self.average_slow       = self.exponential_ma(self.alpha_slow       , ppg_value, self.average_slow)
+            self.average_fast       = self.exponential_ma(self.alpha_fast       , ppg_sample, self.average_fast)
+            self.average_slow       = self.exponential_ma(self.alpha_slow       , ppg_sample, self.average_slow)
             self.crossover_index    = self.exponential_ma(self.alpha_crossover  , self.average_fast - self.average_slow, self.crossover_index)
             
             fast_averages.append(self.average_fast)
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
             
-            if self.crossover_index > 0:
-                peaks_array.append(1)
-            else:  
-                peaks_array.append(0)
+            # 
+            peak_condition = self.crossover_index > 0
+            peak_blocks.append(int(peak_condition))
             
-        return fast_averages, slow_averages, crossover_indices, peaks_array
+            # Updates the height and position of a peak if the condition is True
+            if peak_condition:
+                peak_ocurring = True
+                if ppg_sample > peak_hei:
+                    peak_hei = ppg_sample
+                    peak_pos = index
+                # If the signal ends during a peak block onset, act as if a falling edge occurs
+                if index == len(filtered_ppg) - 1:
+                    peak_positions.append(peak_pos)
+            # Append the current peak position at falling edges of the detection
+            elif peak_ocurring:
+                peak_ocurring = False
+                peak_hei = 0.0
+                peak_positions.append(peak_pos) 
+            
+        return  fast_averages, slow_averages, crossover_indices, peak_blocks, peak_positions
+        
+    # Wrapper to keep conformity with the base_detector and TERMA_detector classes
+    def detect(self, raw_ppg, sampling_frequency):
+        _, _, _, peak_blocks, peak_locations = self.get_peak_results(raw_ppg, sampling_frequency)
+        return peak_blocks, peak_locations
+        

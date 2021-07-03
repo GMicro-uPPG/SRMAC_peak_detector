@@ -29,11 +29,10 @@ import sys
 if len(sys.argv) != 3:
     print('Please enter the first and last record numbers')
     exit(-1)
-# Own
-from ppg_peak_detection import crossover_detector
+# Application modules
+from TERMA_detector import TERMA_detector
 from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
-import optimization_utilities
-
+import utilities
 # Third party
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,9 +43,15 @@ last_rec = int(sys.argv[2])
 if first_rec > last_rec:
     print('Error, last rec must be greater than first rec')
     exit(-1)
+if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
+    print(f'Error, record index must be in the range 0 < index < {len(records)}')
 
-# Define crossover detector
-detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798, 200)              
+# Define TERMA detector
+W1 = 22
+W2 = 133
+beta = 0.02
+Fs = 200
+detector = TERMA_detector(W1, W2, beta, Fs)              
 
 # Get sample signal and reference from records
 for record_number in range(first_rec, last_rec + 1):
@@ -55,24 +60,27 @@ for record_number in range(first_rec, last_rec + 1):
     sample_signal = sample_record.ppg[1]
     sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
 
-    fast_averages, slow_averages, crossover_indices, detected_peaks = detector.get_peak_blocks(sample_signal)
-    detected_positions = optimization_utilities.peak_positions(sample_signal, detected_peaks)
-
-    lit_cm = optimization_utilities.signal_confusion_matrix(detected_positions, sample_peaks, 200)
+    SMA_peak, SMA_beat, peak_blocks, peak_positions = detector.get_peak_results(sample_signal, Fs)
+    
+    lit_cm = utilities.signal_confusion_matrix(peak_positions, sample_peaks, Fs)
     print('\nRecord ' + str(record_number) + ' literature confusion matrix: [TP,FP,FN]' + str(lit_cm))
+
+    filtered_ppg = utilities.biquad_butter_bandpass(sample_signal, 2, 0.5, 8, Fs)
 
     #Plot signal and reference
     plt.figure()
     plt.title('PPG peak detection (rec ' + str(record_number) + ')')
     plt.plot(sample_signal, color='k', label='PPG signal')
     plt.scatter(sample_peaks, [0.3]*len(sample_peaks), label='Reference peaks')
-    plt.scatter(detected_positions, [0.3]*len(detected_positions), label='Found peaks')
+    plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks')
+
+    # Plot filtered signal
+    plt.plot(filtered_ppg, color='tab:purple')
 
     # Plot detector's output
-    plt.plot(fast_averages, color='magenta', label='fast average')
-    plt.plot(slow_averages, color='navy', label='slow average')
-    plt.plot(crossover_indices, color='green', label='crossover index')
-    plt.plot(0.3*np.array(detected_peaks), color='gray', label='Detected peaks')
+    plt.plot(SMA_peak, color='magenta', label='SMA peak')
+    plt.plot(SMA_beat, color='navy', label='SMA beat')
+    plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
     plt.legend()
     
 plt.show()

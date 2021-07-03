@@ -24,10 +24,11 @@
 
 # Author: Victor O. Costa
 
-# Own
-from ppg_peak_detection import crossover_detector
+# Application modules
+from crossover_detector import crossover_detector
 from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
-import optimization_utilities
+import utilities
+import random_search
 # Third party
 import numpy as np
 import time_manager
@@ -59,18 +60,18 @@ try:
     hist_test_accs = []
     for _ in range(num_runs):
         # Get history of solutions defined by iterations of interest
-        solutions_of_interest = optimization_utilities.random_search_crossover(train_records = train_records, iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+        solutions_of_interest = random_search.random_search_crossover(train_records = train_records, iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
         run_train_accuracies = []
         run_test_accuracies = []
         # For each solution define a model and extract test acc
         for soi in solutions_of_interest:
             alpha_cross, alpha_fast, alpha_slow, train_cost = soi
-            peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, Fs)            # Get results for train and test data
+            peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow)            # Get results for train and test data
             # Train
             train_accuracy = 1 - train_cost     # Train cost is 1 - acc
             run_train_accuracies.append(train_accuracy)
             # Test
-            test_cm = optimization_utilities.record_set_confusion_matrix(peak_detector, test_records, Fs)
+            test_cm = utilities.record_set_confusion_matrix(peak_detector, test_records, Fs)
             test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
             test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])
             test_accuracy = (test_precision + test_recall)/2
@@ -98,7 +99,7 @@ except ValueError:
     print('Error: Non-numeric data found in the file.\n')
     print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
     print('Last time: ' + str(time_manager.time.getTime()))
-except ImportError:
+except utilitiesError:
     print('Error: No module found.\n')
     print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
     print('Last time: ' + str(time_manager.time.getTime()))

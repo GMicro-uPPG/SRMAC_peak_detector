@@ -24,9 +24,10 @@
 
 # Author: Victor O. Costa
 
+# Third party
 import numpy as np
 
-def custom_signal_confusion_matrix(detected_peaks, peaks_reference):
+def custom_signal_confusion_matrix(peak_blocks, peaks_reference):
     ''' Given a set of detected peaks and peaks reference,
         returns an in-house confusion matrix which has all measures, including true negatives. '''
     # Our confusion matrix, not used in the literature
@@ -38,12 +39,12 @@ def custom_signal_confusion_matrix(detected_peaks, peaks_reference):
     
     fp_hill_flag = False
     
-    # Assumes that the detected_peaks array treats 0 as negative prediction and 1 as positive prediction
+    # Assumes that the peak_blocks array treats 0 as negative prediction and 1 as positive prediction
     state_peaks = 0                                                 # Number of peaks for a given state 
     ref_index = 0                                                   # Index of the reference peaks array
     tn_flag = False                                                 # Flag to avoid a falsely detected peak in one valley to generate two true negatives for that valley 
     confusion_array = []                                            # Array to keep which positions corresponds to which CM members
-    for index, prediction in enumerate(detected_peaks):
+    for index, prediction in enumerate(peak_blocks):
         if index == 0:
             state = prediction
         # Updates confusion matrix when reaches an edge 
@@ -94,7 +95,7 @@ def custom_signal_confusion_matrix(detected_peaks, peaks_reference):
                 ref_index += 1
         
     # Updates confusion matrix in the end of the signal
-    # if index == len(detected_peaks) - 1:
+    # if index == len(peak_blocks) - 1:
         
     if state == 0:
         if state_peaks == 0:
@@ -117,7 +118,7 @@ def custom_signal_confusion_matrix(detected_peaks, peaks_reference):
                     
     return true_positives, true_negatives, false_positives, false_negatives, confusion_array
 
-def custom_record_set_confusion_matrix(peak_detector, ppg_records):
+def custom_record_set_confusion_matrix(peak_detector, ppg_records, sampling_frequency):
     ''' Given a peak detector and a set of records containing ppg signals and peak references,
         returns an in-house confusion matrix which has all measures, including true negatives..'''
     
@@ -132,10 +133,10 @@ def custom_record_set_confusion_matrix(peak_detector, ppg_records):
         reference_peaks = np.array(record.beats[0]) - record.ppg[0][0]            # Shifts reference peaks so it is in phase with ppg_signal
         
         # Detect peaks using current set of parameters
-        _, _, _, detected_peaks = peak_detector.get_peak_blocks(ppg_signal)
+        peak_blocks, _ = peak_detector.detect(ppg_signal, sampling_frequency)
     
     # Get record's confusion matrix and regularization term
-    tp, tn, fp, fn, _ = custom_signal_confusion_matrix(detected_peaks, reference_peaks)
+    tp, tn, fp, fn, _ = custom_signal_confusion_matrix(peak_blocks, reference_peaks)
     true_positives += tp; true_negatives += tn; false_positives += fp; false_negatives += fn
                 
     return true_positives, true_negatives, false_positives, false_negatives

@@ -24,32 +24,10 @@
 
 # Author: Victor O. Costa
 
-# Application modules
-from read_datasets import records
-from crossover_detector import crossover_detector
-import utilities
-# Third party
-import numpy as np
+from abc import ABC, abstractmethod
 
-if len(records) != 66:
-    print('Number of records is not 66')
-    exit(-1)
-        
-train_records = records[11:-11]
-print('Train records: [11:-11], len = ' + str(len(train_records)))
-test_records = records[0:11] + records[-11:]
-print('Test records: [0:11] u [-11:]), len = ' + str(len(test_records)))
-
-peak_detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798)
-
-train_cm = utilities.record_set_confusion_matrix(peak_detector, train_records, 200)
-test_cm = utilities.record_set_confusion_matrix(peak_detector, test_records, 200)
-print('\nTrain set confusion matrix: [TP,FP,FN]' + str(train_cm))
-print('Test set confusion matrix: [TP,FP,FN]' + str(test_cm))
-
-print('\n\nTERMA')
-terma_detector = TODO
-TERMA_train_cm = utilities.terma_record_set_confusion_matrix(train_records)
-TERMA_test_cm = utilities.terma_record_set_confusion_matrix(test_records)
-print('\nTrain set confusion matrix: [TP,FP,FN]' + str(TERMA_train_cm))
-print('Test set confusion matrix: [TP,FP,FN]' + str(TERMA_test_cm))
+class base_detector(ABC):
+    @abstractmethod
+    def detect(self, raw_ppg, sampling_frequency):
+        pass
+    
