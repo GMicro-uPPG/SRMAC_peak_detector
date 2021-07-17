@@ -24,34 +24,33 @@
 
 # Authors: Cesar Abascal and Victor O. Costa
 
-# Third party
-import numpy as np
 # Python standard lib
 from collections.abc import Iterable
+import math
+# Third party
+import numpy as np
 # Application modules
 import utilities
 from base_detector import base_detector
 
 class TERMA_detector(base_detector):
     ''' Implementation of the peak detector proposed by Elgendi '''
-    def __init__(self, window_peak:int, window_beat:int, beta:float, sampling_frequency:float):
+    def __init__(self, window_peak:int, window_beat:int, beta:float):
         ''' Constructor '''
         
         # Sanity check
         if beta <= 0.0:
             print('Error, beta must be greater than 0')
             exit(-1)
-        if sampling_frequency <= 0.0:
-            print('Error, sampling frequency must be greater than 0')
         if window_peak <= 0 or window_beat <= 0:
             print('Error, window sizes should be greater than 0')
             exit(-1)
         
         # Algorithm parameters
-        self.W1 = window_peak
-        self.W2 = window_beat
+        self.W1 = window_peak   # window peak in milliseconds
+        self.W2 = window_beat   # window beat in milliseconds
         self.beta = beta
-        
+
     def simple_moving_average(self, signal, window):
         '''  '''
         moving_avg = []
@@ -71,6 +70,8 @@ class TERMA_detector(base_detector):
         if len(raw_ppg) == 0:
             print('Error, length of PPG signal must be greater than zero')
             exit(-1)
+        if sampling_frequency <= 0.0:
+            print('Error, sampling frequency must be greater than 0')
         
         # Filter signal
         order = 2
@@ -87,9 +88,16 @@ class TERMA_detector(base_detector):
         # Compute offset of threshold 1
         alpha = self.beta * np.mean(ppg_signal)
         
+        # Conversion of windows in miliseconds to number of samples, 
+        def nearest_odd(x):
+            return 2 * math.floor( x / 2 ) + 1
+        
+        W1_samples = nearest_odd(sampling_frequency * (self.W1 / 1000))
+        W2_samples = nearest_odd(sampling_frequency * (self.W2 / 1000))
+        
         # Compute moving averages
-        SMA_peak = self.simple_moving_average(ppg_signal, self.W1)
-        SMA_beat = self.simple_moving_average(ppg_signal, self.W2)
+        SMA_peak = self.simple_moving_average(ppg_signal, W1_samples)
+        SMA_beat = self.simple_moving_average(ppg_signal, W2_samples)
         
         # Since differences between W1 and W2 lead to different lengths
         #   for SMA_beat and SMA_peak, we make both of them to have the same length
@@ -120,7 +128,7 @@ class TERMA_detector(base_detector):
                     peak_positions.append(peak_pos)
             # 
             else:
-                if block_width >= self.W1:              # THR2    
+                if block_width >= W1_samples:              # THR2    
                     peak_positions.append(peak_pos)
                 block_width = 0
                 peak_hei = 0.0 
