@@ -47,11 +47,11 @@ if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
     print(f'Error, record index must be in the range 0 < index < {len(records)}')
 
 # Define TERMA detector
-W1 = 22
-W2 = 133
+W1 = 111
+W2 = 545
 beta = 0.02
 Fs = 200
-detector = TERMA_detector(W1, W2, beta, Fs)              
+detector = TERMA_detector(W1, W2, beta)              
 
 # Get sample signal and reference from records
 for record_number in range(first_rec, last_rec + 1):
