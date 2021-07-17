@@ -28,7 +28,7 @@
 from crossover_detector import crossover_detector
 from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
 import utilities
-import random_search
+import optimization
 # Third party
 import numpy as np
 import time_manager
@@ -60,7 +60,9 @@ try:
     hist_test_accs = []
     for _ in range(num_runs):
         # Get history of solutions defined by iterations of interest
-        solutions_of_interest = random_search.random_search_crossover(train_records = train_records, iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+        solutions_of_interest = optimization.random_search_crossover(train_records = train_records,
+                                iterations_of_interest = iterations_of_interest, min_alpha = 0.7, max_alpha = 1,
+                                sampling_frequency=Fs, verbosity=verbosity)
         run_train_accuracies = []
         run_test_accuracies = []
         # For each solution define a model and extract test acc
