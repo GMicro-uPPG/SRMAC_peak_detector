@@ -29,7 +29,7 @@ import sys
 # Own
 from crossover_detector import crossover_detector
 import utilities
-import random_search
+import optimization
 # Third party
 import numpy as np
 
@@ -83,7 +83,7 @@ for fold_i in range(num_folds):
     # Run random search a number of times
     for run in range(num_runs):
         # Get history of solutions defined by iterations of interest
-        solutions_of_interest = random_search.random_search_crossover(train_records = fold_train, iterations_of_interest = iterations_of_interest,
+        solutions_of_interest = optimization.random_search_crossover(train_records = fold_train, iterations_of_interest = iterations_of_interest,
                                                         min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
         # Parameters found, and also precisions and recalls of interest for this run
         run_parameter_sets = []
@@ -144,9 +144,9 @@ print(f'{np.shape(cv_precisions)} .... should be ({num_folds},{num_runs},{len(it
 print(f'{np.shape(cv_recalls)}    .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')
 
 if num_folds == 22:
-    base_filename = f'LOSOCV_{num_folds}folds_{num_runs}runs_'
+    base_filename = f'search_results/LOSOCV_{num_folds}folds_{num_runs}runs_'
 else:
-    base_filename = f'CV_{num_folds}folds_{num_runs}runs_'
+    base_filename = f'search_results/CV_{num_folds}folds_{num_runs}runs_'
 np.save(base_filename + 'parameters.npy', cv_parameters)
 np.save(base_filename + 'precisions.npy', cv_precisions)
 np.save(base_filename + 'recalls.npy',    cv_recalls)
