@@ -39,8 +39,8 @@ class TERMA_detector(base_detector):
         ''' Constructor '''
         
         # Sanity check
-        if beta <= 0.0:
-            print('Error, beta must be greater than 0')
+        if beta < 0.0:
+            print('Error, beta must be greater than or equal to 0')
             exit(-1)
         if window_peak <= 0 or window_beat <= 0:
             print('Error, window sizes should be greater than 0')
