@@ -61,10 +61,15 @@ if leftovers > 0:
 # Sampling frequency
 Fs = 200
 # Lists of parameters for GS
-W1_list = [54, 111]
-W2_list = [545, 694]
-beta_list = [0.1, 1]
-verbosity = False
+# W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]                # = np.arange(51, 111 + 6, 6)
+# W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 665, 680, 695]       # = np.arange(545, 695 + 15, 15)
+# beta_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]         # = np.arange(0, 1 + 0.1, 0.1)    
+
+W1_list = [51, 111]
+W2_list = [545, 695]
+beta_list = [0, 1]
+
+verbosity = True
 
 # Generate num_folds splits of the loaded record and run random search a number of times for each split
 cv_parameters = []
@@ -93,12 +98,13 @@ for fold_i in range(num_folds):
     cv_precisions.append(val_precision)
     cv_recalls.append(val_recall)
     
-print(f'Parameters { {np.size(cv_parameters) }}')
-print(cv_parameters)
-print(f'Parameters { {np.size(cv_precisions) }}')
-print(cv_precisions)
-print(f'Parameters { {np.size(cv_recalls) }}')
-print(cv_recalls)
+if verbosity:
+    print(f'Parameters { {np.size(cv_parameters) }}')
+    print(cv_parameters)
+    print(f'Parameters { {np.size(cv_precisions) }}')
+    print(cv_precisions)
+    print(f'Parameters { {np.size(cv_recalls) }}')
+    print(cv_recalls)
 
 # Save results in binary files
 if num_folds == 22:
