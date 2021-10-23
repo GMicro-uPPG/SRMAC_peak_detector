@@ -26,6 +26,7 @@
 
 # Python std library
 import sys
+import time
 # Own
 from TERMA_detector import TERMA_detector
 import utilities
@@ -61,13 +62,13 @@ if leftovers > 0:
 # Sampling frequency
 Fs = 200
 # Lists of parameters for GS
-# W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]                # = np.arange(51, 111 + 6, 6)
-# W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 665, 680, 695]       # = np.arange(545, 695 + 15, 15)
-# beta_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]         # = np.arange(0, 1 + 0.1, 0.1)    
+W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]                # = np.arange(51, 111 + 6, 6)
+W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 665, 680, 695]       # = np.arange(545, 695 + 15, 15)
+beta_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]         # = np.arange(0, 1 + 0.1, 0.1)    
 
-W1_list = [51, 111]
-W2_list = [545, 695]
-beta_list = [0, 1]
+# W1_list = [51, 111]
+# W2_list = [545, 695]
+# beta_list = [0, 1]
 
 verbosity = True
 
@@ -82,9 +83,11 @@ for fold_i in range(num_folds):
     # print(f'Val: {len(fold_validation)}; Train: {len(fold_train)}')
     
     # Search for TERMA parameters with grid search
+    start_time = time.time()
     found_solution = optimization.grid_search_TERMA(train_records = fold_train,
                      W1_list = W1_list, W2_list = W2_list, beta_list = beta_list,
                      sampling_frequency = Fs, verbosity = verbosity)
+    print(f'Took {time.time() - start_time} sec')
     
     # Define TERMA model with the found parameters and compute validation metrics
     W1, W2, beta, _ = found_solution
