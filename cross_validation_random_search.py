@@ -144,7 +144,7 @@ print(f'{np.shape(cv_precisions)} .... should be ({num_folds},{num_runs},{len(it
 print(f'{np.shape(cv_recalls)}    .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')
 
 if num_folds == 22:
-    base_filename = f'search_results/LOSOCV_{num_folds}folds_{num_runs}runs_'
+    base_filename = f'search_results/LOSOCV_RS_{num_folds}folds_{num_runs}runs_'
 else:
     base_filename = f'search_results/CV_{num_folds}folds_{num_runs}runs_'
 np.save(base_filename + 'parameters.npy', cv_parameters)

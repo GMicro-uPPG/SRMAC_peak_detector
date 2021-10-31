@@ -28,8 +28,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Carrega array multidimensional com precisions
-val_precisions = np.load('LOSOCV_22folds_30runs_precisions.npy')
-val_recalls = np.load('LOSOCV_22folds_30runs_recalls.npy')
+val_precisions = np.load('./search_results/LOSOCV_RS_22folds_30runs_precisions.npy')
+val_recalls = np.load('./search_results/LOSOCV_RS_22folds_30runs_recalls.npy')
 
 # Dimensões do array devem ser (num_folds, num_runs, iterations_of_interest)
 print('Dimensões esperadas: (22, 30, 20)')
@@ -38,34 +38,36 @@ print(f'Dimensões obtidas (R): {np.shape(val_recalls)}')
 
 # Há 30 repetições dos resultados para as interações de interesse
 # Iterações de interesse são [50, 100, 150, ..., 1000]
-all_avg_precisions = []
-all_avg_recalls    = []
+# Reservar soluções da iteração 150
+fold_avg_precisions = []
+fold_avg_recalls    = []
 
 for subj_p, subj_r in zip(val_precisions, val_recalls):
     avg_precisions_of_interest = np.sum(subj_p, axis=0) / 30
     avg_recalls_of_interest = np.sum(subj_r, axis=0) / 30
     
-    all_avg_precisions.append(list(avg_precisions_of_interest))
-    all_avg_recalls.append(list(avg_recalls_of_interest))
+    fold_avg_precisions.append(avg_precisions_of_interest[2])
+    fold_avg_recalls.append(avg_recalls_of_interest[2])
 
-overall_avg_precisions = np.sum(all_avg_precisions, axis=0) / 22
-overall_avg_recalls    = np.sum(all_avg_recalls, axis = 0) / 22
+avg_precision = np.sum(fold_avg_precisions) / 22
+avg_recall    = np.sum(fold_avg_recalls) / 22
+avg_avg = (avg_precision + avg_recall)/2
 
-iterations_of_interest = [i*50 for i in range(1,21)]
-iterations_ticks = range(len(iterations_of_interest))
+print(f'Avg precision: {avg_precision}, avg recall: {avg_recall}, avg avg: {avg_avg}')
+
+
 
 fig, axs = plt.subplots(2)
+folds_ticks = range(1,23)
 
-axs[0].set_title('Average precisions')
-axs[0].bar(iterations_ticks, overall_avg_precisions)
-axs[0].set_ylim([0.98, 0.985])
-axs[0].set_xticks(iterations_ticks)
-axs[0].set_xticklabels([str(x) for x in iterations_of_interest])
+axs[0].set_title('Average precisions per subject')
+axs[0].bar(folds_ticks, fold_avg_precisions)
+axs[0].set_ylim([0.89, 1.03])
+axs[0].set_xticks(folds_ticks)
 
-axs[1].set_title('Average recalls')
-axs[1].bar(iterations_ticks, overall_avg_recalls)
-axs[1].set_ylim([0.98, 0.985])
-axs[1].set_xticks(iterations_ticks)
-axs[1].set_xticklabels([str(x) for x in iterations_of_interest])
+axs[1].set_title('Average recalls per subject')
+axs[1].bar(folds_ticks, fold_avg_recalls)
+axs[1].set_ylim([0.89, 1.03])
+axs[1].set_xticks(folds_ticks)
 
 plt.show()
