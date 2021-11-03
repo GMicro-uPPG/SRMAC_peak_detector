@@ -75,57 +75,6 @@ def butter_bandpass_filter_zi(data, lowcut, highcut, sRate, order=5):
     return y
 #/def
 
-# Read signals from MIMIC ----------------------------------------------------------------
-def getMIMICppg():
-
-    print('\nFirst timestamp: ' + str(time_manager.time.getTimestamp()))
-    print('First time: ' + str(time_manager.time.getTime()))
-
-    dataset = 'MIMIC1_organized'
-    list_of_recs = os.listdir(dataset)
-    list_of_recs.sort()
-    print('\nLoading ' + str(dataset) + ' dataset\n')
-    for item in list_of_recs:
-        if (len(item) == 3): # To not read trash
-
-            #print('Getting record number ' + item)
-    
-            # PPG signals file
-            x_ppg, ppg = [], []
-            with open(dataset+'/'+item+'/record_ppg-ecg.csv') as data_file:
-                next(data_file)
-                next(data_file)
-                for line in data_file:
-                    aux = line.split(',')
-                    x_ppg.append(int(aux[0]))
-                    try:
-                        ppg.append(float(aux[1]))
-                    except:
-                        ppg.append(float(0.0))
-                    #/try
-                #/for
-            #/with
-
-            data_file.close()
-
-            # Beats signals file
-            x_beats, beats = [], []
-            with open(dataset+'/'+item+'/rri.csv') as data_file:
-                next(data_file)
-                for line in data_file:
-                    aux = line.split(',')
-                    shift = int(aux[3])
-                    x_beats.append(int(aux[0]) + shift)
-                    beats.append(float(aux[1]))
-                #/for
-            #/with
-
-            data_file.close()
-
-            records.append( record(item, x_ppg, ppg, x_beats, beats) )
-        #/if
-    #/for
-#/def
 
 # Read signals from PPG HUSM -------------------------------------------------------------
 def getHUSMppg():
