@@ -24,8 +24,6 @@
 
 # Author: Victor O. Costa
 
-# Third party
-import numpy as np
 # Python standard lib
 from collections.abc import Iterable
 # Application modules
@@ -91,8 +89,11 @@ class crossover_detector(base_detector):
         
         # Low-pass filter parameters
         order = 2
-        freq_cut = 8                    # Cutoff frequecy (Hz)
-        filtered_ppg = utilities.biquad_butter_lowpass(raw_ppg, order, freq_cut, sampling_frequency)
+        # freq_cut = 8                    # Cutoff frequecy (Hz)
+        # filtered_ppg = utilities.biquad_butter_lowpass(raw_ppg, order, freq_cut, sampling_frequency)
+        low_cut = 0.5   # Hz
+        high_cut = 8    # Hz 
+        filtered_ppg = utilities.biquad_butter_bandpass(raw_ppg, order, low_cut, high_cut, sampling_frequency)
         
         # 
         for index, ppg_sample in enumerate(filtered_ppg):
