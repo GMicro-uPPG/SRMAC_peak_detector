@@ -61,7 +61,7 @@ if leftovers > 0:
 # Sampling frequency
 Fs = 200
 # Number of random search iterations per run, and runs per fold
-iterations_of_interest = [i*50 for i in range(1,21)]
+iterations_of_interest = [150]
 num_runs = 30
 verbosity = False
 print(f'RS iterations of interest = {iterations_of_interest}\nRS runs per folds = {num_runs}')
@@ -97,8 +97,13 @@ for fold_i in range(num_folds):
             # Validation triangular confusion matrix
             validation_conf_mat = utilities.record_set_confusion_matrix(peak_detector, fold_validation, Fs)
             tp, fp, fn = validation_conf_mat
-            val_precision = tp / (tp + fp)
-            val_recall    = tp / (tp + fn)
+            
+            if tp != 0:
+                val_precision = tp / (tp + fp)
+                val_recall    = tp / (tp + fn)
+            else:
+                val_precision = 0
+                val_recall = 0
             
             # Keep parameters, precisions and recalls for this run
             run_parameter_sets.append(list(soi[:-1]))

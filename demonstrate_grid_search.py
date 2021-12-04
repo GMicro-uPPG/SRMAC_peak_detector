@@ -49,14 +49,16 @@ Fs = 200
 # Lists of parameters for GS
 W1 = [54, 111]
 W2 = [545, 694]
-beta = [0.1, 1]
+beta = [0.5]
 
 verbosity = True
 # Get best solution from grid search over train records
 best_sol = optimization.grid_search_TERMA(train_records = train_records, W1_list = W1, W2_list = W2,
                                     beta_list = beta, sampling_frequency = Fs, verbosity = verbosity)
+
 detector = TERMA_detector(best_sol[0], best_sol[1], best_sol[2])
-train_acc = best_sol[-1]
+train_acc = 1 - best_sol[-1]
+
 test_cm = utilities.record_set_confusion_matrix(detector, test_records, Fs)
 test_precision = test_cm[0] / (test_cm[0] + test_cm[1])
 test_recall =    test_cm[0] / (test_cm[0] + test_cm[2])

@@ -88,7 +88,6 @@ try:
     # print(f'Train acc: {np.mean(train_accuracies)} ({np.std(train_accuracies)})')
     # print(f'Test acc:  {np.mean(test_accuracies)} ({np.std(test_accuracies)})')
     
-    
     print('\nLast timestamp: ' + str(time_manager.time.getTimestamp()))
     print('Last time: ' + str(time_manager.time.getTime()))
 

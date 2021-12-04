@@ -69,8 +69,13 @@ def random_search_crossover(train_records, iterations_of_interest, min_alpha, ma
         # Run the detector defined above in the train records and extract SE and P+
         tp, fp, fn = utilities.record_set_confusion_matrix(peak_detector, train_records, sampling_frequency)
         
-        SE = tp / (tp + fn)
-        Pp = tp / (tp + fp)
+        if tp == 0:
+            SE = 0.0
+            Pp = 0.0
+        else:
+            SE = tp / (tp + fn)
+            Pp = tp / (tp + fp)
+            
         cost = 1 - (SE + Pp)/2
         
         if cost < best_solution[-1]:
@@ -110,8 +115,13 @@ def grid_search_TERMA(train_records, W1_list, W2_list, beta_list, sampling_frequ
                 TERMA =  TERMA_detector(W1, W2, beta)
                 tp, fp, fn = utilities.record_set_confusion_matrix(TERMA, train_records, sampling_frequency)
                 # 
-                SE = tp / (tp + fn)
-                Pp = tp / (tp + fp)
+                if tp == 0:
+                    SE = 0.0
+                    Pp = 0.0
+                else:
+                    SE = tp / (tp + fn)
+                    Pp = tp / (tp + fp)
+                    
                 cost = 1 - (SE + Pp)/2
                 
                 if cost < best_solution[-1]:
