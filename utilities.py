@@ -39,7 +39,7 @@ def biquad_butter_lowpass(raw_signal, order, cut_frequency, sampling_frequency):
     # Defines the initial state and filters signal
     zi = scipy.signal.sosfilt_zi(sos) * raw_signal[0]
     filtered_ppg, zo = scipy.signal.sosfilt(sos=sos, x=raw_signal, zi=zi)
-    
+
     return filtered_ppg
 
 def biquad_butter_bandpass(raw_signal, order, low_cut, high_cut, sampling_frequency):
@@ -53,41 +53,50 @@ def biquad_butter_bandpass(raw_signal, order, low_cut, high_cut, sampling_freque
     # Defines the initial state and filters signal
     zi = scipy.signal.sosfilt_zi(sos) * raw_signal[0]
     filtered_ppg, zo = scipy.signal.sosfilt(sos=sos, x=raw_signal, zi=zi)
-    
+
     return filtered_ppg
     
 def signal_confusion_matrix(peak_locations, reference_locations, sampling_frequency):
     ''' The confusion (triangular) matrix defined in the literature considers if a peak was detected in the
         neighborhood of a reference peak, and has no definition of true negatives '''
-    
+
     # running through the reference peaks one can extract true positives and false negatives
     # false positives = all detected - true positives
-    
+
     # Sampling interval in seconds
     T = 1/sampling_frequency
     # Neighborhood definition in seconds
     neighborhood_time = 0.1
     # Neighborhood definition in number of samples
     neighborhood_samples = int(neighborhood_time / T)
-    
+
     true_positives = 0 
     false_positives = 0
     false_negatives = 0
-            
+    i_start = 0
+
     for reference in reference_locations:
         # Detection of the reference peak is initially assumed to be false
         correct_detection = False
-        for location in peak_locations:
+
+        for i in range(i_start, len(peak_locations)):
+            location = peak_locations[i]
+
             if location > (reference - neighborhood_samples) and location < (reference + neighborhood_samples):
                 correct_detection = True
-        
+                i_start = i + 1
+                break
+
+            if location > reference + neighborhood_samples:
+                break
+
         if correct_detection:
             true_positives += 1
         else:
             false_negatives += 1
-            
+
     false_positives = len(peak_locations) - true_positives
-    
+
     return true_positives, false_positives, false_negatives    
 
 def record_set_confusion_matrix(peak_detector, ppg_records, sampling_frequency):
@@ -104,11 +113,11 @@ def record_set_confusion_matrix(peak_detector, ppg_records, sampling_frequency):
         # Detect peaks using the 
         peak_blocks, peak_locations = peak_detector.detect(ppg_signal, sampling_frequency)
         #peak_locations = peak_positions(ppg_signal, peak_blocks)
-        
+
         # Get record's confusion matrix and regularization term
         tp, fp, fn = signal_confusion_matrix(peak_locations, reference_peaks, sampling_frequency)
         true_positives += tp; false_positives += fp; false_negatives += fn
-        
+
     return true_positives, false_positives, false_negatives
  
     
@@ -116,7 +125,7 @@ def calculate_heart_rates(peaks_array, freq):
     ''' Use the beats to calculate Heart Rates in bpm '''
     sampling_t = 1.0/freq
     heart_rates = []
-    
+
     samples_interval = 0
     old_state = 0
     for index, state in enumerate(peaks_array):
@@ -130,5 +139,5 @@ def calculate_heart_rates(peaks_array, freq):
         else:
             samples_interval += 1    
         old_state = state
-        
+
     return heart_rates
