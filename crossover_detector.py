@@ -30,6 +30,9 @@ from collections.abc import Iterable
 from base_detector import base_detector
 import utilities
 
+class STATE_SEEKING_PEAK(object): pass
+class STATE_PEAK_FOUND(object): pass
+
 class crossover_detector(base_detector):
     ''' Class to process the PPG signal and indicate peaks using a crossover of moving averages '''
     
@@ -74,25 +77,26 @@ class crossover_detector(base_detector):
             print('Sampling frequency must be positive')
             exit(-1)
         
-				# Reset the both EWMA to zero
+        # Reset both EWMA to zero
         self.reset_state(0)
         
-        # 
+        # Dynamics' history
         fast_averages = []
         slow_averages = []
         crossover_indices = []
         peak_blocks = []
         peak_positions = []
-        # Aux varaibles to detect peak positions
-        peak_hei = 0.0
-        peak_pos = 0
-        peak_ocurring = False
         
         # Low-pass filter parameters
         order = 2
         low_cut = 0.5   # Hz
         high_cut = 8    # Hz 
         filtered_ppg = utilities.biquad_butter_bandpass(raw_ppg, order, low_cut, high_cut, sampling_frequency)
+        
+        # Current state of peak detection
+        fsm_state = STATE_SEEKING_PEAK
+        peak_height = float('-inf')
+        peak_position = 0
         
         # 
         for index, ppg_sample in enumerate(filtered_ppg):
@@ -105,24 +109,29 @@ class crossover_detector(base_detector):
             slow_averages.append(self.average_slow)
             crossover_indices.append(self.crossover_index)
             
-            # 
+            # The peak condition is evaluated and stored in both states
             peak_condition = self.crossover_index > 0
             peak_blocks.append(int(peak_condition))
             
-            # Updates the height and position of a peak if the condition is True
-            if peak_condition:
-                peak_ocurring = True
-                if ppg_sample > peak_hei:
-                    peak_hei = ppg_sample
-                    peak_pos = index
-                # If the signal ends during a peak block onset, act as if a falling edge occurs
-                if index == len(filtered_ppg) - 1:
-                    peak_positions.append(peak_pos)
-            # Append the current peak position at falling edges of the detection
-            elif peak_ocurring:
-                peak_ocurring = False
-                peak_hei = 0.0
-                peak_positions.append(peak_pos) 
+            # In this state, no peak was detected and we wait for a new peak to begin
+            if fsm_state == STATE_SEEKING_PEAK:
+              # State transition
+              if peak_condition:
+                fsm_state = STATE_PEAK_FOUND
+              
+            # This state characterizes the current peak and stores its info
+            else:
+              # Find sample with highest magnitude
+              if ppg_sample > peak_height:
+                peak_height = ppg_sample
+                peak_position = index
+              
+              # State transition
+              ## If the signal ends during a peak block onset, act as if a falling edge occurs
+              if (not peak_condition) or (index == len(filtered_ppg) - 1):
+                peak_positions.append(peak_position)
+                peak_height = float('-inf')
+                fsm_state = STATE_SEEKING_PEAK
             
         return  fast_averages, slow_averages, crossover_indices, peak_blocks, peak_positions
         
