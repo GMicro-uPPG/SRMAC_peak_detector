@@ -78,7 +78,7 @@ for record_number in range(first_rec, last_rec + 1):
     plt.plot(filtered_ppg, color='tab:purple')
 
     # Plot detector's output
-    plt.plot(SMA_peak, color='magenta', label='SMA peak')
+    plt.plot(SMA_peak, color='green', label='SMA peak')
     plt.plot(SMA_beat, color='navy', label='SMA beat')
     plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
     plt.legend()

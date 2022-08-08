@@ -26,6 +26,9 @@
 
 from abc import ABC, abstractmethod
 
+class STATE_SEEKING_PEAK(object): pass
+class STATE_PEAK_FOUND(object): pass
+
 class base_detector(ABC):
     @abstractmethod
     def detect(self, raw_ppg, sampling_frequency):

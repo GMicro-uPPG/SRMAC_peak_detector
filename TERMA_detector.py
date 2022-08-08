@@ -31,32 +31,34 @@ import math
 import numpy as np
 # Application modules
 import utilities
-from base_detector import base_detector
+from base_detector import *
 
 class TERMA_detector(base_detector):
     ''' Implementation of the peak detector proposed by Elgendi '''
-    def __init__(self, window_peak:int, window_beat:int, beta:float):
+    def __init__(self, peak_window_ms:int, beat_window_ms:int, beta:float):
         ''' Constructor '''
         
         # Sanity check
         if beta < 0.0:
             print('Error, beta must be greater than or equal to 0')
             exit(-1)
-        if window_peak <= 0 or window_beat <= 0:
+        if peak_window_ms <= 0 or beat_window_ms <= 0:
             print('Error, window sizes should be greater than 0')
             exit(-1)
         
         # Algorithm parameters
-        self.W1 = window_peak   # window peak in milliseconds
-        self.W2 = window_beat   # window beat in milliseconds
+        ## W1
+        self.peak_window_ms = peak_window_ms   # window peak in milliseconds
+        ## W2
+        self.beat_window_ms = beat_window_ms   # window beat in milliseconds
         self.beta = beta
 
-    def simple_moving_average(self, signal, window):
+    def simple_moving_average(self, signal, window_len):
         '''  '''
         moving_avg = []
-        for index in range(len(signal)-window):
+        for index in range(len(signal)-window_len):
             # Compute mean in the range signal[index, index+window-1]
-            local_avg = np.mean(signal[index : (index+window)])
+            local_avg = np.mean(signal[index : (index+window_len)])
             moving_avg.append(local_avg)
             
         return moving_avg
@@ -73,6 +75,17 @@ class TERMA_detector(base_detector):
         if sampling_frequency <= 0.0:
             print('Error, sampling frequency must be greater than 0')
         
+        
+        # Conversion of windows in miliseconds to number of samples, 
+        def nearest_odd(x):
+            return 2 * math.floor( x / 2 ) + 1
+        
+        peak_window_len = nearest_odd(sampling_frequency * (self.peak_window_ms / 1000))
+        beat_window_len = nearest_odd(sampling_frequency * (self.beat_window_ms / 1000))
+        
+        # TODO: make zero-padding optional through a parameter
+        raw_ppg = np.append(raw_ppg, [0] * beat_window_len)
+        
         # Filter signal
         order = 2
         low_cut = 0.5   # Hz
@@ -88,17 +101,11 @@ class TERMA_detector(base_detector):
         # Compute offset of threshold 1
         alpha = self.beta * np.mean(ppg_signal)
         
-        # Conversion of windows in miliseconds to number of samples, 
-        def nearest_odd(x):
-            return 2 * math.floor( x / 2 ) + 1
-        
-        W1_samples = nearest_odd(sampling_frequency * (self.W1 / 1000))
-        W2_samples = nearest_odd(sampling_frequency * (self.W2 / 1000))
         
         # Compute moving averages
-        SMA_peak = self.simple_moving_average(ppg_signal, W1_samples)
-        SMA_beat = self.simple_moving_average(ppg_signal, W2_samples)
-        
+        SMA_peak = self.simple_moving_average(ppg_signal, peak_window_len)
+        SMA_beat = self.simple_moving_average(ppg_signal, beat_window_len)
+
         # Since differences between W1 and W2 lead to different lengths
         #   for SMA_beat and SMA_peak, we make both of them to have the same length
         if len(SMA_beat) > len(SMA_peak):
@@ -111,29 +118,64 @@ class TERMA_detector(base_detector):
         peak_positions = []
         block_width = 0
         index = 0
-        peak_hei = 0.0
-        peak_pos = 0
+        
+        # Current state of peak detection
+        fsm_state = STATE_SEEKING_PEAK
+        peak_height = float('-inf')
+        peak_position = 0
+        
         for sample_peak, sample_beat in zip(SMA_peak, SMA_beat):
-            # 
-            peak_condition = sample_peak > sample_beat + alpha       # THR1
+            # THR1 
+            peak_condition = sample_peak > sample_beat + alpha       
             peak_blocks.append(int(peak_condition))
-            # Updates the height and position of a peak if the condition is True
-            if peak_condition:
+
+            # STATE SEEKING PEAK
+            # In this state, no peak was detected and we wait for a new peak to begin
+            if fsm_state == STATE_SEEKING_PEAK:
+              if peak_condition:
                 block_width += 1
-                if ppg_filtered[index] > peak_hei:
-                    peak_hei = ppg_filtered[index]
-                    peak_pos = index
-                # If the signal ends during a peak block onset, act as if a falling edge occurs
-                if index == len(SMA_peak) - 1:
-                    peak_positions.append(peak_pos)
-            # 
+                fsm_state = STATE_PEAK_FOUND
+
+            # STATE PEAK FOUND
+            ## This state characterizes the current peak and stores its info
             else:
-                if block_width >= W1_samples:              # THR2    
-                    peak_positions.append(peak_pos)
+              block_width += 1
+              # Find sample with highest magnitude
+              if ppg_filtered[index] > peak_height:
+                peak_height = ppg_filtered[index]
+                peak_position = index
+
+              # State transition
+              ## If the signal ends during a peak block onset, act as if a falling edge occurs
+              if (not peak_condition) or (index == len(SMA_peak) - 1):
+                # THR2
+                if block_width >= peak_window_len:               
+                    peak_positions.append(peak_position)
+
                 block_width = 0
-                peak_hei = 0.0 
-            
+                peak_height = float('-inf')
+                fsm_state = STATE_SEEKING_PEAK
+
             index += 1
+            
+            
+            # # Updates the height and position of a peak if the condition is True
+            # if peak_condition:
+                # block_width += 1
+                # if ppg_filtered[index] > peak_hei:
+                    # peak_hei = ppg_filtered[index]
+                    # peak_pos = index
+                
+                # # If the signal ends during a peak block onset, act as if a falling edge occurs
+                # if index == len(SMA_peak) - 1:
+                    # peak_positions.append(peak_pos)
+                    
+            
+            # else:
+                # if block_width >= peak_window_len:               
+                    # peak_positions.append(peak_pos)
+                # block_width = 0
+                # peak_hei = float('-inf')
             
         return SMA_peak, SMA_beat, peak_blocks, peak_positions
         
