@@ -31,7 +31,7 @@ if len(sys.argv) != 3:
     exit(-1)
 # Application modules
 from TERMA_detector import TERMA_detector
-from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
+from read_datasets import records 
 import utilities
 # Third party
 import numpy as np
@@ -53,27 +53,32 @@ beta = 0.02
 Fs = 200
 detector = TERMA_detector(W1, W2, beta)              
 
+accumulated_cm = [0, 0, 0]
 # Get sample signal and reference from records
 for record_number in range(first_rec, last_rec + 1):
 
     sample_record = records[record_number]
     sample_signal = sample_record.ppg[1]
-    sample_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
+    reference_peaks = np.array(sample_record.beats[0]) - sample_record.ppg[0][0] 
 
     SMA_peak, SMA_beat, peak_blocks, peak_positions = detector.get_peak_results(sample_signal, Fs)
     
-    lit_cm = utilities.signal_confusion_matrix(peak_positions, sample_peaks, Fs)
+    lit_cm = utilities.signal_confusion_matrix(peak_positions, reference_peaks, Fs)
+    accumulated_cm = np.array(accumulated_cm) + np.array(lit_cm)
+    
     print('\nRecord ' + str(record_number) + ' literature confusion matrix: [TP,FP,FN]' + str(lit_cm))
-
+    print('Number of reference peaks: ' + str(len(reference_peaks)))
+    print('Number of peaks found: ' + str(len(peak_positions)))
+    
     filtered_ppg = utilities.biquad_butter_bandpass(sample_signal, 2, 0.5, 8, Fs)
-
+    
     #Plot signal and reference
     plt.figure()
     plt.title('PPG peak detection (rec ' + str(record_number) + ')')
     plt.plot(sample_signal, color='k', label='PPG signal')
-    plt.scatter(sample_peaks, [0.3]*len(sample_peaks), label='Reference peaks')
-    plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks')
-
+    plt.scatter(reference_peaks, [0.3]*len(reference_peaks), label='Reference peaks', linewidth=4.5)
+    plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks', linewidth=1.5)
+    
     # Plot filtered signal
     plt.plot(filtered_ppg, color='tab:purple')
 
@@ -83,4 +88,5 @@ for record_number in range(first_rec, last_rec + 1):
     plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
     plt.legend()
     
+print('Accumulated confusion matrix: [TP,FP,FN]' + str(accumulated_cm))
 plt.show()

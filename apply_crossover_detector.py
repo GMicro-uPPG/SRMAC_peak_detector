@@ -31,7 +31,7 @@ if len(sys.argv) != 3:
     exit(-1)
 # Application modules
 from crossover_detector import crossover_detector
-from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
+from read_datasets import records
 import utilities
 # Third party
 import numpy as np
@@ -50,6 +50,7 @@ if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
 detector = crossover_detector(0.8705192717851324, 0.903170529094925, 0.9586798163470798)              
 Fs = 200
 
+accumulated_cm = [0, 0, 0]
 # Get sample signal and reference from records
 for record_number in range(first_rec, last_rec + 1):
 
@@ -60,6 +61,8 @@ for record_number in range(first_rec, last_rec + 1):
     fast_averages, slow_averages, crossover_indices, peak_blocks, peak_positions = detector.get_peak_results(sample_signal, Fs)
     
     lit_cm = utilities.signal_confusion_matrix(peak_positions, reference_peaks, Fs)
+    accumulated_cm = np.array(accumulated_cm) + np.array(lit_cm)
+        
     print('\nRecord ' + str(record_number) + ' literature confusion matrix: [TP,FP,FN]' + str(lit_cm))
     print('Number of reference peaks: ' + str(len(reference_peaks)))
     print('Number of peaks found: ' + str(len(peak_positions)))
@@ -73,7 +76,7 @@ for record_number in range(first_rec, last_rec + 1):
 
     plt.scatter(reference_peaks, [0.3]*len(reference_peaks), label='Reference peaks', linewidth=4.5)
     plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks', linewidth=1.5)
-				
+                
     # Plot filtered signal
     plt.plot(filtered_ppg, color='tab:purple')
 
@@ -83,5 +86,5 @@ for record_number in range(first_rec, last_rec + 1):
     plt.plot(crossover_indices, color='green', label='crossover index')
     plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
     plt.legend()
-    
-plt.show()
+
+print('Accumulated confusion matrix: [TP,FP,FN]' + str(accumulated_cm))
