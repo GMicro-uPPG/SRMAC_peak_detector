@@ -94,9 +94,9 @@ class TERMA_detector(base_detector):
         # Square signal
         ppg_signal = ppg_signal ** 2
         
-				# Zero-padding to avoid a false negative in the last peak of a signal
+        # Zero-padding to avoid a false negative in the last peak of a signal
         ## TODO: Make zero-padding optional
-        ppg_signal = np.append(ppg_signal, [0] * beat_window_len)				
+        ppg_signal = np.append(ppg_signal, [0] * beat_window_len)        
 
         # Compute offset of threshold 1
         alpha = self.beta * np.mean(ppg_signal)
@@ -131,51 +131,34 @@ class TERMA_detector(base_detector):
             # STATE SEEKING PEAK
             # In this state, no peak was detected and we wait for a new peak to begin
             if fsm_state == STATE_SEEKING_PEAK:
-              if peak_condition:
-                block_width += 1
-                fsm_state = STATE_PEAK_FOUND
+                if peak_condition:
+                    block_width += 1
+                    fsm_state = STATE_PEAK_FOUND
 
             # STATE PEAK FOUND
             ## This state characterizes the current peak and stores its info
             else:
-              block_width += 1
-              # Find sample with highest magnitude
-              if ppg_filtered[index] > peak_height:
-                peak_height = ppg_filtered[index]
-                peak_position = index
+                block_width += 1
+                # Find sample with highest magnitude
+                if ppg_filtered[index] > peak_height:
+                    peak_height = ppg_filtered[index]
+                    peak_position = index
 
-              # State transition
-              ## If the signal ends during a peak block onset, act as if a falling edge occurs
-              if (not peak_condition) or (index == len(SMA_peak) - 1):
-                # THR2
-                if block_width >= peak_window_len:               
-                    peak_positions.append(peak_position)
+                # State transition
+                ## If the signal ends during a peak block onset, act as if a falling edge occurs
+                if (not peak_condition) or (index == len(SMA_peak) - 1):
+                    # THR2
+                    if block_width >= peak_window_len:               
+                        peak_positions.append(peak_position)
+                    else:
+                        peak_blocks[index-block_width : index] = [0] * block_width
 
-                block_width = 0
-                peak_height = float('-inf')
-                fsm_state = STATE_SEEKING_PEAK
+                    block_width = 0
+                    peak_height = float('-inf')
+                    fsm_state = STATE_SEEKING_PEAK
 
             index += 1
-            
-            
-            # # Updates the height and position of a peak if the condition is True
-            # if peak_condition:
-                # block_width += 1
-                # if ppg_filtered[index] > peak_hei:
-                    # peak_hei = ppg_filtered[index]
-                    # peak_pos = index
-                
-                # # If the signal ends during a peak block onset, act as if a falling edge occurs
-                # if index == len(SMA_peak) - 1:
-                    # peak_positions.append(peak_pos)
-                    
-            
-            # else:
-                # if block_width >= peak_window_len:               
-                    # peak_positions.append(peak_pos)
-                # block_width = 0
-                # peak_hei = float('-inf')
-            
+
         return SMA_peak, SMA_beat, peak_blocks, peak_positions
         
         
