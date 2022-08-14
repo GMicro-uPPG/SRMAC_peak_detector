@@ -86,11 +86,11 @@ class TERMA_detector(base_detector):
         # TODO: make zero-padding optional through a parameter
         raw_ppg = np.append(raw_ppg, [0] * beat_window_len)
         
-        # Filter signal
+        # Filter PPG signal
         order = 2
-        low_cut = 0.5   # Hz
-        high_cut = 8    # Hz    
-        ppg_filtered = utilities.biquad_butter_bandpass(raw_ppg, order, low_cut, high_cut, sampling_frequency)
+        low_cut_hz = 0.5
+        high_cut_hz = 8
+        ppg_filtered = utilities.butter_bandpass_2order_0phase(raw_ppg, low_cut_hz, high_cut_hz, sampling_frequency)
         
         # Clip signal
         ppg_signal = ppg_filtered.clip(min = 0)

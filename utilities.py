@@ -28,34 +28,65 @@
 import numpy as np
 import scipy
 
+
 def biquad_butter_lowpass(raw_signal, order, cut_frequency, sampling_frequency):
     ''' Filters a signal using a lowpass Butterworth filter, with a biquadratic IIR implementation.
         The initial state of the filter is equal to the first sample of the signal to avoid a large initial overshoot.'''
 
+        # 
     nyquist_freq = 0.5 * sampling_frequency
     normalized_cut = cut_frequency / nyquist_freq
+        
     # Define the IIR Buterworth biquad lowpass filter
     sos = scipy.signal.iirfilter(N=order, Wn=normalized_cut, btype='lowpass', analog=False, ftype='butter', output='sos')
     # Defines the initial state and filters signal
+        
     zi = scipy.signal.sosfilt_zi(sos) * raw_signal[0]
     filtered_ppg, zo = scipy.signal.sosfilt(sos=sos, x=raw_signal, zi=zi)
 
     return filtered_ppg
-
+        
+        
 def biquad_butter_bandpass(raw_signal, order, low_cut, high_cut, sampling_frequency):
+
     ''' Filters a signal using a bandpass Butterworth filter, with a biquadratic IIR implementation.
         The initial state of the filter is equal to the first sample of the signal to avoid a large initial overshoot.'''
 
+    #
     nyquist_freq = 0.5 * sampling_frequency
     normalized_frequencies = np.array([low_cut, high_cut]) / nyquist_freq
+        
     # Define the IIR Buterworth biquad bandpass filter
     sos = scipy.signal.iirfilter(N=order, Wn=normalized_frequencies, btype='bandpass', analog=False, ftype='butter', output='sos')
+    
     # Defines the initial state and filters signal
     zi = scipy.signal.sosfilt_zi(sos) * raw_signal[0]
     filtered_ppg, zo = scipy.signal.sosfilt(sos=sos, x=raw_signal, zi=zi)
 
     return filtered_ppg
+
+
+def butter_bandpass_2order_0phase(raw_signal, low_cut, high_cut, sampling_frequency):
+
+    ''' Filters a signal forward and backwards with a first-order bandpass Butterworth filter.
+        The initial state of the filter is equal to the first sample of the signal to avoid a large initial overshoot.'''
+
+    #
+    nyquist_freq = 0.5 * sampling_frequency
+    normalized_frequencies = np.array([low_cut, high_cut]) / nyquist_freq
+
+    # Define the FIR Butterworth first-order bandpass filter
+    # b, a = scipy.signal.butter(N=1, Wn=normalized_frequencies, btype='bandpass', analog=False, output='ba')
     
+    # Define IIR Butterworth first-order bandpass filter
+    b, a = scipy.signal.iirfilter(N=1, Wn=normalized_frequencies, btype='bandpass', analog=False, output='ba', ftype='butter')
+    
+    # Apply filter forward and backwards to achieve a second-order zero-phase filtering
+    filtered_ppg = scipy.signal.filtfilt(b, a, raw_signal)
+    
+    return np.array(filtered_ppg)
+
+
 def signal_confusion_matrix(peak_locations, reference_locations, sampling_frequency):
     ''' The confusion (triangular) matrix defined in the literature considers if a peak was detected in the
         neighborhood of a reference peak, and has no definition of true negatives '''
@@ -99,10 +130,12 @@ def signal_confusion_matrix(peak_locations, reference_locations, sampling_freque
 
     return true_positives, false_positives, false_negatives    
 
+
 def record_set_confusion_matrix(peak_detector, ppg_records, sampling_frequency):
     ''' Given a peak detector and a set of records containing ppg signals and peak references,
         returns the confusion (triangular) matrix based on the literature.'''
 
+        # 
     true_positives = 0
     false_positives = 0
     false_negatives = 0
@@ -123,6 +156,8 @@ def record_set_confusion_matrix(peak_detector, ppg_records, sampling_frequency):
     
 def calculate_heart_rates(peaks_array, freq):
     ''' Use the beats to calculate Heart Rates in bpm '''
+        
+        #
     sampling_t = 1.0/freq
     heart_rates = []
 
