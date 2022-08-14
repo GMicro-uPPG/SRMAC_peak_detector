@@ -35,9 +35,9 @@ from base_detector import *
 
 class TERMA_detector(base_detector):
     ''' Implementation of the peak detector proposed by Elgendi '''
+    
     def __init__(self, peak_window_ms:int, beat_window_ms:int, beta:float):
         ''' Constructor '''
-        
         # Sanity check
         if beta < 0.0:
             print('Error, beta must be greater than or equal to 0')
@@ -45,14 +45,17 @@ class TERMA_detector(base_detector):
         if peak_window_ms <= 0 or beat_window_ms <= 0:
             print('Error, window sizes should be greater than 0')
             exit(-1)
-        
-        # Algorithm parameters
-        ## W1
-        self.peak_window_ms = peak_window_ms   # window peak in milliseconds
-        ## W2
-        self.beat_window_ms = beat_window_ms   # window beat in milliseconds
-        self.beta = beta
 
+        # Algorithm parameters
+        ## W1 - peak window size in milliseconds
+        self.peak_window_ms = peak_window_ms 
+        ## W2 - beat window size in milliseconds
+        self.beat_window_ms = beat_window_ms
+        self.beta = beta
+    
+    def nearest_odd(self, x):
+        return 2 * math.floor( x / 2 ) + 1
+    
     def simple_moving_average(self, signal, window_len):
         '''  '''
         moving_avg = []
@@ -62,7 +65,7 @@ class TERMA_detector(base_detector):
             moving_avg.append(local_avg)
             
         return moving_avg
-                    
+
     def get_peak_results(self, raw_ppg, sampling_frequency):
         '''  '''
         # Sanity chek
@@ -75,16 +78,9 @@ class TERMA_detector(base_detector):
         if sampling_frequency <= 0.0:
             print('Error, sampling frequency must be greater than 0')
         
-        
-        # Conversion of windows in miliseconds to number of samples, 
-        def nearest_odd(x):
-            return 2 * math.floor( x / 2 ) + 1
-        
-        peak_window_len = nearest_odd(sampling_frequency * (self.peak_window_ms / 1000))
-        beat_window_len = nearest_odd(sampling_frequency * (self.beat_window_ms / 1000))
-        
-        # TODO: make zero-padding optional through a parameter
-        raw_ppg = np.append(raw_ppg, [0] * beat_window_len)
+        # Conversion of window sizes from miliseconds to number of samples
+        peak_window_len = self.nearest_odd(sampling_frequency * (self.peak_window_ms / 1000))
+        beat_window_len = self.nearest_odd(sampling_frequency * (self.beat_window_ms / 1000))
         
         # Filter PPG signal
         order = 2
@@ -98,9 +94,12 @@ class TERMA_detector(base_detector):
         # Square signal
         ppg_signal = ppg_signal ** 2
         
+				# Zero-padding to avoid a false negative in the last peak of a signal
+        ## TODO: Make zero-padding optional
+        ppg_signal = np.append(ppg_signal, [0] * beat_window_len)				
+
         # Compute offset of threshold 1
         alpha = self.beta * np.mean(ppg_signal)
-        
         
         # Compute moving averages
         SMA_peak = self.simple_moving_average(ppg_signal, peak_window_len)
