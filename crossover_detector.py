@@ -27,11 +27,8 @@
 # Python standard lib
 from collections.abc import Iterable
 # Application modules
-from base_detector import base_detector
+from base_detector import *
 import utilities
-
-class STATE_SEEKING_PEAK(object): pass
-class STATE_PEAK_FOUND(object): pass
 
 class crossover_detector(base_detector):
     ''' Class to process the PPG signal and indicate peaks using a crossover of moving averages '''
@@ -92,7 +89,7 @@ class crossover_detector(base_detector):
         low_cut = 0.5   # Hz
         high_cut = 8    # Hz 
         filtered_ppg = utilities.biquad_butter_bandpass(raw_ppg, order, low_cut, high_cut, sampling_frequency)
-        
+
         # Current state of peak detection
         fsm_state = STATE_SEEKING_PEAK
         peak_height = float('-inf')
@@ -113,13 +110,15 @@ class crossover_detector(base_detector):
             peak_condition = self.crossover_index > 0
             peak_blocks.append(int(peak_condition))
             
+						# STATE SEEKING PEAK
             # In this state, no peak was detected and we wait for a new peak to begin
             if fsm_state == STATE_SEEKING_PEAK:
               # State transition
               if peak_condition:
                 fsm_state = STATE_PEAK_FOUND
               
-            # This state characterizes the current peak and stores its info
+            # STATE PEAK FOUND
+						## This state characterizes the current peak and stores its info
             else:
               # Find sample with highest magnitude
               if ppg_sample > peak_height:
