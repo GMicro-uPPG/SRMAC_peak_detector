@@ -86,7 +86,7 @@ for record_number in range(first_rec, last_rec + 1):
     plt.plot(SMA_peak, color='green', label='SMA peak')
     plt.plot(SMA_beat, color='navy', label='SMA beat')
     plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
-    plt.legend()
+    plt.legend(loc='upper right')
     
 print('Accumulated confusion matrix: [TP,FP,FN]' + str(accumulated_cm))
 plt.show()

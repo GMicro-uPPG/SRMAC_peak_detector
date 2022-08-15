@@ -72,7 +72,7 @@ beta_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]         # = np.a
 
 verbosity = True
 
-# Generate num_folds splits of the loaded record and run random search a number of times for each split
+# Generate num_folds splits of the loaded record and run grid search a number of times for each split
 cv_parameters = []
 cv_precisions = []
 cv_recalls = []

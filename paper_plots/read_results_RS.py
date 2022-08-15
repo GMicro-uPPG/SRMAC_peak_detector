@@ -44,8 +44,6 @@ print(f'Dimensões obtidas (P): {np.shape(val_precisions)}')
 print(f'Dimensões obtidas (R): {np.shape(val_recalls)}')
 
 # Há 30 repetições dos resultados para as interações de interesse
-# Iterações de interesse são [50, 100, 150, ..., 1000]
-# Reservar soluções da iteração 150
 fold_avg_precisions = []
 fold_avg_recalls    = []
 

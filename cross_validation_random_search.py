@@ -56,7 +56,7 @@ print(f'The size of each fold is {fold_len} records')
 leftovers = num_recs % num_folds
 if leftovers > 0:
     print(f'There are {leftovers} unused records')
-    print(f'This wont happen if {num_recs} is divisible by num_folds')
+    print(f'This wont happen if {num_recs} is divisible by the number of CV folds')
 
 # Sampling frequency
 Fs = 200
@@ -75,7 +75,7 @@ for fold_i in range(num_folds):
     fold_validation = records[fold_i * fold_len : (fold_i + 1) * fold_len]
     fold_train      = records[0 : fold_i * fold_len] + records[(fold_i + 1) * fold_len : len(records) - leftovers]
     # print(f'Val: {len(fold_validation)}; Train: {len(fold_train)}')
-    
+
     # Store validation precision and recall for each run and for all iterations of interest
     fold_parameter_history = []
     fold_precision_history = []
@@ -93,56 +93,56 @@ for fold_i in range(num_folds):
         for soi in solutions_of_interest:
             alpha_cross, alpha_fast, alpha_slow, train_cost = soi
             peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow)
-            
+
             # Validation triangular confusion matrix
             validation_conf_mat = utilities.record_set_confusion_matrix(peak_detector, fold_validation, Fs)
             tp, fp, fn = validation_conf_mat
-            
+
             if tp != 0:
                 val_precision = tp / (tp + fp)
                 val_recall    = tp / (tp + fn)
             else:
                 val_precision = 0
                 val_recall = 0
-            
+
             # Keep parameters, precisions and recalls for this run
             run_parameter_sets.append(list(soi[:-1]))
             run_precisions.append(val_precision)
             run_recalls.append(val_recall)
-            
+
             # Compute acc to validate code
             # val_accuracy  = (val_precision + val_recall)/2          # Here accuracy is the average between precision and recall
             # validation_accuracies.append(val_accuracy)
             # print(f'Validation acc = {val_accuracy}')
-        
-        # Validation 1
+
+        # Accuracy
         # run_accs = (np.array(run_precisions) + np.array(run_recalls))/2
         # print('run accs')
         # print(run_accs)
-        
-        # Validation 2
+
+        # Verify dimensions (1)
         print('Run check')
         print(f'{np.shape(run_parameter_sets)} .. should be ({len(iterations_of_interest)},3)')
         print(f'{np.shape(run_precisions)} .... should be ({len(iterations_of_interest)})')
         print(f'{np.shape(run_recalls)} .... should be ({len(iterations_of_interest)})')
-        
+
         # Keep data of each run
         fold_parameter_history.append(list(run_parameter_sets))
         fold_precision_history.append(list(run_precisions))
         fold_recall_history.append(list(run_recalls))
-    
-    # Validation 3
+
+    # Verify dimensions (2)
     print('Fold check')
     print(f'{np.shape(fold_parameter_history)} .. should be ({num_runs},{len(iterations_of_interest)},3)')
     print(f'{np.shape(fold_precision_history)} .... should be ({num_runs},{len(iterations_of_interest)})')
     print(f'{np.shape(fold_recall_history)} .... should be ({num_runs},{len(iterations_of_interest)})')
-    
+
     # Keep data of each fold
     cv_parameters.append(list(fold_parameter_history))
     cv_precisions.append(list(fold_precision_history))
     cv_recalls.append(list(fold_recall_history))
 
-# Validation 4
+# Verify dimensions (3)
 print('Full CV check')
 print(f'{np.shape(cv_parameters)} .. should be ({num_folds},{num_runs},{len(iterations_of_interest)},3)')
 print(f'{np.shape(cv_precisions)} .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')

@@ -86,7 +86,7 @@ def getHUSMppg():
     list_of_vol = os.listdir(dataset)
     list_of_vol.sort()
     
-    print('\nLoading ' + str(dataset) + '\n')
+    # print('\nLoading ' + str(dataset) + '\n')
     for type_vol in list_of_vol:
         if (4 <= len(type_vol) <= 6): # To not read trash
 
@@ -100,7 +100,7 @@ def getHUSMppg():
                     for protocol in list_of_protocol:
                         if (4 <= len(protocol) <= 8): # To not read trash
 
-                            print('Getting record ' + protocol + ' from ' + type_vol + ' volunteer number ' + volunteer)
+                            # print('Getting record ' + protocol + ' from ' + type_vol + ' volunteer number ' + volunteer)
 
 
                             # PPG signals file
