@@ -151,8 +151,8 @@ class TERMA_detector(base_detector):
                     if block_width >= peak_window_len:               
                         peak_positions.append(peak_position)
                     else:
-                        peak_blocks[index-block_width : index] = [0] * block_width
-
+                        peak_blocks[index - block_width + 1: index] = [0] * (block_width - 1)
+                        
                     block_width = 0
                     peak_height = float('-inf')
                     fsm_state = STATE_SEEKING_PEAK
