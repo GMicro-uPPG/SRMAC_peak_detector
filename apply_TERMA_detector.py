@@ -70,7 +70,7 @@ for record_number in range(first_rec, last_rec + 1):
     print('Number of reference peaks: ' + str(len(reference_peaks)))
     print('Number of peaks found: ' + str(len(peak_positions)))
     
-    filtered_ppg = utilities.biquad_butter_bandpass(sample_signal, 2, 0.5, 8, Fs)
+    filtered_ppg = utilities.butter_bandpass_2order_0phase(sample_signal, 0.5, 8, Fs)
     
     #Plot signal and reference
     plt.figure()
@@ -80,7 +80,7 @@ for record_number in range(first_rec, last_rec + 1):
     plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks', linewidth=1.5)
     
     # Plot filtered signal
-    plt.plot(filtered_ppg, color='tab:purple')
+    plt.plot(filtered_ppg, color='tab:purple', label='Filtered PPG (2nd order zero-phase)')
 
     # Plot detector's output
     plt.plot(SMA_peak, color='green', label='SMA peak')

@@ -35,8 +35,8 @@ import optimization
 # Third party
 import numpy as np
 
-## Sanity check
-# Number of cross-validation folds
+# Sanity check
+## Number of cross-validation folds
 if len(sys.argv) != 2:
     print('Error, pass the number of cross-validation folds to the script')
     exit(-1)
@@ -69,6 +69,7 @@ def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_l
         run_parameter_sets = []
         run_precisions = []
         run_recalls = []
+				
         # For each solution define a model and extract validation precision, recall and accuracy
         for soi in solutions_of_interest:
             alpha_cross, alpha_fast, alpha_slow, train_cost = soi
@@ -140,7 +141,6 @@ def main():
     cv_precisions = []
     cv_recalls = []
     
-    # for run in range(num_runs):
     with ProcessPoolExecutor(max_workers=8) as executor:
         for r_dict in executor.map( partial(single_fold, records, Fs,
                                     iterations_of_interest, verbosity,
