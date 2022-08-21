@@ -80,21 +80,25 @@ for fold_i in range(num_folds):
     # Split the record
     fold_validation = records[fold_i * fold_len : (fold_i + 1) * fold_len]
     fold_train      = records[0 : fold_i * fold_len] + records[(fold_i + 1) * fold_len : len(records) - leftovers]
-    # print(f'Val: {len(fold_validation)}; Train: {len(fold_train)}')
     
     # Search for TERMA parameters with grid search
     start_time = time.time()
     found_solution = optimization.grid_search_TERMA(train_records = fold_train,
                      W1_list = W1_list, W2_list = W2_list, beta_list = beta_list,
                      sampling_frequency = Fs, verbosity = verbosity)
-    print(f'Took {time.time() - start_time} sec')
+    # if verbosity: print(f'Took {time.time() - start_time} sec')
     
     # Define TERMA model with the found parameters and compute validation metrics
     W1, W2, beta, _ = found_solution
     detector = TERMA_detector(W1, W2, beta)              
     tp, fp, fn = utilities.record_set_confusion_matrix(detector, fold_validation, Fs)
-    val_precision = tp / (tp + fp)
-    val_recall    = tp / (tp + fn)
+    
+    if tp != 0:
+        val_precision = tp / (tp + fp)
+        val_recall    = tp / (tp + fn)
+    else:
+        val_precision = 0
+        val_recall = 0
     
     # Store parameters found by GS and metrics for the validation fold
     cv_parameters.append( list(found_solution) )
@@ -104,9 +108,9 @@ for fold_i in range(num_folds):
 if verbosity:
     print(f'Parameters { {np.size(cv_parameters) }}')
     print(cv_parameters)
-    print(f'Parameters { {np.size(cv_precisions) }}')
+    print(f'Precisions { {np.size(cv_precisions) }}')
     print(cv_precisions)
-    print(f'Parameters { {np.size(cv_recalls) }}')
+    print(f'Recalls    { {np.size(cv_recalls) }}')
     print(cv_recalls)
 
 # Save results in binary files
