@@ -93,13 +93,16 @@ def main():
 
     # Sampling frequency
     Fs = 200
+    
     # Lists of parameters for GS
-    # W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]                # = np.arange(51, 111 + 6, 6)
-    # W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 665, 680, 695]       # = np.arange(545, 695 + 15, 15)
-    # beta_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]         # = np.arange(0, 1 + 0.1, 0.1)    
+    ## To detect the systolic waves in PPG signals, the optimal solution was found to be
+    ##     W1 = 111 ms, W2 = 667 ms and β = 2%.
+    # W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]
+    # W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 667, 680, 695]
+    # beta_list = [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]  
     W1_list = [51, 111]
     W2_list = [545, 695]
-    beta_list = [0, 1]
+    beta_list = [0, 0.1]
 
     verbosity = True
 
