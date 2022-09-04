@@ -97,12 +97,12 @@ def main():
     # Lists of parameters for GS
     ## To detect the systolic waves in PPG signals, the optimal solution was found to be
     ##     W1 = 111 ms, W2 = 667 ms and β = 2%.
-    # W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]
-    # W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 667, 680, 695]
-    # beta_list = [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]  
-    W1_list = [51, 111]
-    W2_list = [545, 695]
-    beta_list = [0, 0.1]
+    W1_list = [51, 57, 63, 69, 75, 81, 87, 93, 99, 105, 111]
+    W2_list = [545, 560, 575, 590, 605, 620, 635, 650, 667, 680, 695]
+    beta_list = [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]  
+    # W1_list = [51, 111]
+    # W2_list = [545, 695]
+    # beta_list = [0, 0.1]
 
     verbosity = True
 
@@ -141,9 +141,11 @@ def main():
 
     # Save results in binary files
     if num_folds == 22:
-        base_filename = f'TERMA_GS_LOSOCV_{num_folds}folds_'
+        base_filename = f'search_results/TERMA_GS_LOSOCV_{num_folds}folds_'
     else:
-        base_filename = f'TERMA_GS_CV_{num_folds}folds_'
+        base_filename = f'search_results/TERMA_GS_CV_{num_folds}folds_'
+				
+		#
     np.save(base_filename + 'parameters.npy', cv_parameters)
     np.save(base_filename + 'precisions.npy', cv_precisions)
     np.save(base_filename + 'recalls.npy',    cv_recalls)

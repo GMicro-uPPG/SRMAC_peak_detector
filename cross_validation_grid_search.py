@@ -118,9 +118,11 @@ if verbosity:
 
 # Save results in binary files
 if num_folds == 22:
-    base_filename = f'TERMA_GS_LOSOCV_{num_folds}folds_'
+    base_filename = f'search_results/TERMA_GS_LOSOCV_{num_folds}folds_'
 else:
-    base_filename = f'TERMA_GS_CV_{num_folds}folds_'
+    base_filename = f'search_results/TERMA_GS_CV_{num_folds}folds_'
+		
+# 
 np.save(base_filename + 'parameters.npy', cv_parameters)
 np.save(base_filename + 'precisions.npy', cv_precisions)
 np.save(base_filename + 'recalls.npy',    cv_recalls)
