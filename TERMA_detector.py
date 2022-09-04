@@ -91,15 +91,15 @@ class TERMA_detector(base_detector):
         # Clip signal
         ppg_signal = ppg_filtered.clip(min = 0)
         
+        # Compute offset of threshold 1 before squaring the signal
+        alpha = self.beta * np.mean(ppg_signal)
+        
         # Square signal
         ppg_signal = ppg_signal ** 2
         
         # Zero-padding to avoid a false negative in the last peak of a signal
         ## TODO: Make zero-padding optional
-        ppg_signal = np.append(ppg_signal, [0] * beat_window_len)        
-
-        # Compute offset of threshold 1
-        alpha = self.beta * np.mean(ppg_signal)
+        ppg_signal = np.append(ppg_signal, [0] * beat_window_len)
         
         # Compute moving averages
         SMA_peak = self.simple_moving_average(ppg_signal, peak_window_len)
