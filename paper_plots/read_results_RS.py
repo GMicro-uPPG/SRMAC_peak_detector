@@ -26,80 +26,91 @@
 
 import numpy as np
 import sys
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 if len(sys.argv) != 2:
-    print('Please inform the index of the desired iteration of interest')
+    print('Please inform the index of the desired iteration of interest to be plotted')
     exit(-1)
     
-ioi = int(sys.argv[1])
-    
-# Carrega array multidimensional com precisions
+ioi2plot = int(sys.argv[1])
+ioimax = 6
+
+if ioi2plot >= ioimax or ioi2plot < 0:
+	print('The desired iteration of interest to plot must less or equal to five')
+	exit(-2)
+
+# Loads multidimensional arrays with precision and recall values from cross-validation
 val_precisions = np.load('../search_results/LOSOCV_RS_22folds_30runs_precisions.npy')
 val_recalls = np.load('../search_results/LOSOCV_RS_22folds_30runs_recalls.npy')
 
-# Dimensões do array devem ser (num_folds, num_runs, iterations_of_interest)
-print('Dimensões esperadas: (22, 30, IOI)')
-print(f'Dimensões obtidas (P): {np.shape(val_precisions)}')
-print(f'Dimensões obtidas (R): {np.shape(val_recalls)}')
+# Array dimensions must be (num_folds, num_runs, iterations_of_interest)
+print('Expected dimensions: (22, 30, # of IOI)')
+print(f'Actual dimensions (P): {np.shape(val_precisions)}')
+print(f'Actual dimensions (R): {np.shape(val_recalls)}')
 
-# Há 30 repetições dos resultados para as interações de interesse
-fold_avg_precisions = []
-fold_avg_recalls    = []
+print('\nStats on validation data')
 
-for subj_p, subj_r in zip(val_precisions, val_recalls):
-    avg_precisions_of_interest = np.sum(subj_p, axis=0) / 30
-    avg_recalls_of_interest = np.sum(subj_r, axis=0) / 30
-    
-    fold_avg_precisions.append(avg_precisions_of_interest[ioi])
-    fold_avg_recalls.append(avg_recalls_of_interest[ioi])
+fold_avg_precisions2plot = None
+fold_avg_recalls2plot = None
 
+for ioi in range(0, ioimax):
+		print('\nIteration of interest with index ' + str(ioi))
+		
+		# There are 30 runs of the results for the iterations of interest
+		fold_avg_precisions = np.sum(val_precisions[:,:,-1], axis=1) / 30
+		fold_avg_recalls = np.sum(val_recalls[:,:,-1], axis=1) / 30
 
-# COPD patients statistics
-c_precision_avg = np.mean(fold_avg_precisions[0:11])
-c_precision_std = np.std(fold_avg_precisions[0:11], ddof=1)
-c_recall_avg = np.mean(fold_avg_recalls[0:11])
-c_recall_std = np.std(fold_avg_recalls[0:11], ddof=1)
+		if ioi == ioi2plot:
+			print(f'ioi = {ioi2plot}')
+			fold_avg_precisions2plot = list(fold_avg_precisions)
+			fold_avg_recalls2plot = list(fold_avg_recalls)
 
-print(f'COPD precision: {c_precision_avg} ({c_precision_std})')
-print(f'COPD recall: {c_recall_avg} ({c_recall_std})')
+		# COPD patients statistics
+		c_precision_avg = np.mean(fold_avg_precisions[0:11])
+		c_precision_std = np.std(fold_avg_precisions[0:11], ddof=1)
+		c_recall_avg = np.mean(fold_avg_recalls[0:11])
+		c_recall_std = np.std(fold_avg_recalls[0:11], ddof=1)
 
-# Healthy subjects statistics
-h_precision_avg = np.mean(fold_avg_precisions[11:22])
-h_precision_std = np.std(fold_avg_precisions[11:22], ddof=1)
-h_recall_avg = np.mean(fold_avg_recalls[11:22])
-h_recall_std = np.std(fold_avg_recalls[11:22], ddof=1)
+		print(f'COPD precision: {c_precision_avg} ({c_precision_std})')
+		print(f'COPD recall: {c_recall_avg} ({c_recall_std})')
 
-print(f'Healthy precision: {h_precision_avg} ({h_precision_std})')
-print(f'Healthy recall: {h_recall_avg} ({h_recall_std})')
+		# Healthy subjects statistics
+		h_precision_avg = np.mean(fold_avg_precisions[11:22])
+		h_precision_std = np.std(fold_avg_precisions[11:22], ddof=1)
+		h_recall_avg = np.mean(fold_avg_recalls[11:22])
+		h_recall_std = np.std(fold_avg_recalls[11:22], ddof=1)
 
+		print(f'Healthy precision: {h_precision_avg} ({h_precision_std})')
+		print(f'Healthy recall: {h_recall_avg} ({h_recall_std})')
+		
+		print(f'Overall average: {(c_precision_avg + c_recall_avg + h_precision_avg + h_recall_avg)/4}')
 
+fig, axs = plt.subplots(2, figsize=(15, 8))
+folds_ticks = range(1,23)
+xtick_labels = ['C'+r'$_1$', 'C'+r'$_2$', 'C'+r'$_3$', 'C'+r'$_4$', 'C'+r'$_5$', 'C'+r'$_6$',
+                'C'+r'$_7$', 'C'+r'$_8$', 'C'+r'$_9$', 'C'+r'$_{10}$', 'C'+r'$_{11}$',
+                'H'+r'$_1$', 'H'+r'$_2$', 'H'+r'$_3$', 'H'+r'$_4$', 'H'+r'$_5$', 'H'+r'$_6$',
+                'H'+r'$_7$', 'H'+r'$_8$', 'H'+r'$_9$', 'H'+r'$_{10}$', 'H'+r'$_{11}$']
 
-# fig, axs = plt.subplots(2)
-# folds_ticks = range(1,23)
-# xtick_labels = ['C'+r'$_1$', 'C'+r'$_2$', 'C'+r'$_3$', 'C'+r'$_4$', 'C'+r'$_5$', 'C'+r'$_6$',
-                # 'C'+r'$_7$', 'C'+r'$_8$', 'C'+r'$_9$', 'C'+r'$_{10}$', 'C'+r'$_{11}$',
-                # 'H'+r'$_1$', 'H'+r'$_2$', 'H'+r'$_3$', 'H'+r'$_4$', 'H'+r'$_5$', 'H'+r'$_6$',
-                # 'H'+r'$_7$', 'H'+r'$_8$', 'H'+r'$_9$', 'H'+r'$_{10}$', 'H'+r'$_{11}$']
+axs[0].set_title('Average precisions per subject')
+barlist = axs[0].bar(folds_ticks, fold_avg_precisions2plot)
+[ bar.set_color('#DE8484') for bar in barlist[0:11] ]
+[ bar.set_color('#92BD77') for bar in barlist[11:22] ]
 
-# axs[0].set_title('Average precisions per subject')
-# barlist = axs[0].bar(folds_ticks, fold_avg_precisions)
-# [ bar.set_color('#DE8484') for bar in barlist[0:11] ]
-# [ bar.set_color('#92BD77') for bar in barlist[11:22] ]
+axs[0].set_ylim([0.89, 1.019])
+axs[0].set_xticks(folds_ticks)
+axs[0].set_xticklabels(xtick_labels)
+axs[0].tick_params(axis='both', which='major', labelsize=16)
 
-# axs[0].set_ylim([0.89, 1.019])
-# axs[0].set_xticks(folds_ticks)
-# axs[0].set_xticklabels(xtick_labels)
-# axs[0].tick_params(axis='both', which='major', labelsize=16)
+axs[1].set_title('Average recalls per subject')
+barlist = axs[1].bar(folds_ticks, fold_avg_recalls2plot)
+[ bar.set_color('#DE8484') for bar in barlist[0:11] ]
+[ bar.set_color('#92BD77') for bar in barlist[11:22] ]
 
-# axs[1].set_title('Average recalls per subject')
-# barlist = axs[1].bar(folds_ticks, fold_avg_recalls)
-# [ bar.set_color('#DE8484') for bar in barlist[0:11] ]
-# [ bar.set_color('#92BD77') for bar in barlist[11:22] ]
-
-# axs[1].set_ylim([0.89, 1.019])
-# axs[1].set_xticks(folds_ticks)
-# axs[1].set_xticklabels(xtick_labels)
-# axs[1].tick_params(axis='both', which='major', labelsize=16)
+axs[1].set_ylim([0.89, 1.019])
+axs[1].set_xticks(folds_ticks)
+axs[1].set_xticklabels(xtick_labels)
+axs[1].tick_params(axis='both', which='major', labelsize=16)
 
 # plt.show()
+plt.savefig(f'per_subject_results_THIS_{ioi2plot}IOI.png')
