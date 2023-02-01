@@ -27,7 +27,7 @@
 # Python std library
 import sys
 if len(sys.argv) != 3:
-    print('Please enter the first and last record numbers')
+    print('Please enter the first and last record indices')
     exit(-1)
 # Application modules
 from crossover_detector import crossover_detector
@@ -41,7 +41,7 @@ first_rec = int(sys.argv[1])
 last_rec = int(sys.argv[2])
 
 if first_rec > last_rec:
-    print('Error, last rec must be greater than first rec')
+    print('Error, last record must be greater than first record')
     exit(-1)
 if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
     print(f'Error, record index must be in the range 0 < index < {len(records)}')
@@ -62,7 +62,7 @@ for record_number in range(first_rec, last_rec + 1):
     
     lit_cm = utilities.signal_confusion_matrix(peak_positions, reference_peaks, Fs)
     accumulated_cm = np.array(accumulated_cm) + np.array(lit_cm)
-        
+
     print('\nRecord ' + str(record_number) + ' literature confusion matrix: [TP,FP,FN]' + str(lit_cm))
     print('Number of reference peaks: ' + str(len(reference_peaks)))
     print('Number of peaks found: ' + str(len(peak_positions)))
