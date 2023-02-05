@@ -41,9 +41,10 @@ import numpy as np
 if len(sys.argv) != 2:
     print('Error, pass the number of cross-validation folds to the script')
     exit(-1)
+		
 num_folds = int(sys.argv[1])
 if num_folds <= 0 or num_folds > 66:
-    print('Error, there are 66 records')
+    print('Error, the number of folds should be in the range [1,66]')
     exit(-1)
 
 # Load records (PPG signals and peak references)
@@ -141,9 +142,9 @@ def main():
 
     # Save results in binary files
     if num_folds == 22:
-        base_filename = f'search_results/TERMA_GS_LOSOCV_{num_folds}folds_'
+        base_filename = f'search_results/LOSOCV_GS_TERMA_{num_folds}folds_'
     else:
-        base_filename = f'search_results/TERMA_GS_CV_{num_folds}folds_'
+        base_filename = f'search_results/CV_GS_TERMA_{num_folds}folds_'
 				
 		#
     np.save(base_filename + 'parameters.npy', cv_parameters)

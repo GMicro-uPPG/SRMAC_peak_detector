@@ -27,9 +27,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Loads multidimensional arrays with precision and recall values from cross-validation
-val_precisions = np.load('../search_results/TERMA_GS_LOSOCV_22folds_precisions.npy')
-val_recalls = np.load('../search_results/TERMA_GS_LOSOCV_22folds_recalls.npy')
+# Loads multidimensional arrays with precision and recall values from cross-validationx
+val_precisions = np.load('../search_results/LOSOCV_GS_TERMA_22folds_precisions.npy')
+val_recalls = np.load('../search_results/LOSOCV_GS_TERMA_22folds_recalls.npy')
 
 # Array dimensions must be (num_folds)
 print('Expected dimensions: (22)')
@@ -88,4 +88,4 @@ axs[1].set_xticklabels(xtick_labels)
 axs[1].tick_params(axis='both', which='major', labelsize=16)
 
 #plt.show()
-plt.savefig('per_subject_results_TERMA.png')
+plt.savefig('per_subject_TERMA_GS.png')

@@ -60,7 +60,7 @@ for _ in range(num_runs):
 		# Get history of solutions defined by iterations of interest
 		solutions_of_interest = optimization.random_search_TERMA(train_records = train_records,
 														iterations_of_interest = iterations_of_interest,
-														W1_min = 51, W1_max = 111,
+														W1_min = 54, W1_max = 111,
 														W2_min = 545, W2_max = 694,
 														beta_min = 0, beta_max = 0.1,
 														sampling_frequency=Fs, verbosity=verbosity)

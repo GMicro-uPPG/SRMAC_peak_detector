@@ -40,8 +40,8 @@ if ioi2plot >= ioimax or ioi2plot < 0:
 	exit(-2)
 
 # Loads multidimensional arrays with precision and recall values from cross-validation
-val_precisions = np.load('../search_results/LOSOCV_RS_22folds_30runs_precisions.npy')
-val_recalls = np.load('../search_results/LOSOCV_RS_22folds_30runs_recalls.npy')
+val_precisions = np.load('../search_results/LOSOCV_RS_crossover_22folds_30runs_precisions.npy')
+val_recalls = np.load('../search_results/LOSOCV_RS_crossover_22folds_30runs_recalls.npy')
 
 # Array dimensions must be (num_folds, num_runs, iterations_of_interest)
 print('Expected dimensions: (22, 30, # of IOI)')
@@ -113,4 +113,4 @@ axs[1].set_xticklabels(xtick_labels)
 axs[1].tick_params(axis='both', which='major', labelsize=16)
 
 # plt.show()
-plt.savefig(f'per_subject_results_THIS_{ioi2plot}IOI.png')
+plt.savefig(f'per_subject_THIS_RS_{ioi2plot}IOI.png')
