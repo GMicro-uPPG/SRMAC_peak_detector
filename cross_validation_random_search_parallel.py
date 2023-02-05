@@ -38,11 +38,12 @@ import numpy as np
 # Sanity check
 ## Number of cross-validation folds
 if len(sys.argv) != 2:
-    print('Error, pass the number of cross-validation folds to the script')
+    print('Error, inform in how many cross-validation folds the records will be split')
     exit(-1)
 num_folds = int(sys.argv[1])
+
 if num_folds <= 0 or num_folds > 66:
-    print('Error, there are 66 records')
+    print('Error, the number of folds should be in the range [1,66]')
     exit(-1)
     
 # Load records (PPG signals and peak references)
@@ -64,16 +65,17 @@ def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_l
     for run in range(num_runs):
         # Get history of solutions defined by iterations of interest
         solutions_of_interest = optimization.random_search_crossover(train_records = fold_train, iterations_of_interest = iterations_of_interest,
-                                                        min_alpha = 0.7, max_alpha = 1, sampling_frequency=Fs, verbosity=verbosity)
+                                                        alpha_min = 0.7, alpha_max = 1, thr_min = 0, thr_max = 5e-4, 
+                                                        sampling_frequency = Fs, verbosity = verbosity)
         # Parameters found, and also precisions and recalls of interest for this run
         run_parameter_sets = []
         run_precisions = []
         run_recalls = []
-				
+        
         # For each solution define a model and extract validation precision, recall and accuracy
         for soi in solutions_of_interest:
-            alpha_cross, alpha_fast, alpha_slow, train_cost = soi
-            peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow)
+            alpha_cross, alpha_fast, alpha_slow, threshold, train_cost = soi
+            peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, threshold)
             
             # Validation triangular confusion matrix
             validation_conf_mat = utilities.record_set_confusion_matrix(peak_detector, fold_validation, Fs)
@@ -104,7 +106,7 @@ def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_l
     
     # Fold dimensionality check
     print('Fold check')
-    print(f'{np.shape(fold_parameter_history)} .. should be ({num_runs},{len(iterations_of_interest)},3)')
+    print(f'{np.shape(fold_parameter_history)} .. should be ({num_runs},{len(iterations_of_interest)},4)')
     print(f'{np.shape(fold_precision_history)} .... should be ({num_runs},{len(iterations_of_interest)})')
     print(f'{np.shape(fold_recall_history)} .... should be ({num_runs},{len(iterations_of_interest)})')
     
@@ -157,7 +159,7 @@ def main():
 
     # CV dimensionality check
     print('Full CV check')
-    print(f'{np.shape(cv_parameters)} .. should be ({num_folds},{num_runs},{len(iterations_of_interest)},3)')
+    print(f'{np.shape(cv_parameters)} .. should be ({num_folds},{num_runs},{len(iterations_of_interest)},4)')
     print(f'{np.shape(cv_precisions)} .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')
     print(f'{np.shape(cv_recalls)}    .... should be ({num_folds},{num_runs},{len(iterations_of_interest)})')
 

@@ -33,26 +33,30 @@ from crossover_detector import crossover_detector
 from TERMA_detector import TERMA_detector
 import utilities
 
-def random_search_crossover(train_records, iterations_of_interest, min_alpha, max_alpha, sampling_frequency, verbosity):
+def random_search_crossover(train_records, iterations_of_interest, alpha_min, alpha_max, thr_min, thr_max, sampling_frequency, verbosity):
     ''' Given the number of iterations and alphas range,
         performs random search on the crossover's alphas using train data accuracy as fitness metric. '''
-    if (min_alpha < 0) or (min_alpha > 1) or (max_alpha < 0) or (max_alpha > 1):
-        print('Error, minimum and maximum alphas must be between 0 and 1')
+    # Sanity checks
+    if thr_min > thr_max:
+        print('Error, maximum threshold must be greater than the minimum threshold')
         exit(-1)
-    if len(iterations_of_interest) == 0:
-        print('Error, iterations of interest must not be empty')
+    if alpha_min > alpha_max:
+        print('Error, maximum alpha must be greater than the minimum alpha')
+        exit(-1)
+    if (alpha_min < 0) or (alpha_min > 1) or (alpha_max < 0) or (alpha_max > 1):
+        print('Error, minimum and maximum alphas must be between 0 and 1')
         exit(-1)
     if np.min(iterations_of_interest) <= 0 : 
         print('Error, the minimum iteration of interest must be 1')
         exit(-1)
-    if verbosity != False and verbosity != True:
+    if not isinstance(verbosity, bool):
         print('Error, verbosity must be boolean')
         exit(-1)
     
     num_iterations = int(np.max(iterations_of_interest))
     
     # The initial solution has infinite cost, and therefore any solution is better than the initial one
-    best_solution = [0, 0, 0, float('inf')]
+    best_solution = [0, 0, 0, 0, float('inf')]
     solutions_of_interest = []
     
     # Optimization loop
@@ -60,11 +64,12 @@ def random_search_crossover(train_records, iterations_of_interest, min_alpha, ma
         if verbosity: print('\n[Search iteration ' + str(iteration) + ']')
 
         # Slow alpha depends on fast alpha (fast alpha < slow alpha)
-        alpha_fast = np.random.uniform(min_alpha, max_alpha)
-        alpha_slow = np.random.uniform(alpha_fast, max_alpha)
+        alpha_fast = np.random.uniform(alpha_min, alpha_max)
+        alpha_slow = np.random.uniform(alpha_fast, alpha_max)
         # The crossover alpha is independent of fast and slow alphas
-        alpha_crossover = np.random.uniform(min_alpha, max_alpha)
-        peak_detector = crossover_detector(alpha_crossover, alpha_fast, alpha_slow)
+        alpha_crossover = np.random.uniform(alpha_min, alpha_max)
+        threshold = np.random.uniform(thr_min, thr_max)
+        peak_detector = crossover_detector(alpha_crossover, alpha_fast, alpha_slow, threshold)
         
         # Run the detector defined above in the train records and extract SE and P+
         tp, fp, fn = utilities.record_set_confusion_matrix(peak_detector, train_records, sampling_frequency)
@@ -73,7 +78,25 @@ def random_search_crossover(train_records, iterations_of_interest, min_alpha, ma
             SE = 0.0
             Pp = 0.0
         else:
+            Pp = tp / (tp + fp)
             SE = tp / (tp + fn)
+            
+        cost = 1 - (SE + Pp)/2
+        
+        if cost < best_solution[-1]:
+            best_solution = [alpha_crossover, alpha_fast, alpha_slow, threshold, cost]
+        
+        # Store current best solution in iterations of interest
+        if iteration in (np.array(iterations_of_interest) - 1):
+            solutions_of_interest.append(list(best_solution))
+
+        if verbosity:
+            print('Alphas crossover, fast, slow; threshold : cost')
+            print(f'[{iteration}] {alpha_crossover}, {alpha_fast}, {alpha_slow}; {threshold} : {cost}')
+            print(f'[best] {best_solution[0]}, {best_solution[1]}, {best_solution[2]}; {best_solution[3]} : {best_solution[-1]}')
+            
+    return solutions_of_interest
+
             Pp = tp / (tp + fp)
             
         cost = 1 - (SE + Pp)/2

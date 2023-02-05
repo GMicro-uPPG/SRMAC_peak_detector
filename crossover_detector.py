@@ -33,9 +33,8 @@ import utilities
 class crossover_detector(base_detector):
     ''' Class to process the PPG signal and indicate peaks using a crossover of moving averages '''
     
-    def __init__(self, alpha_crossover:float, alpha_fast:float, alpha_slow:float):
+    def __init__(self, alpha_crossover:float, alpha_fast:float, alpha_slow:float, threshold:float):
         ''' Constructor '''
-        
         # Sanity check
         if any([(alpha >= 1) or (alpha <= 0) for alpha in [alpha_crossover, alpha_fast, alpha_slow]]):
             print('Error, alphas must be in 0 <= a <= 1')
@@ -45,6 +44,7 @@ class crossover_detector(base_detector):
         self.alpha_crossover =  alpha_crossover 
         self.alpha_fast =       alpha_fast
         self.alpha_slow =       alpha_slow
+        self.threshold =        threshold
         
         # Variables
         self.average_fast = 0.0
@@ -60,7 +60,7 @@ class crossover_detector(base_detector):
         self.average_fast = first_ppg_val
         self.average_slow = first_ppg_val
         self.crossover_index = 0.0
-              
+
     def get_peak_results(self, raw_ppg, sampling_frequency):
         ''' Crossover based peak detection  '''
         # Sanity checks
@@ -107,30 +107,30 @@ class crossover_detector(base_detector):
             crossover_indices.append(self.crossover_index)
             
             # The peak condition is evaluated and stored in both states
-            peak_condition = self.crossover_index > 0
+            peak_condition = self.crossover_index > self.threshold
             peak_blocks.append(int(peak_condition))
             
-						# STATE SEEKING PEAK
+            # STATE SEEKING PEAK
             # In this state, no peak was detected and we wait for a new peak to begin
             if fsm_state == STATE_SEEKING_PEAK:
-              # State transition
-              if peak_condition:
-                fsm_state = STATE_PEAK_FOUND
+                # State transition
+                if peak_condition:
+                  fsm_state = STATE_PEAK_FOUND
               
             # STATE PEAK FOUND
-						## This state characterizes the current peak and stores its info
+            ## This state characterizes the current peak and stores its info
             else:
-              # Find sample with highest magnitude
-              if ppg_sample > peak_height:
-                peak_height = ppg_sample
-                peak_position = index
+                # Find sample with highest magnitude
+                if ppg_sample > peak_height:
+                    peak_height = ppg_sample
+                    peak_position = index
               
-              # State transition
-              ## If the signal ends during a peak block onset, act as if a falling edge occurs
-              if (not peak_condition) or (index == len(filtered_ppg) - 1):
-                peak_positions.append(peak_position)
-                peak_height = float('-inf')
-                fsm_state = STATE_SEEKING_PEAK
+                # State transition
+                ## If the signal ends during a peak block onset, act as if a falling edge occurs
+                if (not peak_condition) or (index == len(filtered_ppg) - 1):
+                    peak_positions.append(peak_position)
+                    peak_height = float('-inf')
+                    fsm_state = STATE_SEEKING_PEAK
             
         return  fast_averages, slow_averages, crossover_indices, peak_blocks, peak_positions
         

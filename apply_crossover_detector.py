@@ -39,16 +39,18 @@ import matplotlib.pyplot as plt
 
 first_rec = int(sys.argv[1])
 last_rec = int(sys.argv[2])
-
+  
 if first_rec > last_rec:
     print('Error, last record must be greater than first record')
     exit(-1)
 if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
-    print(f'Error, record index must be in the range 0 < index < {len(records)}')
+    print(f'Error, record index must be in the range ]0,{len(records)-1}]')
+    exit(-1)
 
 # Define crossover detector
 Fs = 200
-detector = crossover_detector(0.8705, 0.9032, 0.9387)              
+# detector = crossover_detector(0.8705, 0.9032, 0.9387, 0)
+detector = crossover_detector(0.9592, 0.8991, 0.9324, 5.710e-05)
 
 accumulated_cm = [0, 0, 0]
 # Get sample signal and reference from records
@@ -71,23 +73,23 @@ for record_number in range(first_rec, last_rec + 1):
     low_cut = 0.5   # Hz
     high_cut = 8    # Hz 
     filtered_ppg = utilities.biquad_butter_bandpass(sample_signal, order, low_cut, high_cut, Fs)
-
+    
     #Plot signal and reference
     plt.figure()
     plt.title('PPG peak detection (rec ' + str(record_number) + ')')
     plt.plot(sample_signal, color='k', label='PPG signal')
 
-    # plt.scatter(reference_peaks, [0.3]*len(reference_peaks), label='Reference peaks', linewidth=4.5)
-    # plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks', linewidth=1.5)
+    plt.scatter(reference_peaks, [0.3]*len(reference_peaks), label='Reference peaks', linewidth=4.5)
+    plt.scatter(peak_positions, [0.3]*len(peak_positions), label='Found peaks', linewidth=1.5)
 
     # Plot filtered signal
     plt.plot(filtered_ppg, color='k', linewidth=3.5)
 
     # Plot detector's output
-    plt.plot(fast_averages, color='magenta', label='$MA_{fast}$', linewidth=2)
-    plt.plot(slow_averages, color='navy', label='$MA_{slow}$', linewidth=2)
-    #plt.plot(1 * np.array(crossover_indices), color='green', label='crossover index', linewidth=2)
-    #plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
+    # plt.plot(fast_averages, color='magenta', label='$MA_{fast}$', linewidth=2)
+    # plt.plot(slow_averages, color='navy', label='$MA_{slow}$', linewidth=2)
+    plt.plot(1 * np.array(crossover_indices), color='green', label='crossover index', linewidth=2)
+    plt.plot(0.3*np.array(peak_blocks), color='gray', label='Detected peaks')
     plt.legend(loc='upper right', fontsize=16)
 
 print('Accumulated confusion matrix: [TP,FP,FN]' + str(accumulated_cm))
