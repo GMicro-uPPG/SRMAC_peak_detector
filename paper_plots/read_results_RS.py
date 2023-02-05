@@ -28,15 +28,15 @@ import numpy as np
 import sys
 import matplotlib.pyplot as plt
 
-if len(sys.argv) != 2:
-    print('Please inform the index of the desired iteration of interest to be plotted')
+if len(sys.argv) != 3:
+    print('Please inform the number of iterations of iterest (IOI) and the index of the IOI to be plotted')
     exit(-1)
-    
-ioi2plot = int(sys.argv[1])
-ioimax = 6
+
+ioimax = int(sys.argv[1])
+ioi2plot = int(sys.argv[2])
 
 if ioi2plot >= ioimax or ioi2plot < 0:
-	print('The desired iteration of interest to plot must less or equal to five')
+	print('The desired iteration of interest (IOI) to plot must be in the range set by the number of IOI')
 	exit(-2)
 
 # Loads multidimensional arrays with precision and recall values from cross-validation
@@ -57,8 +57,8 @@ for ioi in range(0, ioimax):
 		print('\nIteration of interest with index ' + str(ioi))
 		
 		# There are 30 runs of the results for the iterations of interest
-		fold_avg_precisions = np.sum(val_precisions[:,:,-1], axis=1) / 30
-		fold_avg_recalls = np.sum(val_recalls[:,:,-1], axis=1) / 30
+		fold_avg_precisions = np.sum(val_precisions[:,:,ioi], axis=1) / 30
+		fold_avg_recalls = np.sum(val_recalls[:,:,ioi], axis=1) / 30
 
 		if ioi == ioi2plot:
 			print(f'ioi = {ioi2plot}')
