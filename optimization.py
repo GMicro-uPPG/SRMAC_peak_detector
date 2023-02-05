@@ -97,25 +97,68 @@ def random_search_crossover(train_records, iterations_of_interest, alpha_min, al
             
     return solutions_of_interest
 
+def random_search_TERMA(train_records, iterations_of_interest, W1_min, W1_max, W2_min, W2_max, beta_min, beta_max, sampling_frequency, verbosity):
+    ''' Given the number of iterations and alphas range,
+        performs random search on the crossover's alphas using train data accuracy as fitness metric. '''
+    # Sanity checks
+    if W1_min > W1_max or W2_min > W2_max or beta_min > beta_max:
+        print('Error, the maximum value of a given parameter should be greater than the minimum one')
+        exit(-1)
+    if W1_max > W2_min:
+        print('Error, the maximum value of W1 must be less than the minimum value of W2')
+        exit(-1)
+    if (beta_min < 0) or (beta_min > 1) or (beta_min < 0) or (beta_min > 1):
+        print('Error, minimum and maximum alphas must be between 0 and 1')
+        exit(-1)
+    if np.min(iterations_of_interest) <= 0 : 
+        print('Error, the minimum iteration of interest must be 1')
+        exit(-1)
+    if not isinstance(verbosity, bool):
+        print('Error, verbosity must be boolean')
+        exit(-1)
+    
+    num_iterations = int(np.max(iterations_of_interest))
+    
+    # The initial solution has infinite cost, and therefore any solution is better than the initial one
+    best_solution = [0, 0, 0, float('inf')]
+    solutions_of_interest = []
+    
+    # Optimization loop
+    for iteration in range(num_iterations):
+        if verbosity: print('\n[Search iteration ' + str(iteration) + ']')
+
+        # Generate random parameters
+        W1 = np.random.randint(W1_min, W1_max)
+        W2 = np.random.randint(W2_min, W2_max)
+        beta = np.random.uniform(beta_min, beta_max)
+        peak_detector = TERMA_detector(W1, W2, beta)
+        
+        # Run the detector defined above in the train records and extract SE and P+
+        tp, fp, fn = utilities.record_set_confusion_matrix(peak_detector, train_records, sampling_frequency)
+        
+        if tp == 0:
+            SE = 0.0
+            Pp = 0.0
+        else:
             Pp = tp / (tp + fp)
+            SE = tp / (tp + fn)
+           
             
         cost = 1 - (SE + Pp)/2
         
         if cost < best_solution[-1]:
-            best_solution = [alpha_crossover, alpha_fast, alpha_slow, cost]
+            best_solution = [W1, W2, beta, cost]
         
         # Store current best solution in iterations of interest
         if iteration in (np.array(iterations_of_interest) - 1):
             solutions_of_interest.append(list(best_solution))
             
         if verbosity:
-            print('Alphas: crossover, fast, slow : cost')
-            print(f'[{iteration}] {alpha_crossover}, {alpha_fast}, {alpha_slow} : {cost}')
-            print(f'[best] {best_solution[0]} {best_solution[1]} {best_solution[2]} : {best_solution[-1]}')
+            print('W1, W2, beta : cost')
+            print(f'[{iteration}] {W1}, {W2}, {beta} : {cost}')
+            print(f'[best] {best_solution[0]}, {best_solution[1]}, {best_solution[2]}: {best_solution[-1]}')
     
     return solutions_of_interest 
-
-
 
 def grid_search_TERMA(train_records, W1_list, W2_list, beta_list, sampling_frequency, verbosity):
     ''' Deterministic brute force search with every combination of the parameter lists provided. '''
