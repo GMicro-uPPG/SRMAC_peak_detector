@@ -128,8 +128,8 @@ def random_search_TERMA(train_records, iterations_of_interest, W1_min, W1_max, W
         if verbosity: print('\n[Search iteration ' + str(iteration) + ']')
 
         # Generate random parameters
-        W1 = np.random.randint(W1_min, W1_max)
-        W2 = np.random.randint(W2_min, W2_max)
+        W1 = np.random.randint(W1_min, W1_max + 1)
+        W2 = np.random.randint(W2_min, W2_max + 1)
         beta = np.random.uniform(beta_min, beta_max)
         peak_detector = TERMA_detector(W1, W2, beta)
         
@@ -143,7 +143,6 @@ def random_search_TERMA(train_records, iterations_of_interest, W1_min, W1_max, W
             Pp = tp / (tp + fp)
             SE = tp / (tp + fn)
            
-            
         cost = 1 - (SE + Pp)/2
         
         if cost < best_solution[-1]:
