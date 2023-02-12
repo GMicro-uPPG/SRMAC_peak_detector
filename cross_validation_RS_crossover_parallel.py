@@ -32,6 +32,7 @@ from functools import partial
 from crossover_detector import crossover_detector
 import utilities
 import optimization
+import read_datasets
 # Third party
 import numpy as np
 
@@ -46,15 +47,12 @@ if num_folds <= 0 or num_folds > 66:
     print('Error, the number of folds should be in the range [1,66]')
     exit(-1)
     
-# Load records (PPG signals and peak references)
-from read_datasets import records   # This import will load 66 records. Record sample rate = 200 Hz
-
 # Define function for a single run of random search
 def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_len, leftovers, fold_i):
     # Split the record
     fold_validation = records[fold_i * fold_len : (fold_i + 1) * fold_len]
     fold_train      = records[0 : fold_i * fold_len] + records[(fold_i + 1) * fold_len : len(records) - leftovers]
-     
+    
     # Store validation precision and recall for each run and for all iterations of interest
     fold_parameter_history = []
     fold_precision_history = []
@@ -106,9 +104,10 @@ def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_l
     return {'params': list(fold_parameter_history),
             'pr': list(fold_precision_history),
             're': list(fold_recall_history)}
-    
 
 def main():
+    # Read PPG dataset	
+    records = read_datasets.getHUSMppg()	
     num_recs = len(records)
     print(f'Loaded {num_recs} records')
     if num_recs == 0:

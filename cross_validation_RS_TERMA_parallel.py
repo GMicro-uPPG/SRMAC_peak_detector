@@ -32,6 +32,7 @@ from functools import partial
 from TERMA_detector import TERMA_detector
 import utilities
 import optimization
+import read_datasets
 # Third party
 import numpy as np
 
@@ -45,9 +46,6 @@ num_folds = int(sys.argv[1])
 if num_folds <= 0 or num_folds > 66:
     print('Error, the number of folds should be in the range [1,66]')
     exit(-1)
-    
-# Load records (PPG signals and peak references)
-from read_datasets import records   # This import will load 66 records. Record sample rate = 200 Hz
 
 # Define function for a single run of random search
 def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_len, leftovers, fold_i):
@@ -112,6 +110,8 @@ def single_fold(records, Fs, iterations_of_interest, verbosity, num_runs, fold_l
     
 
 def main():
+    # Read PPG dataset	
+    records = read_datasets.getHUSMppg()	
     num_recs = len(records)
     print(f'Loaded {num_recs} records')
     if num_recs == 0:

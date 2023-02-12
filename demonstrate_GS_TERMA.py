@@ -26,18 +26,19 @@
 
 # Application modules
 from TERMA_detector import TERMA_detector
-from read_datasets import records # This will load 66 records. Rercord sample rate = 200 Hz
+import read_datasets
 import utilities
 import optimization
 # Third party
 import numpy as np
 import time_manager
 
+print('\nFirst timestamp: ' + str(time_manager.time.getTimestamp()))
+print('First time: ' + str(time_manager.time.getTime()))	
+
 # Load reference data (44 records for training and 22 for testing)
 # Test data is composed of an equal number of healty and dpoc records
-print('\nFirst timestamp: ' + str(time_manager.time.getTimestamp()))
-print('First time: ' + str(time_manager.time.getTime()))
-
+records = read_datasets.getHUSMppg()	
 train_records = records[11:-11]
 print('\nTrain records: [11:-11], len = ' + str(len(train_records)))
 test_records = records[0:11] + records[-11:]

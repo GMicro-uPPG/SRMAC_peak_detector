@@ -31,6 +31,7 @@ import time
 from TERMA_detector import TERMA_detector
 import utilities
 import optimization
+import read_datasets
 # Third party
 import numpy as np
 
@@ -45,13 +46,15 @@ if num_folds <= 0 or num_folds > 66:
     print('Error, the number of folds should be in the range [1,66]')
     exit(-1)
 
-# Load records (PPG signals and peak references)
-from read_datasets import records   # This import will load 66 records. Record sample rate = 200 Hz
+# Read PPG dataset	
+records = read_datasets.getHUSMppg()	
+num_recs = len(records)
 
 # Length of the cross-validation folds
 fold_len = num_recs // num_folds
-print(f'The size of each fold is {fold_len} records')
 leftovers = num_recs % num_folds
+print(f'The size of each fold is {fold_len} records')
+
 if leftovers > 0:
     print(f'There are {leftovers} unused records')
     print(f'This wont happen if {num_recs} is divisible by num_folds')
