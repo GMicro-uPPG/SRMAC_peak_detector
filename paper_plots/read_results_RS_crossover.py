@@ -35,9 +35,9 @@ if len(sys.argv) != 3:
 ioimax = int(sys.argv[1])
 ioi2plot = int(sys.argv[2])
 
-if ioi2plot >= ioimax or ioi2plot < 0:
-	print('The desired iteration of interest (IOI) to plot must be in the range set by the number of IOI')
-	exit(-2)
+if ioi2plot >= ioimax or ioi2plot < -1:
+	print('The desired iteration of interest (IOI) to plot must be in the range set by the number of IOI or \'-1\' for no plotting')
+	exit(-1)
 
 # Loads multidimensional arrays with precision and recall values from cross-validation
 val_precisions = np.load('../search_results/LOSOCV_RS_crossover_22folds_30runs_precisions.npy')
@@ -61,9 +61,9 @@ for ioi in range(0, ioimax):
 		fold_avg_recalls = np.sum(val_recalls[:,:,ioi], axis=1) / 30
 
 		if ioi == ioi2plot:
-			print(f'ioi = {ioi2plot}')
-			fold_avg_precisions2plot = list(fold_avg_precisions)
-			fold_avg_recalls2plot = list(fold_avg_recalls)
+				print(f'ioi = {ioi2plot}')
+				fold_avg_precisions2plot = list(fold_avg_precisions)
+				fold_avg_recalls2plot = list(fold_avg_recalls)
 
 		# COPD patients statistics
 		c_precision_avg = np.mean(fold_avg_precisions[0:11])
@@ -84,6 +84,9 @@ for ioi in range(0, ioimax):
 		print(f'Healthy recall: {h_recall_avg} ({h_recall_std})')
 		
 		print(f'Overall average: {(c_precision_avg + c_recall_avg + h_precision_avg + h_recall_avg)/4}')
+
+if ioi2plot == -1:
+	exit()
 
 fig, axs = plt.subplots(2, figsize=(15, 8))
 folds_ticks = range(1,23)

@@ -35,9 +35,9 @@ if len(sys.argv) != 3:
 ioimax = int(sys.argv[1])
 ioi2plot = int(sys.argv[2])
 
-if ioi2plot >= ioimax or ioi2plot < 0:
-	print('The desired iteration of interest (IOI) to plot must be in the range set by the number of IOI')
-	exit(-2)
+if ioi2plot >= ioimax or ioi2plot < -1:
+	print('The desired iteration of interest (IOI) to plot must be in the range set by the number of IOI or \'-1\' for no plotting')
+	exit(-1)
 
 # Loads multidimensional arrays with precision and recall values from cross-validation
 val_precisions = np.load('../search_results/LOSOCV_RS_TERMA_22folds_30runs_precisions.npy')
@@ -55,7 +55,7 @@ fold_avg_recalls2plot = None
 
 for ioi in range(0, ioimax):
 		print('\nIteration of interest with index ' + str(ioi))
-		
+
 		# There are 30 runs of the results for the iterations of interest
 		fold_avg_precisions = np.sum(val_precisions[:,:,ioi], axis=1) / 30
 		fold_avg_recalls = np.sum(val_recalls[:,:,ioi], axis=1) / 30
@@ -82,9 +82,12 @@ for ioi in range(0, ioimax):
 
 		print(f'Healthy precision: {h_precision_avg} ({h_precision_std})')
 		print(f'Healthy recall: {h_recall_avg} ({h_recall_std})')
-		
+
 		print(f'Overall average: {(c_precision_avg + c_recall_avg + h_precision_avg + h_recall_avg)/4}')
 
+if ioi2plot == -1:
+	exit()
+	
 fig, axs = plt.subplots(2, figsize=(15, 8))
 folds_ticks = range(1,23)
 xtick_labels = ['C'+r'$_1$', 'C'+r'$_2$', 'C'+r'$_3$', 'C'+r'$_4$', 'C'+r'$_5$', 'C'+r'$_6$',
