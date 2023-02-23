@@ -35,13 +35,13 @@ import utilities
 import numpy as np
 import matplotlib.pyplot as plt
 
-first_rec = int(sys.argv[1])
-last_rec = int(sys.argv[2])
-
 if len(sys.argv) != 3:
     print('Please enter the first and last record numbers')
     exit(-1)
-		
+    
+first_rec = int(sys.argv[1])
+last_rec = int(sys.argv[2])
+	
 if first_rec > last_rec:
     print('Error, last rec must be greater than first rec')
     exit(-1)
@@ -54,7 +54,7 @@ if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
 # Define TERMA detector
 W1 = 111
 W2 = 545
-beta = 0.02
+beta = 0
 Fs = 200
 detector = TERMA_detector(W1, W2, beta)              
 

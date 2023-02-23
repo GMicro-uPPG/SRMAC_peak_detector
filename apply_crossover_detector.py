@@ -34,12 +34,14 @@ import utilities
 import numpy as np
 import matplotlib.pyplot as plt
 
-first_rec = int(sys.argv[1])
-last_rec = int(sys.argv[2])  
-	
+
 if len(sys.argv) != 3:
     print('Please enter the first and last record indices')
     exit(-1)
+    
+first_rec = int(sys.argv[1])
+last_rec = int(sys.argv[2])  
+	
 if first_rec > last_rec:
     print('Error, last record must be greater than first record')
     exit(-1)
