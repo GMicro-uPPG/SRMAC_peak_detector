@@ -57,14 +57,7 @@ class TERMA_detector(base_detector):
         return 2 * math.floor( x / 2 ) + 1
     
     def simple_moving_average(self, signal, window_len):
-        '''  '''
-        moving_avg = []
-        for index in range(len(signal)-window_len):
-            # Compute mean in the range signal[index, index+window-1]
-            local_avg = np.mean(signal[index : (index+window_len)])
-            moving_avg.append(local_avg)
-            
-        return moving_avg
+        return (np.convolve(signal, np.ones(window_len), 'valid') / window_len)[:-1]
 
     def get_peak_results(self, raw_ppg, sampling_frequency):
         '''  '''
@@ -158,7 +151,7 @@ class TERMA_detector(base_detector):
                     fsm_state = STATE_SEEKING_PEAK
 
             index += 1
-
+            
         return SMA_peak, SMA_beat, peak_blocks, peak_positions
         
         
