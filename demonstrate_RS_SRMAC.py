@@ -25,7 +25,7 @@
 # Author: Victor O. Costa
 
 # Application modules
-from crossover_detector import crossover_detector
+from SRMAC_detector import SRMAC_detector
 import read_datasets
 import utilities
 import optimization
@@ -59,7 +59,7 @@ hist_train_accs = []
 hist_test_accs = []
 for _ in range(num_runs):
 		# Get history of solutions defined by iterations of interest
-		solutions_of_interest = optimization.random_search_crossover(train_records = train_records,
+		solutions_of_interest = optimization.random_search_SRMAC(train_records = train_records,
 														iterations_of_interest = iterations_of_interest,
 														alpha_min = 0.7, alpha_max = 1,
 														thr_min = 0, thr_max = 5e-4,
@@ -69,7 +69,7 @@ for _ in range(num_runs):
 		# For each solution define a model and extract test acc
 		for soi in solutions_of_interest:
 				alpha_cross, alpha_fast, alpha_slow, threshold, train_cost = soi
-				peak_detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, threshold)
+				peak_detector = SRMAC_detector(alpha_cross, alpha_fast, alpha_slow, threshold)
 				# Train
 				train_accuracy = 1 - train_cost     # Train cost is 1 - acc
 				run_train_accuracies.append(train_accuracy)

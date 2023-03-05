@@ -29,8 +29,8 @@ import matplotlib.pyplot as plt
 
 # Loads arrays with precision and recall values from cross-validation
 ## Validation results for the proposed model
-precisions_this = np.load('../search_results/LOSOCV_RS_crossover_22folds_30runs_precisions.npy')
-recalls_this = np.load('../search_results/LOSOCV_RS_crossover_22folds_30runs_recalls.npy')
+precisions_SRMAC = np.load('../search_results/LOSOCV_RS_SRMAC_22folds_30runs_precisions.npy')
+recalls_SRMAC = np.load('../search_results/LOSOCV_RS_SRMAC_22folds_30runs_recalls.npy')
 
 ## Validation results for TERMA
 precisions_terma = np.load('../search_results/LOSOCV_GS_TERMA_22folds_precisions.npy')
@@ -38,8 +38,8 @@ recalls_terma = np.load('../search_results/LOSOCV_GS_TERMA_22folds_recalls.npy')
 
 # Dimensionality checking
 print('Expected dimensions for our results: (22, 30, # of IOI)')
-print(f'Actual dimensions (P): {np.shape(precisions_this)}')
-print(f'Actual dimensions (R): {np.shape(recalls_this)}')
+print(f'Actual dimensions (P): {np.shape(precisions_SRMAC)}')
+print(f'Actual dimensions (R): {np.shape(recalls_SRMAC)}')
 
 print('\nExpected dimensions for TERMA\'s results: (22)')
 print(f'Actual dimensions (P): {np.shape(precisions_terma)}')
@@ -53,10 +53,10 @@ rec_copd_terma = recalls_terma[0:11]
 rec_healthy_terma = recalls_terma[11:22]
 
 ## THIS
-pre_copd_this = np.sum(precisions_this[0:11,:,-1], axis=1) / 30
-pre_healthy_this = np.sum(precisions_this[11:22,:,-1], axis=1) / 30
-rec_copd_this = np.sum(recalls_this[0:11,:,-1], axis=1) / 30
-rec_healthy_this = np.sum(recalls_this[11:22,:,-1], axis=1) / 30
+pre_copd_SRMAC = np.sum(precisions_SRMAC[0:11,:,-1], axis=1) / 30
+pre_healthy_SRMAC = np.sum(precisions_SRMAC[11:22,:,-1], axis=1) / 30
+rec_copd_SRMAC = np.sum(recalls_SRMAC[0:11,:,-1], axis=1) / 30
+rec_healthy_SRMAC = np.sum(recalls_SRMAC[11:22,:,-1], axis=1) / 30
 
 # Summary statistics to check for correctness
 print('\nSTATS FOR TERMA')
@@ -64,19 +64,21 @@ print(f'COPD precision: {np.mean(pre_copd_terma)} {np.std(pre_copd_terma, ddof=1
 print(f'COPD recall: {np.mean(rec_copd_terma)} {np.std(rec_copd_terma, ddof=1)}')
 print(f'Healthy precision: {np.mean(pre_healthy_terma)} {np.std(pre_healthy_terma, ddof=1)}')
 print(f'Healthy recall: {np.mean(rec_healthy_terma)} {np.std(rec_healthy_terma, ddof=1)}')
+print(f'Overall accuracy: {(np.mean(pre_copd_terma) + np.mean(rec_copd_terma) + np.mean(pre_healthy_terma) + np.mean(rec_healthy_terma))/4}')
 
-print('\nSTATS FOR THIS')
-print(f'COPD precision: {np.mean(pre_copd_this)} {np.std(pre_copd_this, ddof=1)}')
-print(f'COPD recall: {np.mean(rec_copd_this)} {np.std(rec_copd_this, ddof=1)}')
-print(f'Healthy precision: {np.mean(pre_healthy_this)} {np.std(pre_healthy_this, ddof=1)}')
-print(f'Healthy recall: {np.mean(rec_healthy_this)} {np.std(rec_healthy_this, ddof=1)}')
+print('\nSTATS FOR SRMAC')
+print(f'COPD precision: {np.mean(pre_copd_SRMAC)} {np.std(pre_copd_SRMAC, ddof=1)}')
+print(f'COPD recall: {np.mean(rec_copd_SRMAC)} {np.std(rec_copd_SRMAC, ddof=1)}')
+print(f'Healthy precision: {np.mean(pre_healthy_SRMAC)} {np.std(pre_healthy_SRMAC, ddof=1)}')
+print(f'Healthy recall: {np.mean(rec_healthy_SRMAC)} {np.std(rec_healthy_SRMAC, ddof=1)}')
+print(f'Overall accuracy: {(np.mean(pre_copd_SRMAC) + np.mean(rec_copd_SRMAC) + np.mean(pre_healthy_SRMAC) + np.mean(rec_healthy_SRMAC))/4}')
 
 # There are 4 plots, from the cartesian product (precision, recall)x(healthy, COPD)
 bar_width = 0.4
 bar_offset = bar_width/2 + 0.02
 y_max = 1.01
 y_min = 0.9
-color_this = 'mediumseagreen'
+color_SRMAC = 'mediumseagreen'
 color_TERMA = 'slateblue'
 figure_proportion = (15, 5)
 
@@ -89,9 +91,9 @@ COPD_labels = ['C'+r'$_1$', 'C'+r'$_2$', 'C'+r'$_3$', 'C'+r'$_4$', 'C'+r'$_5$', 
 
 ## (Precision, healthy)
 fig, axs = plt.subplots(1, figsize = figure_proportion)
-barlist_this = axs.bar(subj_ticks - bar_offset, pre_healthy_this, width = bar_width, label='This')
+barlist_SRMAC = axs.bar(subj_ticks - bar_offset, pre_healthy_SRMAC, width = bar_width, label='SRMAC')
 barlist_terma = axs.bar(subj_ticks + bar_offset, pre_healthy_terma, width = bar_width, label='TERMA')
-[ bar.set_color(color_this) for bar in barlist_this ]
+[ bar.set_color(color_SRMAC) for bar in barlist_SRMAC ]
 [ bar.set_color(color_TERMA) for bar in barlist_terma ]
 axs.set_title('Precisions for healthy subjects', fontsize=18)
 axs.set_ylim([y_min, y_max])
@@ -102,9 +104,9 @@ plt.savefig(f'precisions_healthy_subs.png', bbox_inches='tight')
 
 ## (Precision, COPD)
 fig, axs = plt.subplots(1, figsize = figure_proportion)
-barlist_this = axs.bar(subj_ticks - bar_offset, pre_copd_this, width = bar_width, label='This')
+barlist_SRMAC = axs.bar(subj_ticks - bar_offset, pre_copd_SRMAC, width = bar_width, label='SRMAC')
 barlist_terma = axs.bar(subj_ticks + bar_offset, pre_copd_terma, width = bar_width, label='TERMA')
-[ bar.set_color(color_this) for bar in barlist_this ]
+[ bar.set_color(color_SRMAC) for bar in barlist_SRMAC ]
 [ bar.set_color(color_TERMA) for bar in barlist_terma ]
 axs.set_title('Precisions for COPD patients', fontsize=18)
 axs.set_ylim([y_min, y_max])
@@ -115,9 +117,9 @@ plt.savefig(f'precisions_copd_subs.png', bbox_inches='tight')
 
 ## (Recall, healthy)
 fig, axs = plt.subplots(1, figsize = figure_proportion)
-barlist_this = axs.bar(subj_ticks - bar_offset, rec_healthy_this, width = bar_width, label='This')
+barlist_SRMAC = axs.bar(subj_ticks - bar_offset, rec_healthy_SRMAC, width = bar_width, label='SRMAC')
 barlist_terma = axs.bar(subj_ticks + bar_offset, rec_healthy_terma, width = bar_width, label='TERMA')
-[ bar.set_color(color_this) for bar in barlist_this ]
+[ bar.set_color(color_SRMAC) for bar in barlist_SRMAC ]
 [ bar.set_color(color_TERMA) for bar in barlist_terma ]
 axs.set_title('Recalls for healthy subjects', fontsize=18)
 axs.set_ylim([y_min, y_max])
@@ -128,9 +130,9 @@ plt.savefig(f'recalls_healthy_subs.png', bbox_inches='tight')
 
 ## (Recall, COPD)
 fig, axs = plt.subplots(1, figsize = figure_proportion)
-barlist_this = axs.bar(subj_ticks - bar_offset, rec_copd_this, width = bar_width, label='This')
+barlist_SRMAC = axs.bar(subj_ticks - bar_offset, rec_copd_SRMAC, width = bar_width, label='SRMAC')
 barlist_terma = axs.bar(subj_ticks + bar_offset, rec_copd_terma, width = bar_width, label='TERMA')
-[ bar.set_color(color_this) for bar in barlist_this ]
+[ bar.set_color(color_SRMAC) for bar in barlist_SRMAC ]
 [ bar.set_color(color_TERMA) for bar in barlist_terma ]
 axs.set_title('Recalls for COPD patients', fontsize=18)
 axs.set_ylim([y_min, y_max])

@@ -29,13 +29,13 @@ from collections.abc import Iterable
 # Third party
 import numpy as np
 # Application modules
-from crossover_detector import crossover_detector
+from SRMAC_detector import SRMAC_detector
 from TERMA_detector import TERMA_detector
 import utilities
 
-def random_search_crossover(train_records, iterations_of_interest, alpha_min, alpha_max, thr_min, thr_max, sampling_frequency, verbosity):
+def random_search_SRMAC(train_records, iterations_of_interest, alpha_min, alpha_max, thr_min, thr_max, sampling_frequency, verbosity):
     ''' Given the number of iterations and alphas range,
-        performs random search on the crossover's alphas using train data accuracy as fitness metric. '''
+        performs random search on SRMAC's alphas using train data accuracy as fitness metric. '''
     # Sanity checks
     if thr_min > thr_max:
         print('Error, maximum threshold must be greater than the minimum threshold')
@@ -66,10 +66,10 @@ def random_search_crossover(train_records, iterations_of_interest, alpha_min, al
         # Slow alpha depends on fast alpha (fast alpha < slow alpha)
         alpha_fast = np.random.uniform(alpha_min, alpha_max)
         alpha_slow = np.random.uniform(alpha_fast, alpha_max)
-        # The crossover alpha is independent of fast and slow alphas
+        # The alpha crossoveris independent of fast and slow alphas
         alpha_crossover = np.random.uniform(alpha_min, alpha_max)
         threshold = np.random.uniform(thr_min, thr_max)
-        peak_detector = crossover_detector(alpha_crossover, alpha_fast, alpha_slow, threshold)
+        peak_detector = SRMAC_detector(alpha_crossover, alpha_fast, alpha_slow, threshold)
         
         # Run the detector defined above in the train records and extract SE and P+
         tp, fp, fn = utilities.record_set_confusion_matrix(peak_detector, train_records, sampling_frequency)
@@ -99,7 +99,7 @@ def random_search_crossover(train_records, iterations_of_interest, alpha_min, al
 
 def random_search_TERMA(train_records, iterations_of_interest, W1_min, W1_max, W2_min, W2_max, beta_min, beta_max, sampling_frequency, verbosity):
     ''' Given the number of iterations and alphas range,
-        performs random search on the crossover's alphas using train data accuracy as fitness metric. '''
+        performs random search on SRMAC's alphas using train data accuracy as fitness metric. '''
     # Sanity checks
     if W1_min > W1_max or W2_min > W2_max or beta_min > beta_max:
         print('Error, the maximum value of a given parameter should be greater than the minimum one')
@@ -193,7 +193,7 @@ def grid_search_TERMA(train_records, W1_list, W2_list, beta_list, sampling_frequ
                     best_solution = [W1, W2, beta, cost]
                     
                 if verbosity:
-                    print(f'[current] W1={W1}, W2={W2}, beta={beta}: cost={cost}')
+                    print(f'[current] W1={W1}, W2={W2}, beta={beta}: cost={cost} (SE = {SE}, Pp = {Pp})')
                     print(f'[best] W1={best_solution[0]}, W2={best_solution[1]}, beta={best_solution[2]}: cost={best_solution[-1]}\n')
                     
     
