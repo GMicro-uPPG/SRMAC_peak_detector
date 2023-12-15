@@ -79,7 +79,7 @@ def getHUSMppg():
     #print('\nFirst timestamp: ' + str(time_manager.time.getTimestamp()))
     #print('First time: ' + str(time_manager.time.getTime()))
 
-    dataset = 'ppg-dataset_husm/dataset'
+    dataset = 'ppg-dataset_husm'
     list_of_vol = os.listdir(dataset)
     list_of_vol.sort()
 		
