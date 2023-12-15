@@ -22,19 +22,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Author: Cesar Abascal
+# Author: Victor O. Costa
 
-# Python std library
-from datetime import datetime
+from abc import ABC, abstractmethod
 
-class time:
-    def getTimestamp():
-        now = datetime.now()
-        return datetime.timestamp(now)
-    #end-def
+class STATE_SEEKING_PEAK(object): pass
+class STATE_PEAK_FOUND(object): pass
 
-    def getTime():
-        timestamp = datetime.fromtimestamp(time.getTimestamp())
-        return timestamp
-    #end-def
-#end-class
+class base_detector(ABC):
+    @abstractmethod
+    def detect(self, raw_ppg, sampling_frequency):
+        pass
+    
