@@ -30,8 +30,8 @@ from collections.abc import Iterable
 from base_detector import *
 import utilities
 
-class crossover_detector(base_detector):
-    ''' Class to process the PPG signal and indicate peaks using a crossover of moving averages '''
+class SRMAC_detector(base_detector):
+    ''' Class to process the PPG signal and indicate peaks with the SRMAC model '''
     
     def __init__(self, alpha_crossover:float, alpha_fast:float, alpha_slow:float, threshold:float):
         ''' Constructor '''

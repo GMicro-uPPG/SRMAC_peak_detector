@@ -25,7 +25,7 @@
 # Author: Victor O. Costa
 
 # Application modules
-from crossover_detector import crossover_detector
+from SRMAC_detector import SRMAC_detector
 import read_datasets
 import utilities
 # Third party
@@ -34,7 +34,7 @@ import numpy as np
 # Load PPG dataset
 Fs = 200
 records = np.array(read_datasets.getHUSMppg())
-LSOCV_parameters = np.load('./search_results/LOSOCV_RS_crossover_22folds_30runs_parameters.npy')
+LSOCV_parameters = np.load('./search_results/LOSOCV_RS_SRMAC_22folds_30runs_parameters.npy')
 
 # Select all parameters found by random search during LSOCV
 parameters = LSOCV_parameters[:,:,-1,:]
@@ -59,7 +59,7 @@ rest_recalls = []
 for index, parameter_set in enumerate(parameters):
 		print(f'Evaluating parameter set no. {index}')
 		alpha_cross, alpha_fast, alpha_slow, thr = parameter_set
-		detector = crossover_detector(alpha_cross, alpha_fast, alpha_slow, thr)
+		detector = SRMAC_detector(alpha_cross, alpha_fast, alpha_slow, thr)
 		
 		# Get metrics for balke phase
 		tp, fp, fn = utilities.record_set_confusion_matrix(detector, balke_records, Fs)

@@ -27,7 +27,7 @@
 # Python std library
 import sys
 # Application modules
-from crossover_detector import crossover_detector
+from SRMAC_detector import SRMAC_detector
 import read_datasets
 import utilities
 # Third party
@@ -52,10 +52,10 @@ if last_rec > len(records) - 1 or last_rec < 0 or first_rec < 0:
     print(f'Error, record index must be in the range ]0,{len(records)-1}]')
     exit(-1)
 
-# Define crossover detector
+# Define SRMAC detector
 Fs = 200
-# detector = crossover_detector(0.8705, 0.9032, 0.9387, 0)
-detector = crossover_detector(0.9592, 0.8991, 0.9324, 5.710e-05)
+# detector = SRMAC_detector(0.8705, 0.9032, 0.9387, 0)
+detector = SRMAC_detector(0.9592, 0.8991, 0.9324, 5.710e-05)
 
 accumulated_cm = [0, 0, 0]
 # Get sample signal and reference from records
