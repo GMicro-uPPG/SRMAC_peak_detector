@@ -1,10 +1,22 @@
-# PPG Signal Processing
+<p align="center"><b> SRMAC - Peak Detection for Photoplethysmography</b></p>
 
 Photoplethysmography (PPG) is a non-invasive technique that measures changes in blood flow volume through optical means.
 Accurate detection of peaks in the PPG waveform allows the extraction of the heart rate variability (HRV), a recognized indicator for the health of the cardiac and autonomic nervous systems.
 Previous research has established the feasibility of PPG peak detection based on the crossover of moving averages.
 This repository has sources to implement the Smoothed Recursive Moving Average Crossover (SRMAC) peak detector, which eliminates the need for post-processing and nonlinear pre-processing of previous crossover-based peak detectors
 The proposed model is advantageous regarding memory and computational complexity, making it attractive for implementations on embedded devices.
+
+<p align="center">
+Block diagram of the SRMAC peak detector.
+<br />
+<img src="paper_plots/srmac_block_diagram.png">
+<br /><br />
+
+<p align="center">
+Example of peak detection with SRMAC.
+<br />
+<img src="paper_plots/peak_detection_example.png">
+<br /><br />
 
 ## Organization of the repository:
 
@@ -50,6 +62,25 @@ The proposed model is advantageous regarding memory and computational complexity
 18) paper_plots/read_results_RS_SRMAC.py          - Plot per-subject results for a combination of peak detector and search method
 </pre>
 
-If the SRMAC model is useful for your research or application, please cite it as "".
+If the <b>SRMAC model</b> is useful for your research or application, please cite it as
 
-If the PPG dataset is useful for your research or application, please cite it as "".
+<pre>
+@article{machado2023SRMAC,
+  title = {SRMAC - Smoothed Recursive Moving Average Crossover for Real-Time Systolic Peak Detection in Photoplethysmography},
+  author = {Abascal Machado, Cesar and O. Costa, Victor and Augusto Prior, Cesar and Ramos Rodrigues, Cesar},
+  journal = {arXiv preprint arXiv:},
+  doi = {https://doi.org/10.48550/arxiv.2312.10013},
+  year = {2023}
+}
+</pre>
+
+If the <b>PPG dataset</b> is useful for your research or application, please cite it as
+
+<pre>
+@misc{machado2023HUSM
+  author = {Abascal Machado, Cesar and O. Costa, Victor and Augusto Prior, Cesar and Ramos Rodrigues, Cesar and de Albuquerque, Isabella Martins and Schmidt Pasqualoto, Adriane},
+  title = {HUSM and GMicro: PPG Peak detection dataset},
+  doi = {10.5281/zenodo.8280127},
+  howpublished= {\url{https://zenodo.org/}
+}
+</pre>
