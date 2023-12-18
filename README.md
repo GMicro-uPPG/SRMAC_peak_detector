@@ -66,12 +66,13 @@ If the <b>SRMAC model</b> is useful for your research or application, please cit
 
 <pre>
 @misc{machado2023srmac,
-	title={SRMAC -- Smoothed Recursive Moving Average Crossover for Real-Time Systolic Peak Detection in Photoplethysmography}, 
-	author={Cesar Abascal Machado and Victor O. Costa and Cesar Augusto Prior and Cesar Ramos Rodrigues},
-	year={2023},
-	eprint={2312.10013},
-	archivePrefix={arXiv},
-	primaryClass={eess.SP}
+	title = {SRMAC -- Smoothed Recursive Moving Average Crossover for Real-Time Systolic Peak Detection in Photoplethysmography}, 
+	author = {Cesar Abascal Machado and Victor O. Costa and Cesar Augusto Prior and Cesar Ramos Rodrigues},
+	year = {2023},
+	eprint = {2312.10013},
+	archivePrefix = {arXiv},
+	doi = {10.48550/arXiv.2312.10013}
+	primaryClass = {eess.SP}
 }
 </pre>
 
