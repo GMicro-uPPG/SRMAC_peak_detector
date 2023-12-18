@@ -65,14 +65,16 @@ Example of peak detection with SRMAC.
 If the <b>SRMAC model</b> is useful for your research or application, please cite it as
 
 <pre>
-@article{machado2023SRMAC,
-  title = {SRMAC - Smoothed Recursive Moving Average Crossover for Real-Time Systolic Peak Detection in Photoplethysmography},
-  author = {Abascal Machado, Cesar and O. Costa, Victor and Augusto Prior, Cesar and Ramos Rodrigues, Cesar},
-  journal = {arXiv preprint arXiv:},
-  doi = {https://doi.org/10.48550/arxiv.2312.10013},
-  year = {2023}
+@misc{machado2023srmac,
+	title={SRMAC -- Smoothed Recursive Moving Average Crossover for Real-Time Systolic Peak Detection in Photoplethysmography}, 
+	author={Cesar Abascal Machado and Victor O. Costa and Cesar Augusto Prior and Cesar Ramos Rodrigues},
+	year={2023},
+	eprint={2312.10013},
+	archivePrefix={arXiv},
+	primaryClass={eess.SP}
 }
 </pre>
+
 
 If the <b>PPG dataset</b> is useful for your research or application, please cite it as
 
@@ -81,6 +83,7 @@ If the <b>PPG dataset</b> is useful for your research or application, please cit
   author = {Abascal Machado, Cesar and O. Costa, Victor and Augusto Prior, Cesar and Ramos Rodrigues, Cesar and de Albuquerque, Isabella Martins and Schmidt Pasqualoto, Adriane},
   title = {HUSM and GMicro: PPG Peak detection dataset},
   doi = {10.5281/zenodo.8280127},
-  howpublished= {\url{https://zenodo.org/}
+	year = {2023},
+  howpublished= {\url{https://zenodo.org/}}
 }
 </pre>
